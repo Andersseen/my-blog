@@ -18,15 +18,17 @@ const { class: className } = Astro.props;
   Tema: Light
 </button>
 
-<script type="module">
+<script>
   import { $theme, initTheme, toggleTheme } from '../../store/theme';
 
-  const updateButtonLabel = (button, theme) => {
+  type Theme = 'light' | 'dark';
+
+  const updateButtonLabel = (button: HTMLButtonElement, theme: Theme) => {
     button.textContent = `Tema: ${theme === 'dark' ? 'Dark' : 'Light'}`;
   };
 
   const mountThemeToggle = async () => {
-    const buttons = document.querySelectorAll('[data-theme-toggle]');
+    const buttons = document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]');
 
     if (buttons.length === 0) {
       return;
