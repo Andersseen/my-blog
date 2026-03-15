@@ -1,56 +1,56 @@
 {
   "meta": {
-    "siteDescription": "Statti pro frontend, web-arkhitekturu ta design systems vid Andrii Pa (@Andersseen).",
-    "aboutTitle": "Pro tsei proiekt",
-    "aboutDescription": "Bazova arkhitektura blogu Andrii Pa",
+    "siteDescription": "Статті про frontend, веб-архітектуру та design systems від Andrii Pap (@Andersseen).",
+    "aboutTitle": "Про цей проєкт",
+    "aboutDescription": "Базова архітектура блогу Andrii Pap",
     "blogTitle": "Blog",
-    "blogDescription": "Tekhnichnyi kontent i notatky z arkhitektury."
+    "blogDescription": "Технічний контент і нотатки з архітектури."
   },
   "nav": {
-    "home": "Holovna",
+    "home": "Головна",
     "blog": "Blog",
-    "about": "Pro mene"
+    "about": "Про мене"
   },
   "language": {
-    "label": "Mova",
+    "label": "Мова",
     "es": "ES",
     "en": "EN",
     "ua": "UA"
   },
   "theme": {
-    "label": "Tema",
-    "light": "Svitla",
-    "dark": "Temna",
-    "aria": "Peremyknuty temu"
+    "label": "Тема",
+    "light": "Світла",
+    "dark": "Темна",
+    "aria": "Перемкнути тему"
   },
   "home": {
-    "badge": "Andrii Pa • @Andersseen",
-    "headline": "Tekhnichni statti u moiemu vlasnomu blogi z tym samym vizualnym DNK, shcho i v moiemu portfolio.",
-    "description": "Tsei prostir vidobrazhaie styl Andersseen Dev dlia publikuvannia pro Angular, TypeScript, design systems i frontend arkhitekturu bez zalezhnosti tilky vid Medium.",
-    "editorialTitle": "Redaktsiina liniia",
+    "badge": "Andrii Pap • @Andersseen",
+    "headline": "Технічні статті у моєму власному блозі з тим самим візуальним ДНК, що і в моєму портфоліо.",
+    "description": "Цей простір відображає стиль Andersseen Dev для публікацій про Angular, TypeScript, design systems і frontend-архітектуру без залежності лише від Medium.",
+    "editorialTitle": "Редакційна лінія",
     "editorialPoints": [
-      "Mashtabovana frontend arkhitektura",
-      "Realni eksperymenty z Angular ta Web Components",
-      "Pidiody do tooling, DX i yakosti kodu",
-      "Kontent, uzghodzhenyi z Andersseen Dev"
+      "Масштабована frontend-архітектура",
+      "Реальні експерименти з Angular та Web Components",
+      "Підходи до tooling, DX і якості коду",
+      "Контент, узгоджений з Andersseen Dev"
     ]
   },
   "about": {
-    "title": "Pro tsei proiekt",
+    "title": "Про цей проєкт",
     "paragraphs": [
-      "Tsei blog stvoreno dlia zrostannia bez tertia: vidokremleni shary, striktna typizatsiia, kontrolovanyi hlobalnyi stan i lokalne zberihannia v IndexedDB dlia nalashtuvan ta maibutnikh sesii.",
-      "UI pobudovanyi na modularnykh komponentakh Astro, a Angular nalashtovano dlia dynamichnykh islands, koly interaktyvnist diisno daye tsinnist."
+      "Цей блог створено для зростання без тертя: відокремлені шари, строга типізація, контрольований глобальний стан і локальне зберігання в IndexedDB для налаштувань та майбутніх сесій.",
+      "UI побудований на модульних компонентах Astro, а Angular налаштовано для динамічних islands, коли інтерактивність дійсно додає цінність."
     ]
   },
   "blog": {
-    "latestTitle": "Ostanni statti",
-    "latestDescription": "Tekhnichnyi kontent i notatky z arkhitektury."
+    "latestTitle": "Останні статті",
+    "latestDescription": "Технічний контент і нотатки з архітектури."
   },
   "blogPost": {
-    "updatedOn": "Onovleno"
+    "updatedOn": "Оновлено"
   },
   "footer": {
-    "rights": "All rights reserved.",
+    "rights": "Усі права захищено.",
     "portfolio": "Portfolio",
     "medium": "Medium"
   }

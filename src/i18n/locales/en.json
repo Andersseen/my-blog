@@ -1,8 +1,8 @@
 {
   "meta": {
-    "siteDescription": "Articles about frontend engineering, web architecture and design systems by Andrii Pa (@Andersseen).",
+    "siteDescription": "Articles about frontend engineering, web architecture and design systems by Andrii Pap (@Andersseen).",
     "aboutTitle": "About this project",
-    "aboutDescription": "Architecture baseline for Andrii Pa blog",
+    "aboutDescription": "Architecture baseline for Andrii Pap blog",
     "blogTitle": "Blog",
     "blogDescription": "Technical content and architecture notes."
   },
@@ -24,7 +24,7 @@
     "aria": "Toggle theme"
   },
   "home": {
-    "badge": "Andrii Pa • @Andersseen",
+    "badge": "Andrii Pap • @Andersseen",
     "headline": "Technical articles on my own blog, with the same visual DNA as my portfolio.",
     "description": "This space mirrors the Andersseen Dev style to publish about Angular, TypeScript, design systems and frontend architecture without relying only on Medium.",
     "editorialTitle": "Editorial line",
