@@ -14,9 +14,15 @@ const today = new Date();
 	<div class="flex flex-col items-center justify-between gap-3 sm:flex-row">
 		<p>&copy; {today.getFullYear()} {AUTHOR_NAME}. {messages.footer.rights}</p>
 		<p class="flex items-center gap-3 text-foreground/60">
-			<a class="hover:text-primary-800" href={AUTHOR_PORTFOLIO_URL} rel="me noopener noreferrer" target="_blank">{messages.footer.portfolio}</a>
+			<a class="inline-flex items-center gap-1 hover:text-primary-800" href={AUTHOR_PORTFOLIO_URL} rel="me noopener noreferrer" target="_blank">
+				{messages.footer.portfolio}
+				<and-icon name="external-link" size="13" aria-hidden="true"></and-icon>
+			</a>
 			<span aria-hidden="true">•</span>
-			<a class="hover:text-primary-800" href={AUTHOR_MEDIUM_URL} rel="me noopener noreferrer" target="_blank">{messages.footer.medium}</a>
+			<a class="inline-flex items-center gap-1 hover:text-primary-800" href={AUTHOR_MEDIUM_URL} rel="me noopener noreferrer" target="_blank">
+				{messages.footer.medium}
+				<and-icon name="external-link" size="13" aria-hidden="true"></and-icon>
+			</a>
 		</p>
 	</div>
 </footer>

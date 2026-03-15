@@ -11,6 +11,12 @@ importers:
       '@analogjs/astro-angular':
         specifier: ^2.3.1
         version: 2.3.1(72be616edd5417d6e4217df23d11d5e5)
+      '@andersseen/icon':
+        specifier: ^0.0.1
+        version: 0.0.1
+      '@andersseen/web-components':
+        specifier: ^0.0.2
+        version: 0.0.2
       '@angular/animations':
         specifier: ^21.2.4
         version: 21.2.4(@angular/core@21.2.4(@angular/compiler@21.2.4)(rxjs@7.8.2))
@@ -116,6 +122,18 @@ packages:
         optional: true
       '@angular/build':
         optional: true
+
+  '@andersseen/headless-components@0.1.0':
+    resolution: {integrity: sha512-332WHj8Ug5yl3iuGkVAdqdu4TEO4B//bsEL5s6rkLqis/t2t5FmzeXmWap6i38/5kLOPz5XOa1M7H7Lh58lUEg==}
+
+  '@andersseen/icon@0.0.1':
+    resolution: {integrity: sha512-uGAVkwpQWUCRWPthHUjJibIBVxA5xElaUWyTS7w70VGbQgyOWSAI3VknTEKXDHqxZJGkHPJ08r+DULg/aWZxkQ==}
+
+  '@andersseen/motion@0.1.0':
+    resolution: {integrity: sha512-tuOtlOGLEgU6ZQqDmKPCyCmOWfH3hMo7I9Tvc4kfLv19DC+DlL/m8HKDbT5QzGVA9ceUJgyMVQDvLVjBfKoq/w==}
+
+  '@andersseen/web-components@0.0.2':
+    resolution: {integrity: sha512-7zG4MD8W4TX44zqQ0VULJkISbWm1S/JhPYN9S1AAeoHqpkGREnf4feHJCwSL4ymWHPYPU2bInAXyYrmQvmie5Q==}
 
   '@angular-devkit/architect@0.2102.2':
     resolution: {integrity: sha512-CDvFtXwyBtMRkTQnm+LfBNLL0yLV8ZGskrM1T6VkcGwXGFDott1FxUdj96ViodYsYL5fbJr0MNA6TlLcanV3kQ==}
@@ -345,6 +363,10 @@ packages:
     resolution: {integrity: sha512-IyDgFV5GeDUVX4YdF/3CPULtVGSXXMLh1xVIgdCgxApktqnQV0r7/8Nqthg+8YLGaAtdyIlo2qIdZrbCv4+7ww==}
     engines: {node: '>=6.0.0'}
     hasBin: true
+
+  '@babel/runtime@7.28.6':
+    resolution: {integrity: sha512-05WQkdpL9COIMz4LjTxGpPNCdlpyimKppYNoJ5Di5EUObifl8t4tuLuUBBZEpoLYOmfvIWrsp9fCl0HoPRVTdA==}
+    engines: {node: '>=6.9.0'}
 
   '@babel/template@7.28.6':
     resolution: {integrity: sha512-YA6Ma2KsCdGb+WC6UpBVFJGXL58MDA6oyONbjyF/+5sBgxY/dwkhLogbMT2GXXyU84/IhRw/2D1Os1B/giz+BQ==}
@@ -1854,6 +1876,9 @@ packages:
     resolution: {integrity: sha512-77PSwercCZU2Fc4sX94eF8k8Pxte6JAwL4/ICZLFjJLqegs7kCuAsqqj/70NQF6TvDpgFjkubQB2FW2ZZddvQg==}
     engines: {node: '>=8'}
 
+  class-variance-authority@0.7.1:
+    resolution: {integrity: sha512-Ka+9Trutv7G8M6WT6SeiRWz792K5qEqIGEGzXKhAE6xOWAY6pPH8U+9IY3oCMv6kqTmLsv7Xh/2w2RigkePMsg==}
+
   cli-cursor@5.0.0:
     resolution: {integrity: sha512-aCj4O5wKyszjMmDT4tZj93kxyydN/K5zPWSCe6/0AV/AA1pqe5ZBIw0a2ZfPQV7lL5/yb5HsUreJ6UFAF1tEQw==}
     engines: {node: '>=18'}
@@ -3079,6 +3104,9 @@ packages:
   symbol-tree@3.2.4:
     resolution: {integrity: sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==}
 
+  tailwind-merge@3.5.0:
+    resolution: {integrity: sha512-I8K9wewnVDkL1NTGoqWmVEIlUcB9gFriAEkXkfCjX5ib8ezGxtR3xD7iZIxrfArjEsH7F1CHD4RFUtxefdqV/A==}
+
   tailwindcss@4.2.1:
     resolution: {integrity: sha512-/tBrSQ36vCleJkAOsy9kbNTgaxvGbyOamC30PRePTQe/o1MFwEKHQk4Cn7BNGaPtjp+PuUrByJehM1hgxfq4sw==}
 
@@ -3487,6 +3515,22 @@ snapshots:
     optionalDependencies:
       '@angular/build': 21.2.2(2cb3b76b2dc2c0bbed893bf8c7d3e573)
 
+  '@andersseen/headless-components@0.1.0': {}
+
+  '@andersseen/icon@0.0.1': {}
+
+  '@andersseen/motion@0.1.0': {}
+
+  '@andersseen/web-components@0.0.2':
+    dependencies:
+      '@andersseen/headless-components': 0.1.0
+      '@andersseen/icon': 0.0.1
+      '@andersseen/motion': 0.1.0
+      '@babel/runtime': 7.28.6
+      class-variance-authority: 0.7.1
+      clsx: 2.1.1
+      tailwind-merge: 3.5.0
+
   '@angular-devkit/architect@0.2102.2(chokidar@5.0.0)':
     dependencies:
       '@angular-devkit/core': 21.2.2(chokidar@5.0.0)
@@ -3797,6 +3841,8 @@ snapshots:
   '@babel/parser@7.29.0':
     dependencies:
       '@babel/types': 7.29.0
+
+  '@babel/runtime@7.28.6': {}
 
   '@babel/template@7.28.6':
     dependencies:
@@ -4986,6 +5032,10 @@ snapshots:
       readdirp: 5.0.0
 
   ci-info@4.4.0: {}
+
+  class-variance-authority@0.7.1:
+    dependencies:
+      clsx: 2.1.1
 
   cli-cursor@5.0.0:
     dependencies:
@@ -6732,6 +6782,8 @@ snapshots:
       sax: 1.5.0
 
   symbol-tree@3.2.4: {}
+
+  tailwind-merge@3.5.0: {}
 
   tailwindcss@4.2.1: {}
 

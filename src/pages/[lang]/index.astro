@@ -29,10 +29,16 @@ const { locale, messages } = getI18n(Astro.url.pathname);
       </p>
     </div>
     <aside class="rounded-2xl border border-primary-300/35 bg-[hsl(var(--surface)/0.82)] p-6 shadow-[0_10px_30px_-18px_hsl(var(--primary-900)/0.55)] backdrop-blur-md">
-      <h2 class="text-lg font-semibold text-foreground">{messages.home.editorialTitle}</h2>
-      <ul class="mt-4 space-y-2 text-sm text-[hsl(var(--muted-foreground))]">
-        {messages.home.editorialPoints.map((point) => <li>{point}</li>)}
-      </ul>
+      <and-accordion>
+        <and-accordion-item value="editorial-line">
+          <and-accordion-trigger>{messages.home.editorialTitle}</and-accordion-trigger>
+          <and-accordion-content>
+            <ul class="space-y-2 py-2 text-sm text-[hsl(var(--muted-foreground))]">
+              {messages.home.editorialPoints.map((point) => <li>{point}</li>)}
+            </ul>
+          </and-accordion-content>
+        </and-accordion-item>
+      </and-accordion>
     </aside>
   </section>
 </MainLayout>

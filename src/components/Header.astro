@@ -1,6 +1,7 @@
 ---
 import { AUTHOR_USERNAME, SITE_TITLE } from '../consts';
-import { LOCALES, type Dictionary, type Locale, stripLocaleFromPath, toLocalePath } from '../i18n';
+import { type Dictionary, type Locale, stripLocaleFromPath, toLocalePath } from '../i18n';
+import LanguageDropdown from './i18n/LanguageDropdown.astro';
 import HeaderLink from './HeaderLink.astro';
 import ThemeToggle from './theme/ThemeToggle.astro';
 
@@ -13,13 +14,6 @@ const { locale, messages } = Astro.props;
 
 const currentPath = stripLocaleFromPath(Astro.url.pathname);
 const homePath = toLocalePath(locale, '/');
-
-const languageLinks = LOCALES.map((lang) => ({
-	lang,
-	label: messages.language[lang],
-	href: toLocalePath(lang, currentPath),
-	isActive: lang === locale,
-}));
 ---
 
 <header class="py-6">
@@ -34,23 +28,7 @@ const languageLinks = LOCALES.map((lang) => ({
 				<HeaderLink href={toLocalePath(locale, '/blog')}>{messages.nav.blog}</HeaderLink>
 				<HeaderLink href={toLocalePath(locale, '/about')}>{messages.nav.about}</HeaderLink>
 			</nav>
-			<nav class="flex items-center gap-1" aria-label={messages.language.label}>
-				{
-					languageLinks.map((item) => (
-						<a
-							href={item.href}
-							class:list={[
-								'rounded-md px-2 py-1 text-[11px] font-semibold uppercase tracking-wide transition',
-								item.isActive
-									? 'bg-primary-200/80 text-primary-900'
-									: 'text-[hsl(var(--muted-foreground))] hover:bg-primary-100 hover:text-primary-800',
-							]}
-						>
-							{item.label}
-						</a>
-					))
-				}
-			</nav>
+			<LanguageDropdown locale={locale} messages={messages} currentPath={currentPath} />
 			<ThemeToggle messages={messages} />
 		</div>
 	</div>
