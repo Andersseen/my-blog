@@ -1,0 +1,65 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<button
+  type="button"
+  data-theme-toggle
+  class:list={[
+    'inline-flex items-center rounded-md border border-primary-300 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-foreground transition hover:bg-primary-100',
+    className,
+  ]}
+  aria-label="Alternar tema"
+>
+  Tema: Light
+</button>
+
+<script type="module">
+  import { $theme, initTheme, toggleTheme } from '../../store/theme';
+
+  const updateButtonLabel = (button, theme) => {
+    button.textContent = `Tema: ${theme === 'dark' ? 'Dark' : 'Light'}`;
+  };
+
+  const mountThemeToggle = async () => {
+    const buttons = document.querySelectorAll('[data-theme-toggle]');
+
+    if (buttons.length === 0) {
+      return;
+    }
+
+    const currentTheme = await initTheme();
+
+    buttons.forEach((button) => {
+      if (button.dataset.bound === 'true') {
+        return;
+      }
+
+      button.dataset.bound = 'true';
+      updateButtonLabel(button, currentTheme);
+
+      button.addEventListener('click', async () => {
+        const nextTheme = await toggleTheme();
+        updateButtonLabel(button, nextTheme);
+      });
+
+      const unsubscribe = $theme.listen((theme) => {
+        updateButtonLabel(button, theme);
+      });
+
+      window.addEventListener(
+        'beforeunload',
+        () => {
+          unsubscribe();
+        },
+        { once: true },
+      );
+    });
+  };
+
+  void mountThemeToggle();
+</script>
