@@ -2,21 +2,35 @@
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
+import { type Dictionary, type Locale, getI18n, getLangCode } from '../i18n';
 
 interface Props {
   title: string;
   description: string;
   lang?: string;
   pageType?: 'website' | 'article';
+  locale?: Locale;
+  messages?: Dictionary;
 }
 
-const { title, description, lang = 'es', pageType = 'website' } = Astro.props;
+const detectedI18n = getI18n(Astro.url.pathname);
+
+const {
+  title,
+  description,
+  pageType = 'website',
+  locale = detectedI18n.locale,
+  messages = detectedI18n.messages,
+  lang,
+} = Astro.props;
+
+const htmlLang = lang ?? getLangCode(locale);
 ---
 
 <!doctype html>
-<html lang={lang} data-theme="light">
+<html lang={htmlLang} data-theme="light">
   <head>
-    <BaseHead title={title} description={description} pageType={pageType} />
+    <BaseHead title={title} description={description} pageType={pageType} locale={locale} />
   </head>
   <body class="min-h-screen bg-background text-foreground antialiased">
     <div class="relative min-h-screen overflow-x-clip">
@@ -26,11 +40,11 @@ const { title, description, lang = 'es', pageType = 'website' } = Astro.props;
       ></div>
 
       <div class="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 sm:px-6 lg:px-8">
-        <Header />
+        <Header locale={locale} messages={messages} />
         <main class="flex-1 pb-8 pt-2">
           <slot />
         </main>
-        <Footer />
+        <Footer messages={messages} />
       </div>
     </div>
 

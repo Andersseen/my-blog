@@ -1,17 +1,18 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
+import { getI18n } from '../i18n';
+
+const { locale, messages } = getI18n(Astro.url.pathname);
 ---
 
-<MainLayout title="Sobre este proyecto" description="Arquitectura base del blog">
+<MainLayout
+	title={messages.meta.aboutTitle}
+	description={messages.meta.aboutDescription}
+	locale={locale}
+	messages={messages}
+>
 	<section class="mx-auto max-w-3xl space-y-5">
-		<h1 class="text-3xl font-bold tracking-tight text-foreground">Sobre este proyecto</h1>
-		<p class="text-foreground/75">
-			Este blog está diseñado para crecer sin fricción: capas desacopladas, tipado estricto, estado
-			global controlado y persistencia local en IndexedDB para preferencias y futuras sesiones.
-		</p>
-		<p class="text-foreground/75">
-			La UI está construida con componentes Astro modulares y Angular queda configurado para islas
-			dinámicas cuando realmente aporten interactividad.
-		</p>
+		<h1 class="text-3xl font-bold tracking-tight text-foreground">{messages.about.title}</h1>
+		{messages.about.paragraphs.map((paragraph) => <p class="text-foreground/75">{paragraph}</p>)}
 	</section>
 </MainLayout>

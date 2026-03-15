@@ -7,16 +7,20 @@ import {
   SITE_TITLE,
   SITE_URL,
 } from '../../consts';
+import { type Locale, getLangCode } from '../../i18n';
 
 interface Props {
   title: string;
   description: string;
   pageURL: string;
   imageURL: string;
+  locale: Locale;
   pageType?: 'website' | 'article';
 }
 
-const { title, description, pageURL, imageURL, pageType = 'website' } = Astro.props;
+const { title, description, pageURL, imageURL, locale, pageType = 'website' } = Astro.props;
+
+const language = getLangCode(locale);
 
 const structuredData = {
   '@context': 'https://schema.org',
@@ -27,7 +31,7 @@ const structuredData = {
       url: SITE_URL,
       name: SITE_TITLE,
       description,
-      inLanguage: 'es',
+      inLanguage: language,
       publisher: {
         '@id': `${SITE_URL}/#person`,
       },

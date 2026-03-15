@@ -1,12 +1,15 @@
 ---
 import type { HTMLAttributes } from 'astro/types';
+import { stripLocaleFromPath } from '../i18n';
 
 type Props = HTMLAttributes<'a'>;
 
 const { href, class: className, ...props } = Astro.props;
-const pathname = Astro.url.pathname.replace(import.meta.env.BASE_URL, '');
+const pathname = stripLocaleFromPath(Astro.url.pathname.replace(import.meta.env.BASE_URL, ''));
+const hrefPath = typeof href === 'string' ? href : href?.pathname ?? '/';
+const targetPath = stripLocaleFromPath(hrefPath);
 const subpath = pathname.match(/[^\/]+/g);
-const isActive = href === pathname || href === '/' + (subpath?.[0] || '');
+const isActive = targetPath === pathname || targetPath === '/' + (subpath?.[0] || '');
 
 const baseClasses =
 	'rounded-md px-3 py-2 text-sm font-medium text-foreground/80 transition hover:bg-primary-100 hover:text-primary-800';

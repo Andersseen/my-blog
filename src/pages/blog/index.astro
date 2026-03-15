@@ -2,18 +2,26 @@
 import { getCollection } from 'astro:content';
 import PostCard from '../../components/blog/PostCard.astro';
 import MainLayout from '../../layouts/MainLayout.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+import { SITE_TITLE } from '../../consts';
+import { getI18n } from '../../i18n';
+
+const { locale, messages } = getI18n(Astro.url.pathname);
 
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 ---
 
-<MainLayout title={`${SITE_TITLE} | Blog`} description={SITE_DESCRIPTION}>
+<MainLayout
+	title={`${SITE_TITLE} | ${messages.meta.blogTitle}`}
+	description={messages.meta.blogDescription}
+	locale={locale}
+	messages={messages}
+>
 	<section class="space-y-6">
 		<header class="space-y-2">
-			<h1 class="text-3xl font-bold tracking-tight text-foreground">Últimos artículos</h1>
-			<p class="text-foreground/70">Contenido técnico y notas de arquitectura.</p>
+			<h1 class="text-3xl font-bold tracking-tight text-foreground">{messages.blog.latestTitle}</h1>
+			<p class="text-[hsl(var(--muted-foreground))]">{messages.blog.latestDescription}</p>
 		</header>
 
 		<ul class="grid gap-6 sm:grid-cols-2">

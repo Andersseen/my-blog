@@ -1,21 +1,27 @@
 ---
+import type { Dictionary } from '../../i18n';
+
 interface Props {
   class?: string;
+  messages: Dictionary;
 }
 
-const { class: className } = Astro.props;
+const { class: className, messages } = Astro.props;
 ---
 
 <button
   type="button"
   data-theme-toggle
+  data-theme-label={messages.theme.label}
+  data-theme-light={messages.theme.light}
+  data-theme-dark={messages.theme.dark}
   class:list={[
     'inline-flex items-center rounded-md border border-primary-300 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-foreground transition hover:bg-primary-100',
     className,
   ]}
-  aria-label="Alternar tema"
+  aria-label={messages.theme.aria}
 >
-  Tema: Light
+  {messages.theme.label}: {messages.theme.light}
 </button>
 
 <script>
@@ -24,7 +30,10 @@ const { class: className } = Astro.props;
   type Theme = 'light' | 'dark';
 
   const updateButtonLabel = (button: HTMLButtonElement, theme: Theme) => {
-    button.textContent = `Tema: ${theme === 'dark' ? 'Dark' : 'Light'}`;
+    const label = button.dataset.themeLabel ?? 'Theme';
+    const lightLabel = button.dataset.themeLight ?? 'Light';
+    const darkLabel = button.dataset.themeDark ?? 'Dark';
+    button.textContent = `${label}: ${theme === 'dark' ? darkLabel : lightLabel}`;
   };
 
   const mountThemeToggle = async () => {

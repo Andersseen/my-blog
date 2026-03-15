@@ -5,6 +5,7 @@ import '../styles/global.css';
 import type { ImageMetadata } from 'astro';
 import FallbackImage from '../assets/blog-placeholder-1.jpg';
 import { AUTHOR_MEDIUM_URL, AUTHOR_PORTFOLIO_URL } from '../consts';
+import { LOCALES, type Locale, getLocaleFromPath, stripLocaleFromPath, toLocalePath } from '../i18n';
 import SeoMetaTags from './seo/SeoMetaTags.astro';
 import SeoFavicons from './seo/SeoFavicons.astro';
 import SeoStructuredData from './seo/SeoStructuredData.astro';
@@ -15,13 +16,28 @@ interface Props {
 	image?: ImageMetadata;
 	noindex?: boolean;
 	pageType?: 'website' | 'article';
+	locale?: Locale;
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
-const { title, description, image = FallbackImage, noindex = false, pageType = 'website' } = Astro.props;
+const {
+	title,
+	description,
+	image = FallbackImage,
+	noindex = false,
+	pageType = 'website',
+	locale = getLocaleFromPath(Astro.url.pathname),
+} = Astro.props;
+
+const basePath = stripLocaleFromPath(Astro.url.pathname);
 const pageURL = canonicalURL.toString();
 const imageURL = new URL(image.src, Astro.site).toString();
+
+const alternateLinks = LOCALES.map((lang) => ({
+	lang,
+	href: new URL(toLocalePath(lang, basePath), Astro.site),
+}));
 ---
 
 <meta charset="utf-8" />
@@ -33,6 +49,13 @@ const imageURL = new URL(image.src, Astro.site).toString();
 
 <link rel="me" href={AUTHOR_PORTFOLIO_URL} />
 <link rel="me" href={AUTHOR_MEDIUM_URL} />
+
+{
+	alternateLinks.map((item) => (
+		<link rel="alternate" hreflang={item.lang} href={item.href} />
+	))
+}
+<link rel="alternate" hreflang="x-default" href={new URL(toLocalePath('es', basePath), Astro.site)} />
 
 <link rel="sitemap" href="/sitemap-index.xml" />
 <link
@@ -52,6 +75,7 @@ const imageURL = new URL(image.src, Astro.site).toString();
 	canonicalURL={pageURL}
 	pageURL={pageURL}
 	imageURL={imageURL}
+	locale={locale}
 	noindex={noindex}
 />
 
@@ -60,5 +84,6 @@ const imageURL = new URL(image.src, Astro.site).toString();
 	description={description}
 	pageURL={pageURL}
 	imageURL={imageURL}
+	locale={locale}
 	pageType={pageType}
 />

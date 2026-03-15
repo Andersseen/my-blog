@@ -1,22 +1,57 @@
 ---
 import { AUTHOR_USERNAME, SITE_TITLE } from '../consts';
+import { LOCALES, type Dictionary, type Locale, stripLocaleFromPath, toLocalePath } from '../i18n';
 import HeaderLink from './HeaderLink.astro';
 import ThemeToggle from './theme/ThemeToggle.astro';
+
+interface Props {
+	locale: Locale;
+	messages: Dictionary;
+}
+
+const { locale, messages } = Astro.props;
+
+const currentPath = stripLocaleFromPath(Astro.url.pathname);
+const homePath = toLocalePath(locale, '/');
+
+const languageLinks = LOCALES.map((lang) => ({
+	lang,
+	label: messages.language[lang],
+	href: toLocalePath(lang, currentPath),
+	isActive: lang === locale,
+}));
 ---
 
 <header class="py-6">
 	<div class="flex flex-wrap items-center justify-between gap-4 border-b border-primary-200 pb-4">
-		<a href="/" class="inline-flex items-baseline gap-2 text-xl font-semibold tracking-tight text-foreground">
+		<a href={homePath} class="inline-flex items-baseline gap-2 text-xl font-semibold tracking-tight text-foreground">
 			{SITE_TITLE}
 			<span class="text-xs font-medium uppercase tracking-[0.18em] text-[hsl(var(--muted-foreground))]">@{AUTHOR_USERNAME}</span>
 		</a>
 		<div class="flex items-center gap-3 sm:gap-6">
 			<nav class="flex items-center gap-1 sm:gap-2" aria-label="Main navigation">
-				<HeaderLink href="/">Inicio</HeaderLink>
-				<HeaderLink href="/blog">Blog</HeaderLink>
-				<HeaderLink href="/about">Acerca</HeaderLink>
+				<HeaderLink href={toLocalePath(locale, '/')}>{messages.nav.home}</HeaderLink>
+				<HeaderLink href={toLocalePath(locale, '/blog')}>{messages.nav.blog}</HeaderLink>
+				<HeaderLink href={toLocalePath(locale, '/about')}>{messages.nav.about}</HeaderLink>
 			</nav>
-			<ThemeToggle />
+			<nav class="flex items-center gap-1" aria-label={messages.language.label}>
+				{
+					languageLinks.map((item) => (
+						<a
+							href={item.href}
+							class:list={[
+								'rounded-md px-2 py-1 text-[11px] font-semibold uppercase tracking-wide transition',
+								item.isActive
+									? 'bg-primary-200/80 text-primary-900'
+									: 'text-[hsl(var(--muted-foreground))] hover:bg-primary-100 hover:text-primary-800',
+							]}
+						>
+							{item.label}
+						</a>
+					))
+				}
+			</nav>
+			<ThemeToggle messages={messages} />
 		</div>
 	</div>
 </header>

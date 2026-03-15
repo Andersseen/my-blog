@@ -11,14 +11,7 @@
     </defs>
 
     <rect x="4" y="4" width="56" height="56" rx="14" fill="url(#bg)" />
-    <text
-        x="16"
-        y="45"
-        fill="#eef2ff"
-        font-family="Sora, Inter, Segoe UI, Arial, sans-serif"
-        font-size="33"
-        font-weight="800"
-        letter-spacing="-1.1"
-    >aP</text>
+    <path d="M14.6 46 25.1 18h4.4L40 46h-5.8l-2.1-6h-9.6l-2 6Zm9.2-10.5h6.8l-3.4-9.8z" fill="#eef2ff" />
+    <path d="M42.3 46V18h8.4c5.9 0 9.4 3.3 9.4 8.7 0 5.4-3.5 8.8-9.4 8.8h-3.1V46zm5.3-15.1h2.7c2.6 0 4.2-1.5 4.2-4.1s-1.6-4.1-4.2-4.1h-2.7z" fill="#eef2ff" />
     <path d="M8 8h34a19 19 0 0 1-19 19H8z" fill="url(#sheen)" />
 </svg>
