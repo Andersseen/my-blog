@@ -1,0 +1,94 @@
+---
+import { LOCALES, type Dictionary, type Locale, toLocalePath } from '../../i18n';
+
+interface Props {
+  locale: Locale;
+  messages: Dictionary;
+  currentPath: string;
+  class?: string;
+}
+
+const { locale, messages, currentPath, class: className } = Astro.props;
+
+const languageItems = LOCALES.map((lang) => ({
+  text: messages.language[lang],
+  value: toLocalePath(lang, currentPath),
+  disabled: lang === locale,
+}));
+
+const activeLabel = messages.language[locale];
+---
+
+<and-dropdown
+  class:list={['w-[88px]', className]}
+  label={`${messages.language.label}: ${activeLabel}`}
+  data-language-dropdown
+  data-language-items={JSON.stringify(languageItems)}
+  aria-label={messages.language.label}
+>
+  <button
+    slot="trigger"
+    type="button"
+    class="inline-flex w-full items-center justify-between rounded-md border border-primary-300 bg-[hsl(var(--surface)/0.82)] px-2.5 py-2 text-xs font-semibold uppercase tracking-wide text-foreground transition hover:bg-primary-100"
+  >
+    <span class="inline-flex items-center gap-1.5">
+      <and-icon name="compass" size="14" aria-hidden="true"></and-icon>
+      {activeLabel}
+    </span>
+    <and-icon name="chevron-down" size="14" aria-hidden="true"></and-icon>
+  </button>
+</and-dropdown>
+
+<script>
+  type DropdownItem = {
+    text: string;
+    value: string;
+    disabled?: boolean;
+  };
+
+  type AndDropdownElement = HTMLElement & {
+    items: DropdownItem[];
+  };
+
+  const parseItems = (rawItems: string | null): DropdownItem[] => {
+    if (!rawItems) {
+      return [];
+    }
+
+    try {
+      const parsed = JSON.parse(rawItems) as DropdownItem[];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const mountLanguageDropdowns = async () => {
+    if (typeof customElements !== 'undefined') {
+      await customElements.whenDefined('and-dropdown');
+    }
+
+    const dropdowns = document.querySelectorAll<AndDropdownElement>('[data-language-dropdown]');
+
+    dropdowns.forEach((dropdown) => {
+      if (dropdown.dataset.bound === 'true') {
+        return;
+      }
+
+      dropdown.dataset.bound = 'true';
+      dropdown.items = parseItems(dropdown.getAttribute('data-language-items'));
+
+      dropdown.addEventListener('andDropdownSelect', (event: Event) => {
+        const selection = (event as CustomEvent<string>).detail;
+
+        if (typeof selection !== 'string' || selection.length === 0) {
+          return;
+        }
+
+        window.location.assign(selection);
+      });
+    });
+  };
+
+  void mountLanguageDropdowns();
+</script>

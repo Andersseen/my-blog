@@ -1,0 +1,44 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import { SITE_TITLE } from '../../consts';
+import { getI18n } from '../../i18n';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'en' } }, { params: { lang: 'ua' } }];
+}
+
+const { locale, messages } = getI18n(Astro.url.pathname);
+---
+
+<MainLayout
+  title={SITE_TITLE}
+  description={messages.meta.siteDescription}
+  locale={locale}
+  messages={messages}
+>
+  <section class="mx-auto grid max-w-5xl gap-8 lg:grid-cols-[1.25fr_1fr] lg:items-start">
+    <div class="space-y-6">
+      <p class="inline-flex rounded-full border border-primary-300/60 bg-primary-100/70 px-3 py-1 text-sm font-semibold text-primary-800">
+        {messages.home.badge}
+      </p>
+      <h1 class="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+        {messages.home.headline}
+      </h1>
+      <p class="max-w-2xl text-lg text-[hsl(var(--muted-foreground))]">
+        {messages.home.description}
+      </p>
+    </div>
+    <aside class="rounded-2xl border border-primary-300/35 bg-[hsl(var(--surface)/0.82)] p-6 shadow-[0_10px_30px_-18px_hsl(var(--primary-900)/0.55)] backdrop-blur-md">
+      <and-accordion>
+        <and-accordion-item value="editorial-line">
+          <and-accordion-trigger>{messages.home.editorialTitle}</and-accordion-trigger>
+          <and-accordion-content>
+            <ul class="space-y-2 py-2 text-sm text-[hsl(var(--muted-foreground))]">
+              {messages.home.editorialPoints.map((point) => <li>{point}</li>)}
+            </ul>
+          </and-accordion-content>
+        </and-accordion-item>
+      </and-accordion>
+    </aside>
+  </section>
+</MainLayout>

@@ -1,0 +1,60 @@
+---
+import { AUTHOR_NAME, AUTHOR_USERNAME, SITE_TITLE } from '../../consts';
+import { type Locale, getOgLocale } from '../../i18n';
+
+interface Props {
+  title: string;
+  description: string;
+  canonicalURL: string;
+  pageURL: string;
+  imageURL: string;
+  locale: Locale;
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description,
+  canonicalURL,
+  pageURL,
+  imageURL,
+  locale,
+  noindex = false,
+} = Astro.props;
+
+const robotsValue = noindex
+  ? 'noindex,nofollow,noarchive'
+  : 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1';
+---
+
+<link rel="canonical" href={canonicalURL} />
+<title>{title}</title>
+
+<meta name="description" content={description} />
+<meta name="robots" content={robotsValue} />
+<meta name="referrer" content="strict-origin-when-cross-origin" />
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content={AUTHOR_NAME} />
+<meta name="creator" content={AUTHOR_NAME} />
+<meta name="publisher" content={AUTHOR_NAME} />
+<meta name="application-name" content={SITE_TITLE} />
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#4f7cff" />
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111827" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content={SITE_TITLE} />
+<meta property="og:locale" content={getOgLocale(locale)} />
+<meta property="og:url" content={pageURL} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={imageURL} />
+<meta property="og:image:alt" content={title} />
+<meta property="article:author" content={AUTHOR_NAME} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content={`@${AUTHOR_USERNAME}`} />
+<meta name="twitter:creator" content={`@${AUTHOR_USERNAME}`} />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageURL} />
+<meta name="twitter:url" content={pageURL} />

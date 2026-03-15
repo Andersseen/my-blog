@@ -1,0 +1,57 @@
+{
+  "meta": {
+    "siteDescription": "Articulos sobre frontend, arquitectura web y design systems por Andrii Pap (@Andersseen).",
+    "aboutTitle": "Sobre este proyecto",
+    "aboutDescription": "Arquitectura base del blog de Andrii Pap",
+    "blogTitle": "Blog",
+    "blogDescription": "Contenido tecnico y notas de arquitectura."
+  },
+  "nav": {
+    "home": "Inicio",
+    "blog": "Blog",
+    "about": "Acerca"
+  },
+  "language": {
+    "label": "Idioma",
+    "es": "ES",
+    "en": "EN",
+    "ua": "UA"
+  },
+  "theme": {
+    "label": "Tema",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "aria": "Alternar tema"
+  },
+  "home": {
+    "badge": "Andrii Pap • @Andersseen",
+    "headline": "Articulos tecnicos en mi propio blog, con el mismo ADN visual de mi portfolio.",
+    "description": "Este espacio replica el estilo Andersseen Dev para publicar sobre Angular, TypeScript, design systems y arquitectura frontend sin depender solo de Medium.",
+    "editorialTitle": "Linea editorial",
+    "editorialPoints": [
+      "Arquitectura frontend escalable",
+      "Experimentos reales con Angular y Web Components",
+      "Tips de tooling, DX y calidad de codigo",
+      "Contenido alineado con Andersseen Dev"
+    ]
+  },
+  "about": {
+    "title": "Sobre este proyecto",
+    "paragraphs": [
+      "Este blog esta disenado para crecer sin friccion: capas desacopladas, tipado estricto, estado global controlado y persistencia local en IndexedDB para preferencias y futuras sesiones.",
+      "La UI esta construida con componentes Astro modulares y Angular queda configurado para islas dinamicas cuando realmente aporten interactividad."
+    ]
+  },
+  "blog": {
+    "latestTitle": "Ultimos articulos",
+    "latestDescription": "Contenido tecnico y notas de arquitectura."
+  },
+  "blogPost": {
+    "updatedOn": "Actualizado el"
+  },
+  "footer": {
+    "rights": "All rights reserved.",
+    "portfolio": "Portfolio",
+    "medium": "Medium"
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "meta": {
+    "siteDescription": "Статті про frontend, веб-архітектуру та design systems від Andrii Pap (@Andersseen).",
+    "aboutTitle": "Про цей проєкт",
+    "aboutDescription": "Базова архітектура блогу Andrii Pap",
+    "blogTitle": "Blog",
+    "blogDescription": "Технічний контент і нотатки з архітектури."
+  },
+  "nav": {
+    "home": "Головна",
+    "blog": "Blog",
+    "about": "Про мене"
+  },
+  "language": {
+    "label": "Мова",
+    "es": "ES",
+    "en": "EN",
+    "ua": "UA"
+  },
+  "theme": {
+    "label": "Тема",
+    "light": "Світла",
+    "dark": "Темна",
+    "aria": "Перемкнути тему"
+  },
+  "home": {
+    "badge": "Andrii Pap • @Andersseen",
+    "headline": "Технічні статті у моєму власному блозі з тим самим візуальним ДНК, що і в моєму портфоліо.",
+    "description": "Цей простір відображає стиль Andersseen Dev для публікацій про Angular, TypeScript, design systems і frontend-архітектуру без залежності лише від Medium.",
+    "editorialTitle": "Редакційна лінія",
+    "editorialPoints": [
+      "Масштабована frontend-архітектура",
+      "Реальні експерименти з Angular та Web Components",
+      "Підходи до tooling, DX і якості коду",
+      "Контент, узгоджений з Andersseen Dev"
+    ]
+  },
+  "about": {
+    "title": "Про цей проєкт",
+    "paragraphs": [
+      "Цей блог створено для зростання без тертя: відокремлені шари, строга типізація, контрольований глобальний стан і локальне зберігання в IndexedDB для налаштувань та майбутніх сесій.",
+      "UI побудований на модульних компонентах Astro, а Angular налаштовано для динамічних islands, коли інтерактивність дійсно додає цінність."
+    ]
+  },
+  "blog": {
+    "latestTitle": "Останні статті",
+    "latestDescription": "Технічний контент і нотатки з архітектури."
+  },
+  "blogPost": {
+    "updatedOn": "Оновлено"
+  },
+  "footer": {
+    "rights": "Усі права захищено.",
+    "portfolio": "Portfolio",
+    "medium": "Medium"
+  }
+}
