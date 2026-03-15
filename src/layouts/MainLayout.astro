@@ -7,21 +7,22 @@ interface Props {
   title: string;
   description: string;
   lang?: string;
+  pageType?: 'website' | 'article';
 }
 
-const { title, description, lang = 'es' } = Astro.props;
+const { title, description, lang = 'es', pageType = 'website' } = Astro.props;
 ---
 
 <!doctype html>
 <html lang={lang} data-theme="light">
   <head>
-    <BaseHead title={title} description={description} />
+    <BaseHead title={title} description={description} pageType={pageType} />
   </head>
   <body class="min-h-screen bg-background text-foreground antialiased">
     <div class="relative min-h-screen overflow-x-clip">
       <div
         aria-hidden="true"
-        class="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(226,244,255,0.9)_0%,_transparent_60%),radial-gradient(circle_at_bottom,_rgba(255,237,217,0.8)_0%,_transparent_55%)]"
+        class="app-backdrop pointer-events-none absolute inset-0 -z-10"
       ></div>
 
       <div class="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 sm:px-6 lg:px-8">

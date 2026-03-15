@@ -1,12 +1,15 @@
 ---
-import { SITE_TITLE } from '../consts';
+import { AUTHOR_USERNAME, SITE_TITLE } from '../consts';
 import HeaderLink from './HeaderLink.astro';
 import ThemeToggle from './theme/ThemeToggle.astro';
 ---
 
 <header class="py-6">
 	<div class="flex flex-wrap items-center justify-between gap-4 border-b border-primary-200 pb-4">
-		<a href="/" class="text-xl font-semibold tracking-tight text-foreground">{SITE_TITLE}</a>
+		<a href="/" class="inline-flex items-baseline gap-2 text-xl font-semibold tracking-tight text-foreground">
+			{SITE_TITLE}
+			<span class="text-xs font-medium uppercase tracking-[0.18em] text-[hsl(var(--muted-foreground))]">@{AUTHOR_USERNAME}</span>
+		</a>
 		<div class="flex items-center gap-3 sm:gap-6">
 			<nav class="flex items-center gap-1 sm:gap-2" aria-label="Main navigation">
 				<HeaderLink href="/">Inicio</HeaderLink>
