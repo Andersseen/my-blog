@@ -9,7 +9,10 @@
   "nav": {
     "home": "Inicio",
     "blog": "Blog",
-    "about": "Acerca"
+    "about": "Acerca",
+    "aria": "Navegacion principal",
+    "menu": "Menu",
+    "closeMenu": "Cerrar"
   },
   "language": {
     "label": "Idioma",

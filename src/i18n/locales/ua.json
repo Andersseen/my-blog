@@ -9,7 +9,10 @@
   "nav": {
     "home": "Головна",
     "blog": "Blog",
-    "about": "Про мене"
+    "about": "Про мене",
+    "aria": "Основна навігація",
+    "menu": "Меню",
+    "closeMenu": "Закрити"
   },
   "language": {
     "label": "Мова",

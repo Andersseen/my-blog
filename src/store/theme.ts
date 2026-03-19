@@ -24,7 +24,15 @@ const applyThemeToDocument = (theme: Theme): void => {
   document.documentElement.style.colorScheme = theme;
 };
 
+const THEME_CACHE_KEY = "theme-cache";
+
 const persistTheme = async (theme: Theme): Promise<void> => {
+  // Write to localStorage first for synchronous FOUC prevention
+  try {
+    localStorage.setItem(THEME_CACHE_KEY, theme);
+  } catch {
+    // ignore
+  }
   try {
     await settingsService.set(THEME_SETTING_KEY, theme);
   } catch (error) {

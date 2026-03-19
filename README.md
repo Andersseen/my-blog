@@ -1,62 +1,105 @@
-# Astro Starter Kit: Blog
+# My Blog
 
-```sh
-pnpm create astro@latest -- --template blog
-```
+Astro-based personal blog for Andrii Pap with i18n routing (`es`, `en`, `ua`), shared Andersseen web components, and Playwright/Vitest coverage.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Development
 
-Features:
+Run all commands from repository root.
 
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and Open Graph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
+| Command         | Action                         |
+| :-------------- | :----------------------------- |
+| `pnpm install`  | Install dependencies           |
+| `pnpm dev`      | Start local dev server         |
+| `pnpm build`    | Build production output        |
+| `pnpm preview`  | Preview production build       |
+| `pnpm test`     | Run Vitest suite with coverage |
+| `pnpm test:e2e` | Run Playwright E2E suite       |
 
-## 🚀 Project Structure
+## UI Conventions (Source of Truth)
 
-Inside of your Astro project, you'll see the following folders and files:
+### Icon registration
 
-```text
-├── public/
-├── src/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
-```
+Primary file: `src/scripts/setup-andersseen.ts`
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+Rules:
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+1. Always register `COMPONENT_ICONS` for internal `@andersseen/web-components` dependencies.
+2. Register only project icons needed by UI surfaces (no global `registerAllIcons()` in production).
+3. Keep registry deterministic (single object allowlist, no ad-hoc registration in components).
+4. In development, missing icon registrations are reported via console warnings by bootstrap validation.
 
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
+Current project icon allowlist:
 
-Any static assets, like images, can be placed in the `public/` directory.
+- `compass`
+- `external-link`
+- `sun`
+- `moon`
+- `menu`
+- `close`
 
-## 🧞 Commands
+Icon size tiers:
 
-All commands are run from the root of the project, from a terminal:
+- `12-14`: micro actions and metadata
+- `16`: standard UI actions
+- `20-24`: navigation and emphasis
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
+Semantic color mapping:
 
-## 👀 Want to learn more?
+- `neutral`: default text/metadata
+- `primary`: key actions
+- `success`: confirmed state
+- `warning`: cautionary state
+- `error`: destructive/invalid state
 
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+### Component adoption order
 
-## Credit
+Priority path:
 
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+1. `and-navbar`
+2. `and-button` + `and-tooltip`
+3. `and-breadcrumb`
+4. `and-badge`
+5. `and-input` + `and-pagination`
+6. `and-toast`
+
+Deferred unless explicitly needed:
+
+- `and-sidebar`
+- `and-context-menu`
+- `and-carousel`
+
+### Header implementation
+
+Primary file: `src/components/Header.astro`
+
+Notes:
+
+1. Header navigation is driven by `and-navbar` items generated from locale-safe routes.
+2. Active section (`home`, `blog`, `about`) is derived from current path to keep route highlighting stable.
+3. Language and theme controls are slotted into navbar end section and remain available through responsive stages.
+4. Mobile toggle aria-label is synchronized to localized open/close strings.
+
+## QA Matrix
+
+Required checks before merging interaction changes:
+
+- Breakpoints: `320`, `375`, `390`, `768`, `1024`
+- Locales: `es`, `en`, `ua`
+- Themes: `light`, `dark`
+
+Core interaction checks:
+
+1. Header open/close/collapse behavior.
+2. Locale route correctness.
+3. Theme switch behavior without visual flash regressions.
+4. Overlay/dropdown clipping at viewport edges.
+5. Keyboard flow (`Tab`, `Enter`/`Space`, `Escape`) with visible focus.
+
+## PR Sequencing
+
+1. PR-01: icon conventions + registry hardening.
+2. PR-02: header migration to `and-navbar`.
+3. PR-03: blog UX components (`and-breadcrumb`, `and-badge`, `and-tooltip`).
+4. PR-04: blog filter/search + pagination.
+5. PR-05: layout/motion polish with reduced-motion support.
+6. PR-06: E2E + accessibility + documentation finalization.

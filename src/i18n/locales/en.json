@@ -9,7 +9,10 @@
   "nav": {
     "home": "Home",
     "blog": "Blog",
-    "about": "About"
+    "about": "About",
+    "aria": "Primary navigation",
+    "menu": "Menu",
+    "closeMenu": "Close"
   },
   "language": {
     "label": "Language",

@@ -31,7 +31,7 @@ const posts = (await getCollection('blog')).sort(
     <ul class="grid gap-6 sm:grid-cols-2">
       {posts.map((post) => (
         <li>
-          <PostCard post={post} />
+          <PostCard post={post} locale={locale} />
         </li>
       ))}
     </ul>
