@@ -9,6 +9,9 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "cf:dev": "pnpm build && wrangler pages dev ./dist",
+    "cf:deploy": "pnpm build && wrangler pages deploy ./dist",
+    "cf:deploy:prod": "pnpm cf:deploy -- --branch main",
     "astro": "astro",
     "test": "vitest run --coverage",
     "test:watch": "vitest",
@@ -44,6 +47,7 @@
     "@playwright/test": "^1.58.2",
     "@vitest/coverage-v8": "^4.1.0",
     "jsdom": "^29.0.0",
-    "vitest": "^4.1.0"
+    "vitest": "^4.1.0",
+    "wrangler": "^4.75.0"
   }
 }
