@@ -20,7 +20,7 @@ const activeLabel = messages.language[locale];
 ---
 
 <and-dropdown
-  class:list={['w-[88px]', className]}
+  class:list={['w-auto min-w-[84px] sm:min-w-[88px]', className]}
   label={`${messages.language.label}: ${activeLabel}`}
   data-language-dropdown
   data-language-items={JSON.stringify(languageItems)}
@@ -29,9 +29,9 @@ const activeLabel = messages.language[locale];
   <button
     slot="trigger"
     type="button"
-    class="inline-flex w-full items-center justify-between rounded-md border border-primary-300 bg-[hsl(var(--surface)/0.82)] px-2.5 py-2 text-xs font-semibold uppercase tracking-wide text-foreground transition hover:bg-primary-100"
+    class="inline-flex h-10 w-full items-center justify-between rounded-md border border-primary-300 bg-[hsl(var(--surface)/0.82)] px-2.5 text-xs font-semibold uppercase tracking-wide text-foreground transition hover:bg-primary-100"
   >
-    <span class="inline-flex items-center gap-1.5">
+    <span class="inline-flex items-center gap-1.5 whitespace-nowrap">
       <and-icon name="compass" size="14" aria-hidden="true"></and-icon>
       {activeLabel}
     </span>
