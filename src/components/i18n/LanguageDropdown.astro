@@ -6,9 +6,10 @@ interface Props {
   messages: Dictionary;
   currentPath: string;
   class?: string;
+  slot?: string;
 }
 
-const { locale, messages, currentPath, class: className } = Astro.props;
+const { locale, messages, currentPath, class: className, slot: slotName } = Astro.props;
 
 const languageItems = LOCALES.map((lang) => ({
   text: messages.language[lang],
@@ -20,7 +21,8 @@ const activeLabel = messages.language[locale];
 ---
 
 <and-dropdown
-  class:list={['w-auto min-w-[84px] sm:min-w-[88px]', className]}
+  slot={slotName}
+  class:list={['language-dropdown w-auto min-w-[84px] sm:min-w-[88px]', className]}
   label={`${messages.language.label}: ${activeLabel}`}
   data-language-dropdown
   data-language-items={JSON.stringify(languageItems)}
@@ -29,7 +31,10 @@ const activeLabel = messages.language[locale];
   <button
     slot="trigger"
     type="button"
-    class="inline-flex h-10 w-full items-center justify-between rounded-md border border-primary-300 bg-[hsl(var(--surface)/0.82)] px-2.5 text-xs font-semibold uppercase tracking-wide text-foreground transition hover:bg-primary-100"
+    data-language-trigger
+    aria-expanded="false"
+    aria-haspopup="menu"
+    class="inline-flex h-10 w-full items-center justify-between rounded-md border border-primary-300 bg-[hsl(var(--surface-strong)/0.96)] px-2.5 text-xs font-semibold uppercase tracking-wide text-foreground shadow-sm transition hover:bg-primary-100"
   >
     <span class="inline-flex items-center gap-1.5 whitespace-nowrap">
       <and-icon name="compass" size="14" aria-hidden="true"></and-icon>
@@ -48,6 +53,16 @@ const activeLabel = messages.language[locale];
 
   type AndDropdownElement = HTMLElement & {
     items: DropdownItem[];
+  };
+
+  const updateTriggerExpanded = (dropdown: HTMLElement, isOpen: boolean) => {
+    const trigger = dropdown.querySelector<HTMLButtonElement>('[data-language-trigger]');
+
+    if (!trigger) {
+      return;
+    }
+
+    trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
   };
 
   const parseItems = (rawItems: string | null): DropdownItem[] => {
@@ -77,6 +92,13 @@ const activeLabel = messages.language[locale];
 
       dropdown.dataset.bound = 'true';
       dropdown.items = parseItems(dropdown.getAttribute('data-language-items'));
+
+      updateTriggerExpanded(dropdown, false);
+
+      dropdown.addEventListener('andDropdownOpenChange', (event: Event) => {
+        const isOpen = (event as CustomEvent<boolean>).detail;
+        updateTriggerExpanded(dropdown, Boolean(isOpen));
+      });
 
       dropdown.addEventListener('andDropdownSelect', (event: Event) => {
         const selection = (event as CustomEvent<string>).detail;

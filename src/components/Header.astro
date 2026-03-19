@@ -56,10 +56,8 @@ const activeNavItem = resolveActiveNavItem(currentPath);
 				<span class="text-[11px] font-medium uppercase tracking-[0.18em] text-[hsl(var(--muted-foreground))]">@{AUTHOR_USERNAME}</span>
 			</a>
 
-			<div slot="end" class="flex items-center gap-2 pl-1">
-				<LanguageDropdown locale={locale} messages={messages} currentPath={currentPath} class="min-w-[74px]" />
-				<ThemeToggle messages={messages} />
-			</div>
+			<LanguageDropdown slot="end" locale={locale} messages={messages} currentPath={currentPath} class="min-w-[74px]" />
+			<ThemeToggle slot="end" messages={messages} />
 
 			<span slot="mobile-title" class="text-sm font-semibold uppercase tracking-wide">{messages.nav.menu}</span>
 		</and-navbar>

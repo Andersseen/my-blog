@@ -1,13 +1,19 @@
 ---
+import { getCollection } from 'astro:content';
+import PostCard from '../../components/blog/PostCard.astro';
 import MainLayout from '../../layouts/MainLayout.astro';
 import { SITE_TITLE } from '../../consts';
-import { getI18n } from '../../i18n';
+import { getI18n, toLocalePath } from '../../i18n';
 
 export function getStaticPaths() {
   return [{ params: { lang: 'en' } }, { params: { lang: 'ua' } }];
 }
 
 const { locale, messages } = getI18n(Astro.url.pathname);
+
+const latestPosts = (await getCollection('blog'))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
 ---
 
 <MainLayout
@@ -16,9 +22,9 @@ const { locale, messages } = getI18n(Astro.url.pathname);
   locale={locale}
   messages={messages}
 >
-  <section class="mx-auto grid max-w-5xl gap-8 lg:grid-cols-[1.25fr_1fr] lg:items-start">
-    <div class="space-y-6">
-      <p class="inline-flex rounded-full border border-primary-300/60 bg-primary-100/70 px-3 py-1 text-sm font-semibold text-primary-800">
+  <section class="home-hero mx-auto grid max-w-5xl gap-8 rounded-3xl border border-primary-300/35 bg-[hsl(var(--surface)/0.7)] p-6 shadow-[0_18px_40px_-26px_hsl(var(--primary-900)/0.65)] backdrop-blur-md sm:p-8 lg:grid-cols-[1.2fr_1fr] lg:items-start">
+    <div class="home-reveal space-y-6" style="--reveal-delay: 40ms;">
+      <p class="inline-flex rounded-full border border-primary-300/70 bg-primary-100/70 px-3 py-1 text-sm font-semibold text-primary-800">
         {messages.home.badge}
       </p>
       <h1 class="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
@@ -27,18 +33,55 @@ const { locale, messages } = getI18n(Astro.url.pathname);
       <p class="max-w-2xl text-lg text-[hsl(var(--muted-foreground))]">
         {messages.home.description}
       </p>
+
+      <div class="flex flex-wrap items-center gap-3 pt-2">
+        <a
+          href={toLocalePath(locale, '/blog')}
+          class="inline-flex items-center justify-center rounded-md border border-primary-600 bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-700"
+        >
+          {messages.nav.blog}
+        </a>
+        <a
+          href={toLocalePath(locale, '/about')}
+          class="inline-flex items-center justify-center rounded-md border border-primary-300 bg-[hsl(var(--surface)/0.84)] px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-primary-100"
+        >
+          {messages.nav.about}
+        </a>
+      </div>
     </div>
-    <aside class="rounded-2xl border border-primary-300/35 bg-[hsl(var(--surface)/0.82)] p-6 shadow-[0_10px_30px_-18px_hsl(var(--primary-900)/0.55)] backdrop-blur-md">
-      <and-accordion>
-        <and-accordion-item value="editorial-line">
-          <and-accordion-trigger>{messages.home.editorialTitle}</and-accordion-trigger>
-          <and-accordion-content>
-            <ul class="space-y-2 py-2 text-sm text-[hsl(var(--muted-foreground))]">
-              {messages.home.editorialPoints.map((point) => <li>{point}</li>)}
-            </ul>
-          </and-accordion-content>
-        </and-accordion-item>
-      </and-accordion>
+
+    <aside class="home-reveal rounded-2xl border border-primary-300/35 bg-[hsl(var(--surface)/0.82)] p-5 shadow-[0_10px_30px_-18px_hsl(var(--primary-900)/0.55)]" style="--reveal-delay: 140ms;">
+      <h2 class="text-base font-semibold tracking-tight text-foreground">{messages.home.editorialTitle}</h2>
+      <ul class="mt-4 space-y-2.5 text-sm text-[hsl(var(--muted-foreground))]">
+        {
+          messages.home.editorialPoints.map((point) => (
+            <li class="flex items-start gap-2">
+              <span class="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary-500"></span>
+              <span>{point}</span>
+            </li>
+          ))
+        }
+      </ul>
     </aside>
+  </section>
+
+  <section class="home-reveal mx-auto mt-10 max-w-5xl space-y-5" style="--reveal-delay: 220ms;">
+    <header class="flex items-end justify-between gap-4">
+      <div class="space-y-1">
+        <h2 class="text-2xl font-bold tracking-tight text-foreground">{messages.blog.latestTitle}</h2>
+        <p class="text-[hsl(var(--muted-foreground))]">{messages.blog.latestDescription}</p>
+      </div>
+      <a href={toLocalePath(locale, '/blog')} class="text-sm font-semibold text-primary-700 hover:text-primary-900">
+        {messages.nav.blog}
+      </a>
+    </header>
+
+    <ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {latestPosts.map((post) => (
+        <li>
+          <PostCard post={post} locale={locale} />
+        </li>
+      ))}
+    </ul>
   </section>
 </MainLayout>
