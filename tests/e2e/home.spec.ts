@@ -4,6 +4,6 @@ test("home page renders architecture headline", async ({ page }) => {
   await page.goto("/");
 
   await expect(
-    page.getByRole("heading", { name: /blog sólido/i }),
+    page.getByRole("heading", { name: /propio blog/i }),
   ).toBeVisible();
 });

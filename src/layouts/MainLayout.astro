@@ -30,6 +30,20 @@ const htmlLang = lang ?? getLangCode(locale);
 <!doctype html>
 <html lang={htmlLang} data-theme="light">
   <head>
+    <script is:inline>
+      (function () {
+        try {
+          var t = localStorage.getItem('theme-cache');
+          if (t === 'dark' || t === 'light') {
+            document.documentElement.setAttribute('data-theme', t);
+            document.documentElement.style.colorScheme = t;
+          } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            document.documentElement.style.colorScheme = 'dark';
+          }
+        } catch (e) {}
+      })();
+    </script>
     <BaseHead title={title} description={description} pageType={pageType} locale={locale} />
   </head>
   <body class="min-h-screen bg-background text-foreground antialiased">

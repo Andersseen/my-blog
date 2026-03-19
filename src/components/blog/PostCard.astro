@@ -2,6 +2,7 @@
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import FormattedDate from '../FormattedDate.astro';
+import { type Locale, toLocalePath } from '../../i18n';
 
 interface Props {
   post: {
@@ -13,13 +14,14 @@ interface Props {
       heroImage?: ImageMetadata;
     };
   };
+  locale: Locale;
 }
 
-const { post } = Astro.props;
+const { post, locale } = Astro.props;
 ---
 
 <a
-  href={`/blog/${post.id}/`}
+  href={toLocalePath(locale, `/blog/${post.id}/`)}
   class="group block overflow-hidden rounded-2xl border border-primary-300/35 bg-[hsl(var(--surface)/0.82)] p-4 shadow-[0_10px_30px_-18px_hsl(var(--primary-900)/0.55)] transition hover:-translate-y-1 hover:border-primary-400/55 hover:shadow-[0_14px_34px_-18px_hsl(var(--primary-800)/0.65)]"
 >
   {

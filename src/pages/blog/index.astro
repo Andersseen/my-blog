@@ -28,7 +28,7 @@ const posts = (await getCollection('blog')).sort(
 			{
 				posts.map((post) => (
 					<li>
-						<PostCard post={post} />
+						<PostCard post={post} locale={locale} />
 					</li>
 				))
 			}

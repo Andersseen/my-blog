@@ -17,19 +17,21 @@ const homePath = toLocalePath(locale, '/');
 ---
 
 <header class="py-6">
-	<div class="flex flex-wrap items-center justify-between gap-4 border-b border-primary-200 pb-4">
+	<div class="flex flex-wrap items-center justify-between gap-3 border-b border-primary-200 pb-4">
 		<a href={homePath} class="inline-flex items-baseline gap-2 text-xl font-semibold tracking-tight text-foreground">
 			{SITE_TITLE}
 			<span class="text-xs font-medium uppercase tracking-[0.18em] text-[hsl(var(--muted-foreground))]">@{AUTHOR_USERNAME}</span>
 		</a>
-		<div class="flex items-center gap-3 sm:gap-6">
-			<nav class="flex items-center gap-1 sm:gap-2" aria-label="Main navigation">
+		<div class="flex flex-wrap items-center gap-2 sm:gap-4">
+			<nav class="flex items-center gap-0.5 sm:gap-1" aria-label="Main navigation">
 				<HeaderLink href={toLocalePath(locale, '/')}>{messages.nav.home}</HeaderLink>
 				<HeaderLink href={toLocalePath(locale, '/blog')}>{messages.nav.blog}</HeaderLink>
 				<HeaderLink href={toLocalePath(locale, '/about')}>{messages.nav.about}</HeaderLink>
 			</nav>
-			<LanguageDropdown locale={locale} messages={messages} currentPath={currentPath} />
-			<ThemeToggle messages={messages} />
+			<div class="flex items-center gap-2">
+				<LanguageDropdown locale={locale} messages={messages} currentPath={currentPath} />
+				<ThemeToggle messages={messages} />
+			</div>
 		</div>
 	</div>
 </header>
