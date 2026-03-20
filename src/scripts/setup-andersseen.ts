@@ -1,4 +1,6 @@
-import { defineCustomElements } from "@andersseen/web-components/loader";
+import "@andersseen/web-components/components/and-icon.js";
+import "@andersseen/web-components/components/and-dropdown.js";
+import "@andersseen/web-components/components/and-navbar.js";
 import {
   COMPONENT_ICONS,
   CLOSE,
@@ -63,7 +65,6 @@ const setupAndersseen = (): void => {
     return;
   }
 
-  defineCustomElements(window);
   registerIcons(ICON_REGISTRY);
 
   window.__andersseenReady = true;
