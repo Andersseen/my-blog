@@ -1,0 +1,30 @@
+---
+import type { Dictionary, Locale } from '../../i18n';
+import HomeEditorialPanel from './HomeEditorialPanel.astro';
+import HomeHeroActions from './HomeHeroActions.astro';
+
+interface Props {
+  locale: Locale;
+  messages: Dictionary;
+}
+
+const { locale, messages } = Astro.props;
+---
+
+<section class="home-hero home-surface mx-auto grid max-w-5xl gap-8 rounded-3xl border border-primary-300/35 p-6 shadow-[0_18px_40px_-26px_hsl(var(--primary-900)/0.45)] backdrop-blur-md sm:p-8 lg:grid-cols-[1.2fr_1fr] lg:items-start">
+  <div class="home-reveal space-y-6" style="--reveal-delay: 40ms;">
+    <p class="inline-flex rounded-full border border-primary-300/70 bg-primary-100/70 px-3 py-1 text-sm font-semibold text-primary-800">
+      {messages.home.badge}
+    </p>
+    <h1 class="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+      {messages.home.headline}
+    </h1>
+    <p class="max-w-2xl text-lg text-[hsl(var(--muted-foreground))]">
+      {messages.home.description}
+    </p>
+
+    <HomeHeroActions locale={locale} messages={messages} />
+  </div>
+
+  <HomeEditorialPanel messages={messages} />
+</section>
