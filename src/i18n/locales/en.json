@@ -47,7 +47,8 @@
   },
   "blog": {
     "latestTitle": "Latest articles",
-    "latestDescription": "Technical content and architecture notes."
+    "latestDescription": "Technical content and architecture notes.",
+    "editorialLabel": "Editorial Journal"
   },
   "blogPost": {
     "updatedOn": "Updated on"

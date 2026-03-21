@@ -131,6 +131,17 @@
     transform: translateY(-4px);
   }
 
+  .editorial-gradient {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--primary-500)) 0%,
+      hsl(var(--primary-700)) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
   .home-surface {
     background:
       linear-gradient(
