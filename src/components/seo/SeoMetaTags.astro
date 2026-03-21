@@ -8,7 +8,11 @@ interface Props {
   canonicalURL: string;
   pageURL: string;
   imageURL: string;
+  imageWidth: number;
+  imageHeight: number;
+  imageType: string;
   locale: Locale;
+  pageType?: 'website' | 'article';
   noindex?: boolean;
 }
 
@@ -18,7 +22,11 @@ const {
   canonicalURL,
   pageURL,
   imageURL,
+  imageWidth,
+  imageHeight,
+  imageType,
   locale,
+  pageType = 'website',
   noindex = false,
 } = Astro.props;
 
@@ -41,13 +49,17 @@ const robotsValue = noindex
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#4f7cff" />
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111827" />
 
-<meta property="og:type" content="website" />
+<meta property="og:type" content={pageType === 'article' ? 'article' : 'website'} />
 <meta property="og:site_name" content={SITE_TITLE} />
 <meta property="og:locale" content={getOgLocale(locale)} />
 <meta property="og:url" content={pageURL} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:image" content={imageURL} />
+<meta property="og:image:secure_url" content={imageURL} />
+<meta property="og:image:type" content={imageType} />
+<meta property="og:image:width" content={String(imageWidth)} />
+<meta property="og:image:height" content={String(imageHeight)} />
 <meta property="og:image:alt" content={title} />
 <meta property="article:author" content={AUTHOR_NAME} />
 
@@ -57,4 +69,5 @@ const robotsValue = noindex
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={imageURL} />
+<meta name="twitter:image:alt" content={title} />
 <meta name="twitter:url" content={pageURL} />

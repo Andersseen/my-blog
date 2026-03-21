@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Andrii Pap Blog social card">
+  <defs>
+    <linearGradient id="bg" x1="120" y1="40" x2="1080" y2="590" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0f172a" />
+      <stop offset="1" stop-color="#1e293b" />
+    </linearGradient>
+    <linearGradient id="accent" x1="320" y1="140" x2="910" y2="470" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#60a5fa" />
+      <stop offset="1" stop-color="#2563eb" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <circle cx="1040" cy="120" r="200" fill="#60a5fa" opacity="0.12" />
+  <circle cx="180" cy="620" r="260" fill="#3b82f6" opacity="0.1" />
+  <rect x="84" y="84" width="1032" height="462" rx="30" fill="#0b1220" stroke="#1f3657" />
+
+  <g transform="translate(144, 152)">
+    <rect x="0" y="0" width="82" height="82" rx="20" fill="url(#accent)" />
+    <path d="M22 62 40 18h8l18 44h-10l-4-10H34l-4 10Zm16-18h12l-6-16z" fill="#eff6ff" />
+  </g>
+
+  <text x="256" y="208" fill="#e2e8f0" font-family="Atkinson, sans-serif" font-size="54" font-weight="700" letter-spacing="-0.02em">
+    Andrii Pap Blog
+  </text>
+  <text x="256" y="272" fill="#93c5fd" font-family="Atkinson, sans-serif" font-size="28" font-weight="700" letter-spacing="0.18em">
+    @ANDERSSEEN
+  </text>
+
+  <text x="144" y="380" fill="#cbd5e1" font-family="Atkinson, sans-serif" font-size="34" font-weight="400">
+    Frontend architecture, Astro, Angular, design systems,
+  </text>
+  <text x="144" y="428" fill="#cbd5e1" font-family="Atkinson, sans-serif" font-size="34" font-weight="400">
+    and practical engineering notes.
+  </text>
+
+  <line x1="144" y1="486" x2="1056" y2="486" stroke="#334155" />
+  <text x="144" y="534" fill="#94a3b8" font-family="Atkinson, sans-serif" font-size="22" font-weight="600" letter-spacing="0.08em">
+    ANDRIIPAP.DEV
+  </text>
+</svg>
