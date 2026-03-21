@@ -1,55 +1,55 @@
 @import "tailwindcss";
 
 :root {
-  --background: 0 0% 96%;
-  --foreground: 0 0% 9%;
-  --muted-foreground: 0 0% 33%;
+  --background: 44 38% 93%;
+  --foreground: 30 30% 12%;
+  --muted-foreground: 30 16% 34%;
   --surface: 0 0% 100%;
-  --surface-strong: 0 0% 98%;
-  --surface-container-low: 0 0% 97%;
-  --surface-container: 0 0% 95%;
-  --surface-container-high: 0 0% 91%;
-  --backdrop-top: 214 30% 84%;
-  --backdrop-bottom: 206 30% 78%;
-  --secondary: 194 66% 42%;
+  --surface-strong: 46 24% 98%;
+  --surface-container-low: 44 30% 97%;
+  --surface-container: 44 26% 95%;
+  --surface-container-high: 44 22% 92%;
+  --backdrop-top: 42 72% 62%;
+  --backdrop-bottom: 46 68% 56%;
+  --secondary: 160 70% 34%;
 
-  --primary-50: 210 30% 97%;
-  --primary-100: 212 30% 93%;
-  --primary-200: 213 30% 87%;
-  --primary-300: 214 31% 77%;
-  --primary-400: 214 33% 65%;
-  --primary-500: 215 38% 51%;
-  --primary-600: 217 44% 41%;
-  --primary-700: 219 50% 33%;
-  --primary-800: 221 53% 27%;
-  --primary-900: 224 51% 22%;
-  --primary-950: 226 46% 14%;
+  --primary-50: 42 100% 97%;
+  --primary-100: 43 95% 92%;
+  --primary-200: 44 88% 82%;
+  --primary-300: 45 80% 70%;
+  --primary-400: 45 75% 58%;
+  --primary-500: 45 70% 45%;
+  --primary-600: 46 74% 36%;
+  --primary-700: 46 78% 28%;
+  --primary-800: 47 82% 22%;
+  --primary-900: 48 86% 16%;
+  --primary-950: 49 90% 12%;
 }
 
 [data-theme="dark"] {
-  --background: 0 0% 9%;
-  --foreground: 0 0% 96%;
-  --muted-foreground: 0 0% 74%;
-  --surface: 0 0% 12%;
-  --surface-strong: 0 0% 16%;
-  --surface-container-low: 0 0% 10%;
-  --surface-container: 0 0% 13%;
-  --surface-container-high: 0 0% 19%;
-  --backdrop-top: 220 22% 18%;
-  --backdrop-bottom: 210 23% 14%;
-  --secondary: 194 70% 60%;
+  --background: 38 20% 8%;
+  --foreground: 45 15% 95%;
+  --muted-foreground: 40 12% 70%;
+  --surface: 38 18% 12%;
+  --surface-strong: 38 16% 18%;
+  --surface-container-low: 38 22% 10%;
+  --surface-container: 38 20% 14%;
+  --surface-container-high: 38 18% 22%;
+  --backdrop-top: 40 80% 40%;
+  --backdrop-bottom: 45 75% 32%;
+  --secondary: 160 65% 55%;
 
-  --primary-50: 225 28% 13%;
-  --primary-100: 224 28% 18%;
-  --primary-200: 222 29% 24%;
-  --primary-300: 220 30% 33%;
-  --primary-400: 217 35% 45%;
-  --primary-500: 214 43% 58%;
-  --primary-600: 210 52% 68%;
-  --primary-700: 206 58% 77%;
-  --primary-800: 203 61% 84%;
-  --primary-900: 200 64% 89%;
-  --primary-950: 198 66% 94%;
+  --primary-50: 40 100% 18%;
+  --primary-100: 40 95% 26%;
+  --primary-200: 42 90% 35%;
+  --primary-300: 43 85% 45%;
+  --primary-400: 44 82% 55%;
+  --primary-500: 45 80% 65%;
+  --primary-600: 46 85% 72%;
+  --primary-700: 47 90% 78%;
+  --primary-800: 48 95% 84%;
+  --primary-900: 50 100% 89%;
+  --primary-950: 52 100% 94%;
 }
 
 @font-face {
@@ -101,115 +101,11 @@
 }
 
 @layer components {
-  .app-backdrop {
-    background:
-      radial-gradient(
-        circle at top,
-        hsl(var(--backdrop-top) / 0.6) 0%,
-        transparent 58%
-      ),
-      radial-gradient(
-        circle at bottom,
-        hsl(var(--backdrop-bottom) / 0.42) 0%,
-        transparent 54%
-      );
-  }
-
-  .home-hero {
-    position: relative;
-    overflow: clip;
-    isolation: isolate;
-  }
-
-  .site-header {
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-  }
-
-  .bento-card {
-    transition:
-      transform 0.22s ease,
-      box-shadow 0.22s ease;
-  }
-
-  .bento-card:hover {
-    transform: translateY(-4px);
-  }
-
-  .editorial-gradient {
-    background: linear-gradient(
-      135deg,
-      hsl(var(--primary-500)) 0%,
-      hsl(var(--primary-700)) 100%
-    );
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .home-surface {
-    background:
-      linear-gradient(
-        150deg,
-        hsl(var(--surface) / 0.94) 0%,
-        hsl(var(--surface-strong) / 0.9) 46%,
-        hsl(var(--primary-100) / 0.44) 100%
-      ),
-      radial-gradient(
-        circle at 18% 24%,
-        hsl(var(--primary-200) / 0.22) 0%,
-        transparent 48%
-      );
-  }
-
-  .home-hero::before {
-    content: "";
-    position: absolute;
-    inset: -28% auto auto -14%;
-    width: 52%;
-    aspect-ratio: 1;
-    border-radius: 999px;
-    background: radial-gradient(
-      circle,
-      hsl(var(--primary-300) / 0.3) 0%,
-      transparent 70%
-    );
-    filter: blur(20px);
-    pointer-events: none;
-    z-index: -1;
-  }
-
-  .home-hero::after {
-    content: "";
-    position: absolute;
-    inset: auto -18% -40% auto;
-    width: 44%;
-    aspect-ratio: 1;
-    border-radius: 999px;
-    background:
-      radial-gradient(circle, hsl(var(--secondary) / 0.2) 0%, transparent 72%),
-      repeating-linear-gradient(
-        125deg,
-        transparent 0 12px,
-        hsl(var(--foreground) / 0.012) 12px 13px
-      );
-    filter: blur(18px);
-    pointer-events: none;
-    z-index: -1;
-  }
-
   .home-reveal {
     opacity: 0;
     transform: translateY(14px);
     animation: home-rise 560ms ease forwards;
     animation-delay: var(--reveal-delay, 0ms);
-  }
-
-  .language-dropdown {
-    --popover: var(--surface-strong);
-    --popover-foreground: var(--foreground);
-    --border: var(--primary-300);
-    --accent: var(--primary-100);
   }
 }
 

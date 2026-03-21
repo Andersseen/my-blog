@@ -3,12 +3,12 @@
     "siteDescription": "Статті про frontend, веб-архітектуру та design systems від Andrii Pap (@Andersseen).",
     "aboutTitle": "Про цей проєкт",
     "aboutDescription": "Базова архітектура блогу Andrii Pap",
-    "blogTitle": "Blog",
+    "blogTitle": "Блог",
     "blogDescription": "Технічний контент і нотатки з архітектури."
   },
   "nav": {
     "home": "Головна",
-    "blog": "Blog",
+    "blog": "Блог",
     "about": "Про мене",
     "aria": "Основна навігація",
     "menu": "Меню",

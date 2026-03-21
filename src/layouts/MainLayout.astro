@@ -30,9 +30,28 @@ const {
 const htmlLang = lang ?? getLangCode(locale);
 ---
 
+<style>
+  .app-backdrop {
+    background:
+      radial-gradient(
+        circle at top,
+        hsl(var(--backdrop-top) / 0.34) 0%,
+        transparent 64%
+      ),
+      radial-gradient(
+        circle at bottom,
+        hsl(var(--backdrop-bottom) / 0.24) 0%,
+        transparent 60%
+      );
+  }
+</style>
+
 <!doctype html>
 <html lang={htmlLang} data-theme="light">
   <head>
+    <script is:inline>
+      window.__AND_ANIMATED__ = true;
+    </script>
     <script is:inline>
       (function () {
         try {
