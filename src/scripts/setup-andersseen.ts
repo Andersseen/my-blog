@@ -1,6 +1,8 @@
 import "@andersseen/web-components/components/and-icon.js";
 import "@andersseen/web-components/components/and-dropdown.js";
 import "@andersseen/web-components/components/and-navbar.js";
+import "@andersseen/web-components/components/and-drawer.js";
+import { enableAnimations } from "@andersseen/web-components";
 import {
   COMPONENT_ICONS,
   CLOSE,
@@ -15,6 +17,7 @@ import {
 declare global {
   interface Window {
     __andersseenReady?: boolean;
+    __AND_ANIMATED__?: boolean;
   }
 }
 
@@ -64,6 +67,9 @@ const setupAndersseen = (): void => {
   if (window.__andersseenReady) {
     return;
   }
+
+  // Keep API-level animation enabling for Andersseen components.
+  enableAnimations();
 
   registerIcons(ICON_REGISTRY);
 

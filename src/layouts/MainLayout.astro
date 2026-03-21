@@ -50,6 +50,9 @@ const htmlLang = lang ?? getLangCode(locale);
 <html lang={htmlLang} data-theme="light">
   <head>
     <script is:inline>
+      window.__AND_ANIMATED__ = true;
+    </script>
+    <script is:inline>
       (function () {
         try {
           var t = localStorage.getItem('theme-cache');

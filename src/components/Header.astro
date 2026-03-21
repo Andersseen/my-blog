@@ -30,11 +30,37 @@ const navLinks = [
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
   }
+
+  .menu-trigger {
+    display: inline-flex;
+    height: 2.5rem;
+    width: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.625rem;
+    border: 1px solid hsl(var(--primary-300) / 0.38);
+    background: hsl(var(--surface-strong) / 0.9);
+    color: hsl(var(--foreground));
+    transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+  }
+
+  .menu-trigger:hover {
+    border-color: hsl(var(--primary-400) / 0.52);
+    background: hsl(var(--surface-container));
+  }
+
+  .mobile-menu-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: hsl(var(--muted-foreground));
+  }
 </style>
 
 <header class="site-header sticky top-0 z-50 w-full">
   <nav
-    class="mx-auto flex h-16 max-w-5xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-8"
+    class="mx-auto flex h-16 max-w-5xl items-center justify-between gap-3 px-4 sm:gap-6 sm:px-6 lg:px-8"
     aria-label={messages.nav.aria}
   >
     <!-- Brand -->
@@ -48,7 +74,7 @@ const navLinks = [
     </a>
 
     <!-- Nav links -->
-    <ul class="flex items-center gap-6" role="list">
+    <ul class="hidden items-center gap-6 md:flex" role="list">
       {navLinks.map((link) => (
         <li>
           <a
@@ -68,10 +94,83 @@ const navLinks = [
     </ul>
 
     <!-- Controls -->
-    <div class="flex shrink-0 items-center gap-2">
+    <div class="hidden shrink-0 items-center gap-2 md:flex">
       <LanguageDropdown locale={locale} messages={messages} currentPath={currentPath} class="min-w-[74px]" />
       <ThemeToggle messages={messages} />
     </div>
+
+    <!-- Mobile menu trigger -->
+    <button
+      type="button"
+      class="menu-trigger md:hidden"
+      aria-label={messages.nav.menu}
+      data-mobile-menu-open
+    >
+      <and-icon name="menu" size="18" aria-hidden="true"></and-icon>
+    </button>
   </nav>
+
   <div class="h-px bg-[hsl(var(--primary-300)/0.18)]"></div>
 </header>
+
+<!-- Drawer outside header to escape z-50 stacking context -->
+<and-drawer placement="right" show-close data-mobile-drawer>
+  <span slot="header" class="mobile-menu-title">{messages.nav.menu}</span>
+
+  <div class="flex flex-col gap-5 px-1 pb-1 pt-2">
+    <ul class="grid gap-2" role="list">
+      {navLinks.map((link) => (
+        <li>
+          <a
+            href={link.href}
+            aria-current={link.active ? 'page' : undefined}
+            class:list={[
+              'block rounded-xl border px-4 py-3 text-[15px] font-semibold transition-colors',
+              link.active
+                ? 'border-[hsl(var(--primary-500)/0.52)] bg-[hsl(var(--primary-100)/0.42)] text-foreground'
+                : 'border-[hsl(var(--primary-300)/0.24)] bg-[hsl(var(--surface-container-low))] text-foreground hover:border-[hsl(var(--primary-400)/0.45)] hover:bg-[hsl(var(--surface-container))]',
+            ]}
+            data-mobile-menu-close
+          >
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <div class="grid gap-3 border-t border-[hsl(var(--primary-300)/0.28)] pt-4">
+      <LanguageDropdown locale={locale} messages={messages} currentPath={currentPath} />
+      <ThemeToggle messages={messages} />
+    </div>
+  </div>
+</and-drawer>
+
+<script>
+  const drawer = document.querySelector<HTMLElement & { open: boolean }>('[data-mobile-drawer]');
+  const openButton = document.querySelector<HTMLButtonElement>('[data-mobile-menu-open]');
+  const closeTriggers = document.querySelectorAll<HTMLElement>('[data-mobile-menu-close]');
+
+  openButton?.addEventListener('click', () => {
+    if (drawer) {
+      drawer.open = true;
+    }
+  });
+
+  closeTriggers.forEach((trigger) => {
+    trigger.addEventListener('click', () => {
+      if (drawer) {
+        drawer.open = false;
+      }
+    });
+  });
+
+  const media = window.matchMedia('(min-width: 768px)');
+  const closeOnDesktop = (event: MediaQueryListEvent | MediaQueryList) => {
+    if (event.matches && drawer) {
+      drawer.open = false;
+    }
+  };
+
+  closeOnDesktop(media);
+  media.addEventListener('change', closeOnDesktop);
+</script>
