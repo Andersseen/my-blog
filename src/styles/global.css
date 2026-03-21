@@ -121,6 +121,12 @@
     isolation: isolate;
   }
 
+  .site-header {
+    background: hsl(var(--background) / 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
   .bento-card {
     transition:
       transform 0.22s ease,

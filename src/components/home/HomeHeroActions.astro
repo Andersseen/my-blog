@@ -17,10 +17,4 @@ const { locale, messages } = Astro.props;
   >
     {messages.nav.blog}
   </a>
-  <a
-    href={toLocalePath(locale, '/about')}
-    class="inline-flex items-center justify-center rounded-full border border-[hsl(var(--primary-300)/0.45)] bg-transparent px-5 py-2.5 text-xs font-semibold uppercase tracking-widest text-foreground transition hover:bg-[hsl(var(--surface-container-high))]"
-  >
-    {messages.nav.about}
-  </a>
 </div>
