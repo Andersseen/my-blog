@@ -1,29 +1,29 @@
 @import "tailwindcss";
 
 :root {
-  --background: 44 38% 93%;
-  --foreground: 30 30% 12%;
-  --muted-foreground: 30 16% 34%;
-  --surface: 0 0% 100%;
-  --surface-strong: 46 24% 98%;
-  --surface-container-low: 44 30% 97%;
-  --surface-container: 44 26% 95%;
-  --surface-container-high: 44 22% 92%;
-  --backdrop-top: 42 72% 62%;
-  --backdrop-bottom: 46 68% 56%;
-  --secondary: 160 70% 34%;
+  --background: 44 52% 90%;
+  --foreground: 28 38% 12%;
+  --muted-foreground: 30 20% 34%;
+  --surface: 46 42% 95%;
+  --surface-strong: 47 38% 97%;
+  --surface-container-low: 45 36% 94%;
+  --surface-container: 43 33% 91%;
+  --surface-container-high: 42 30% 88%;
+  --backdrop-top: 38 82% 58%;
+  --backdrop-bottom: 48 74% 50%;
+  --secondary: 164 62% 32%;
 
-  --primary-50: 42 100% 97%;
-  --primary-100: 43 95% 92%;
-  --primary-200: 44 88% 82%;
-  --primary-300: 45 80% 70%;
-  --primary-400: 45 75% 58%;
-  --primary-500: 45 70% 45%;
-  --primary-600: 46 74% 36%;
-  --primary-700: 46 78% 28%;
-  --primary-800: 47 82% 22%;
-  --primary-900: 48 86% 16%;
-  --primary-950: 49 90% 12%;
+  --primary-50: 44 100% 97%;
+  --primary-100: 43 100% 92%;
+  --primary-200: 43 94% 82%;
+  --primary-300: 42 88% 70%;
+  --primary-400: 40 82% 58%;
+  --primary-500: 38 76% 46%;
+  --primary-600: 34 80% 36%;
+  --primary-700: 31 82% 29%;
+  --primary-800: 29 76% 24%;
+  --primary-900: 26 70% 19%;
+  --primary-950: 24 74% 13%;
 
   /* Andersseen semantic token bridge */
   --primary: var(--primary-600);
@@ -48,14 +48,14 @@
   --radius: 1rem;
 
   /* Neumorphism helpers */
-  --neu-light: 46 36% 99%;
-  --neu-dark: 45 42% 23%;
+  --neu-light: 48 54% 98%;
+  --neu-dark: 33 36% 45%;
   --neu-shadow-raised:
-    10px 10px 24px hsl(var(--neu-dark) / 0.24),
-    -8px -8px 20px hsl(var(--neu-light) / 0.72);
+    12px 12px 28px hsl(var(--neu-dark) / 0.22),
+    -10px -10px 24px hsl(var(--neu-light) / 0.86);
   --neu-shadow-pressed:
-    inset 6px 6px 14px hsl(var(--neu-dark) / 0.24),
-    inset -6px -6px 14px hsl(var(--neu-light) / 0.68);
+    inset 7px 7px 16px hsl(var(--neu-dark) / 0.2),
+    inset -7px -7px 16px hsl(var(--neu-light) / 0.82);
 }
 
 [data-theme="dark"] {
@@ -143,6 +143,21 @@
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
     line-height: 1.65;
+  }
+
+  [data-theme="light"] body {
+    background-image:
+      radial-gradient(
+        1100px 460px at 8% -6%,
+        hsl(var(--primary-200) / 0.42) 0%,
+        transparent 62%
+      ),
+      radial-gradient(
+        900px 360px at 95% 8%,
+        hsl(var(--secondary) / 0.16) 0%,
+        transparent 58%
+      );
+    background-attachment: fixed;
   }
 
   h1,
