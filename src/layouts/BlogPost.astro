@@ -11,7 +11,7 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 const { locale, messages } = getI18n(Astro.url.pathname);
 ---
 
-<MainLayout title={title} description={description} pageType="article" locale={locale} messages={messages}>
+<MainLayout title={title} description={description} image={heroImage} pageType="article" locale={locale} messages={messages}>
 	<article class="mx-auto max-w-3xl space-y-6">
 		{heroImage && <Image width={1200} height={600} src={heroImage} alt="" class="w-full rounded-xl border border-primary-200" />}
 

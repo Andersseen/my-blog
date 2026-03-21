@@ -47,7 +47,8 @@
   },
   "blog": {
     "latestTitle": "Останні статті",
-    "latestDescription": "Технічний контент і нотатки з архітектури."
+    "latestDescription": "Технічний контент і нотатки з архітектури.",
+    "editorialLabel": "Редакційний журнал"
   },
   "blogPost": {
     "updatedOn": "Оновлено"

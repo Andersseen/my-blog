@@ -47,7 +47,8 @@
   },
   "blog": {
     "latestTitle": "Ultimos articulos",
-    "latestDescription": "Contenido tecnico y notas de arquitectura."
+    "latestDescription": "Contenido tecnico y notas de arquitectura.",
+    "editorialLabel": "Diario editorial"
   },
   "blogPost": {
     "updatedOn": "Actualizado el"

@@ -8,13 +8,15 @@ interface Props {
 const { messages } = Astro.props;
 ---
 
-<aside class="home-reveal rounded-2xl border border-primary-300/35 bg-[hsl(var(--surface)/0.82)] p-5 shadow-[0_10px_30px_-18px_hsl(var(--primary-900)/0.55)]" style="--reveal-delay: 140ms;">
-  <h2 class="text-base font-semibold tracking-tight text-foreground">{messages.home.editorialTitle}</h2>
-  <ul class="mt-4 space-y-2.5 text-sm text-[hsl(var(--muted-foreground))]">
+<aside class="bento-card h-full flex flex-col rounded-2xl border border-[hsl(var(--primary-300)/0.18)] bg-[hsl(var(--surface-container-low))] p-6 shadow-[0_8px_28px_-16px_hsl(var(--primary-900)/0.25)]">
+  <h2 class="text-[10px] font-semibold uppercase tracking-[0.2em] text-[hsl(var(--muted-foreground))]">
+    {messages.home.editorialTitle}
+  </h2>
+  <ul class="mt-5 space-y-3 text-sm text-[hsl(var(--muted-foreground))]">
     {
       messages.home.editorialPoints.map((point) => (
-        <li class="flex items-start gap-2">
-          <span class="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary-500"></span>
+        <li class="flex items-start gap-2.5">
+          <span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[hsl(var(--primary-500))]"></span>
           <span>{point}</span>
         </li>
       ))

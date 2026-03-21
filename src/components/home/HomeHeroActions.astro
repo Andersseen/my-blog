@@ -13,14 +13,8 @@ const { locale, messages } = Astro.props;
 <div class="flex flex-wrap items-center gap-3 pt-2">
   <a
     href={toLocalePath(locale, '/blog')}
-    class="inline-flex items-center justify-center rounded-md border border-primary-600 bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-700"
+    class="inline-flex items-center justify-center rounded-full border border-[hsl(var(--primary-600))] bg-[hsl(var(--primary-600))] px-5 py-2.5 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-[hsl(var(--primary-700))] hover:border-[hsl(var(--primary-700))]"
   >
     {messages.nav.blog}
-  </a>
-  <a
-    href={toLocalePath(locale, '/about')}
-    class="inline-flex items-center justify-center rounded-md border border-primary-300 bg-[hsl(var(--surface)/0.84)] px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-primary-100"
-  >
-    {messages.nav.about}
   </a>
 </div>

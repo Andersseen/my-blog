@@ -1,17 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Andrii Pap icon">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Andrii Pap Blog icon">
     <defs>
-        <linearGradient id="bg" x1="8" y1="7" x2="56" y2="58" gradientUnits="userSpaceOnUse">
-            <stop offset="0" stop-color="#4f7cff" />
-            <stop offset="1" stop-color="#1d4ed8" />
-        </linearGradient>
-        <linearGradient id="sheen" x1="11" y1="10" x2="46" y2="44" gradientUnits="userSpaceOnUse">
-            <stop offset="0" stop-color="#ffffff" stop-opacity="0.56" />
-            <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
+        <linearGradient id="bg" x1="10" y1="8" x2="54" y2="58" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#60a5fa" />
+            <stop offset="1" stop-color="#2563eb" />
         </linearGradient>
     </defs>
 
-    <rect x="4" y="4" width="56" height="56" rx="14" fill="url(#bg)" />
-    <path d="M14.6 46 25.1 18h4.4L40 46h-5.8l-2.1-6h-9.6l-2 6Zm9.2-10.5h6.8l-3.4-9.8z" fill="#eef2ff" />
-    <path d="M42.3 46V18h8.4c5.9 0 9.4 3.3 9.4 8.7 0 5.4-3.5 8.8-9.4 8.8h-3.1V46zm5.3-15.1h2.7c2.6 0 4.2-1.5 4.2-4.1s-1.6-4.1-4.2-4.1h-2.7z" fill="#eef2ff" />
-    <path d="M8 8h34a19 19 0 0 1-19 19H8z" fill="url(#sheen)" />
+    <rect x="4" y="4" width="56" height="56" rx="14" fill="#0f172a" />
+    <rect x="8" y="8" width="48" height="48" rx="12" fill="url(#bg)" />
+    <path d="M20 47 30.5 18h3L44 47h-6.4l-2.3-6.6h-6.7L26.4 47Zm10.2-12h3.5L32 30z" fill="#eff6ff" />
 </svg>
