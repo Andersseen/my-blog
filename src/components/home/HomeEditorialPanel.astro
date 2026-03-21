@@ -1,0 +1,23 @@
+---
+import type { Dictionary } from '../../i18n';
+
+interface Props {
+  messages: Dictionary;
+}
+
+const { messages } = Astro.props;
+---
+
+<aside class="home-reveal rounded-2xl border border-primary-300/35 bg-[hsl(var(--surface)/0.82)] p-5 shadow-[0_10px_30px_-18px_hsl(var(--primary-900)/0.55)]" style="--reveal-delay: 140ms;">
+  <h2 class="text-base font-semibold tracking-tight text-foreground">{messages.home.editorialTitle}</h2>
+  <ul class="mt-4 space-y-2.5 text-sm text-[hsl(var(--muted-foreground))]">
+    {
+      messages.home.editorialPoints.map((point) => (
+        <li class="flex items-start gap-2">
+          <span class="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary-500"></span>
+          <span>{point}</span>
+        </li>
+      ))
+    }
+  </ul>
+</aside>

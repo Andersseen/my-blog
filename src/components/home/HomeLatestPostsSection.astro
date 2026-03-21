@@ -1,0 +1,34 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import PostCard from '../blog/PostCard.astro';
+import type { Dictionary, Locale } from '../../i18n';
+import { toLocalePath } from '../../i18n';
+
+interface Props {
+  locale: Locale;
+  messages: Dictionary;
+  posts: CollectionEntry<'blog'>[];
+}
+
+const { locale, messages, posts } = Astro.props;
+---
+
+<section class="home-reveal mx-auto mt-10 max-w-5xl space-y-5" style="--reveal-delay: 220ms;">
+  <header class="flex items-end justify-between gap-4">
+    <div class="space-y-1">
+      <h2 class="text-2xl font-bold tracking-tight text-foreground">{messages.blog.latestTitle}</h2>
+      <p class="text-[hsl(var(--muted-foreground))]">{messages.blog.latestDescription}</p>
+    </div>
+    <a href={toLocalePath(locale, '/blog')} class="text-sm font-semibold text-primary-700 hover:text-primary-900">
+      {messages.nav.blog}
+    </a>
+  </header>
+
+  <ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    {posts.map((post) => (
+      <li class="h-full">
+        <PostCard post={post} locale={locale} />
+      </li>
+    ))}
+  </ul>
+</section>
