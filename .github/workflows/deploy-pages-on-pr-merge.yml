@@ -1,11 +1,9 @@
 name: Deploy to Cloudflare Pages
 
 on:
-  pull_request:
+  push:
     branches:
       - main
-    types:
-      - closed
   workflow_dispatch:
 
 concurrency:
@@ -14,7 +12,6 @@ concurrency:
 
 jobs:
   deploy:
-    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     environment: ci
     permissions:
@@ -42,5 +39,5 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          CLOUDFLARE_PAGES_PROJECT_NAME: ${{ secrets.CLOUDFLARE_PAGES_PROJECT_NAME }}
-        run: pnpm cf:deploy:prod -- --project-name "$CLOUDFLARE_PAGES_PROJECT_NAME"
+          CLOUDFLARE_PAGES_PROJECT_NAME: ${{ vars.CLOUDFLARE_PAGES_PROJECT_NAME }}
+        run: pnpm build && pnpm wrangler pages deploy ./dist --branch main --project-name "$CLOUDFLARE_PAGES_PROJECT_NAME"
