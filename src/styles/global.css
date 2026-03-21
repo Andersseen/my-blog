@@ -46,6 +46,16 @@
   --info: 212 84% 48%;
   --info-foreground: 0 0% 100%;
   --radius: 1rem;
+
+  /* Neumorphism helpers */
+  --neu-light: 46 36% 99%;
+  --neu-dark: 45 42% 23%;
+  --neu-shadow-raised:
+    10px 10px 24px hsl(var(--neu-dark) / 0.24),
+    -8px -8px 20px hsl(var(--neu-light) / 0.72);
+  --neu-shadow-pressed:
+    inset 6px 6px 14px hsl(var(--neu-dark) / 0.24),
+    inset -6px -6px 14px hsl(var(--neu-light) / 0.68);
 }
 
 [data-theme="dark"] {
@@ -94,6 +104,16 @@
   --info: 212 86% 66%;
   --info-foreground: 30 30% 12%;
   --radius: 1rem;
+
+  /* Neumorphism helpers */
+  --neu-light: 45 26% 20%;
+  --neu-dark: 38 38% 5%;
+  --neu-shadow-raised:
+    10px 10px 24px hsl(var(--neu-dark) / 0.58),
+    -8px -8px 20px hsl(var(--neu-light) / 0.24);
+  --neu-shadow-pressed:
+    inset 6px 6px 14px hsl(var(--neu-dark) / 0.52),
+    inset -6px -6px 14px hsl(var(--neu-light) / 0.18);
 }
 
 @font-face {
@@ -145,6 +165,24 @@
 }
 
 @layer components {
+  .neu-soft {
+    box-shadow: var(--neu-shadow-raised);
+  }
+
+  .neu-press {
+    box-shadow: var(--neu-shadow-pressed);
+  }
+
+  .bento-card {
+    box-shadow: var(--neu-shadow-raised);
+  }
+
+  .bento-card:hover {
+    box-shadow:
+      12px 12px 28px hsl(var(--neu-dark) / 0.3),
+      -10px -10px 22px hsl(var(--neu-light) / 0.72);
+  }
+
   and-badge {
     --radius: 1rem;
     border-radius: 1rem !important;
