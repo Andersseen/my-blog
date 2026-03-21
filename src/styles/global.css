@@ -101,115 +101,11 @@
 }
 
 @layer components {
-  .app-backdrop {
-    background:
-      radial-gradient(
-        circle at top,
-        hsl(var(--backdrop-top) / 0.6) 0%,
-        transparent 58%
-      ),
-      radial-gradient(
-        circle at bottom,
-        hsl(var(--backdrop-bottom) / 0.42) 0%,
-        transparent 54%
-      );
-  }
-
-  .home-hero {
-    position: relative;
-    overflow: clip;
-    isolation: isolate;
-  }
-
-  .site-header {
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-  }
-
-  .bento-card {
-    transition:
-      transform 0.22s ease,
-      box-shadow 0.22s ease;
-  }
-
-  .bento-card:hover {
-    transform: translateY(-4px);
-  }
-
-  .editorial-gradient {
-    background: linear-gradient(
-      135deg,
-      hsl(var(--primary-500)) 0%,
-      hsl(var(--primary-700)) 100%
-    );
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .home-surface {
-    background:
-      linear-gradient(
-        150deg,
-        hsl(var(--surface) / 0.94) 0%,
-        hsl(var(--surface-strong) / 0.9) 46%,
-        hsl(var(--primary-100) / 0.44) 100%
-      ),
-      radial-gradient(
-        circle at 18% 24%,
-        hsl(var(--primary-200) / 0.22) 0%,
-        transparent 48%
-      );
-  }
-
-  .home-hero::before {
-    content: "";
-    position: absolute;
-    inset: -28% auto auto -14%;
-    width: 52%;
-    aspect-ratio: 1;
-    border-radius: 999px;
-    background: radial-gradient(
-      circle,
-      hsl(var(--primary-300) / 0.3) 0%,
-      transparent 70%
-    );
-    filter: blur(20px);
-    pointer-events: none;
-    z-index: -1;
-  }
-
-  .home-hero::after {
-    content: "";
-    position: absolute;
-    inset: auto -18% -40% auto;
-    width: 44%;
-    aspect-ratio: 1;
-    border-radius: 999px;
-    background:
-      radial-gradient(circle, hsl(var(--secondary) / 0.2) 0%, transparent 72%),
-      repeating-linear-gradient(
-        125deg,
-        transparent 0 12px,
-        hsl(var(--foreground) / 0.012) 12px 13px
-      );
-    filter: blur(18px);
-    pointer-events: none;
-    z-index: -1;
-  }
-
   .home-reveal {
     opacity: 0;
     transform: translateY(14px);
     animation: home-rise 560ms ease forwards;
     animation-delay: var(--reveal-delay, 0ms);
-  }
-
-  .language-dropdown {
-    --popover: var(--surface-strong);
-    --popover-foreground: var(--foreground);
-    --border: var(--primary-300);
-    --accent: var(--primary-100);
   }
 }
 

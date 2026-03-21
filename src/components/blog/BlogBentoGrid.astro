@@ -21,6 +21,29 @@ const horizontals = posts.slice(4, 6);
 const remaining = posts.slice(6);
 ---
 
+<style>
+  .bento-card {
+    transition:
+      transform 0.22s ease,
+      box-shadow 0.22s ease;
+  }
+
+  .bento-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .editorial-gradient {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--primary-500)) 0%,
+      hsl(var(--primary-700)) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+</style>
+
 {featured && (
   <div class="grid grid-cols-1 gap-5 md:grid-cols-12 md:auto-rows-[210px]">
 

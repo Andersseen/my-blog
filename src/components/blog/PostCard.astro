@@ -20,6 +20,18 @@ interface Props {
 const { post, locale } = Astro.props;
 ---
 
+<style>
+  .bento-card {
+    transition:
+      transform 0.22s ease,
+      box-shadow 0.22s ease;
+  }
+
+  .bento-card:hover {
+    transform: translateY(-4px);
+  }
+</style>
+
 <a
   href={toLocalePath(locale, `/blog/${post.id}/`)}
   class="bento-card group flex h-full flex-col overflow-hidden rounded-2xl border border-[hsl(var(--primary-300)/0.18)] bg-[hsl(var(--surface-container-low))] shadow-[0_8px_28px_-16px_hsl(var(--primary-900)/0.25)] transition-shadow hover:shadow-[0_14px_40px_-14px_hsl(var(--primary-800)/0.4)]"

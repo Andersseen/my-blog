@@ -30,6 +30,22 @@ const {
 const htmlLang = lang ?? getLangCode(locale);
 ---
 
+<style>
+  .app-backdrop {
+    background:
+      radial-gradient(
+        circle at top,
+        hsl(var(--backdrop-top) / 0.6) 0%,
+        transparent 58%
+      ),
+      radial-gradient(
+        circle at bottom,
+        hsl(var(--backdrop-bottom) / 0.42) 0%,
+        transparent 54%
+      );
+  }
+</style>
+
 <!doctype html>
 <html lang={htmlLang} data-theme="light">
   <head>

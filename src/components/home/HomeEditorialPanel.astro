@@ -8,6 +8,18 @@ interface Props {
 const { messages } = Astro.props;
 ---
 
+<style>
+  .bento-card {
+    transition:
+      transform 0.22s ease,
+      box-shadow 0.22s ease;
+  }
+
+  .bento-card:hover {
+    transform: translateY(-4px);
+  }
+</style>
+
 <aside class="bento-card h-full flex flex-col rounded-2xl border border-[hsl(var(--primary-300)/0.18)] bg-[hsl(var(--surface-container-low))] p-6 shadow-[0_8px_28px_-16px_hsl(var(--primary-900)/0.25)]">
   <h2 class="text-[10px] font-semibold uppercase tracking-[0.2em] text-[hsl(var(--muted-foreground))]">
     {messages.home.editorialTitle}

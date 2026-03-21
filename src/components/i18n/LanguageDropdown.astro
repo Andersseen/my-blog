@@ -19,6 +19,15 @@ const languageItems = LOCALES.filter((lang) => lang !== locale).map((lang) => ({
 const activeLabel = messages.language[locale];
 ---
 
+<style>
+  .language-dropdown {
+    --popover: var(--surface-strong);
+    --popover-foreground: var(--foreground);
+    --border: var(--primary-300);
+    --accent: var(--primary-100);
+  }
+</style>
+
 <and-dropdown
   slot={slotName}
   class:list={['language-dropdown w-auto min-w-[84px] sm:min-w-[88px]', className]}
