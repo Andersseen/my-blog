@@ -10,6 +10,22 @@ interface Props {
 const { class: className, messages, slot: slotName } = Astro.props;
 ---
 
+<style>
+  [data-theme-switcher] {
+    --background: var(--surface-strong);
+    --foreground: var(--foreground);
+    --primary: var(--primary-600);
+    --primary-foreground: 0 0% 100%;
+    --secondary: var(--surface-container-high);
+    --secondary-foreground: var(--foreground);
+    --border: var(--primary-300);
+    --input: var(--primary-300);
+    --ring: var(--primary-500);
+    --accent: var(--primary-100);
+    --accent-foreground: var(--primary-900);
+  }
+</style>
+
 <div
   slot={slotName}
   data-theme-switcher
@@ -21,17 +37,19 @@ const { class: className, messages, slot: slotName } = Astro.props;
     className,
   ]}
 >
-  <button
+  <and-button
     type="button"
+    variant="outline"
+    size="icon"
     role="switch"
     aria-checked="false"
     aria-label={messages.theme.aria}
     data-theme-switch
-    class="inline-flex h-10 w-10 items-center justify-center rounded-md border border-primary-300 bg-[hsl(var(--surface-strong)/0.96)] text-primary-800 shadow-sm transition hover:bg-primary-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--background))] motion-reduce:transition-none"
+    custom-class="h-10 w-10"
   >
     <span class="sr-only" data-theme-current>{messages.theme.light}</span>
     <and-icon data-theme-icon name="sun" size="16" aria-hidden="true"></and-icon>
-  </button>
+  </and-button>
 </div>
 
 <script>
@@ -40,7 +58,7 @@ const { class: className, messages, slot: slotName } = Astro.props;
   type Theme = 'light' | 'dark';
 
   const updateThemeSwitch = (wrapper: HTMLElement, theme: Theme) => {
-    const switchButton = wrapper.querySelector<HTMLButtonElement>('[data-theme-switch]');
+    const switchButton = wrapper.querySelector<HTMLElement>('[data-theme-switch]');
     const icon = wrapper.querySelector<HTMLElement>('[data-theme-icon]');
     const current = wrapper.querySelector<HTMLElement>('[data-theme-current]');
 
@@ -59,13 +77,7 @@ const { class: className, messages, slot: slotName } = Astro.props;
     switchButton.setAttribute('title', currentLabel);
 
     icon.setAttribute('name', isDark ? 'moon' : 'sun');
-    switchButton.classList.toggle('bg-primary-700', isDark);
-    switchButton.classList.toggle('text-primary-100', isDark);
-    switchButton.classList.toggle('border-primary-500', isDark);
-
-    switchButton.classList.toggle('bg-[hsl(var(--surface-strong)/0.96)]', !isDark);
-    switchButton.classList.toggle('text-primary-800', !isDark);
-    switchButton.classList.toggle('border-primary-300', !isDark);
+    switchButton.setAttribute('variant', isDark ? 'secondary' : 'outline');
 
     if (current) {
       current.textContent = currentLabel;
@@ -82,7 +94,7 @@ const { class: className, messages, slot: slotName } = Astro.props;
     const currentTheme = await initTheme();
 
     wrappers.forEach((wrapper) => {
-      const switchButton = wrapper.querySelector<HTMLButtonElement>('[data-theme-switch]');
+      const switchButton = wrapper.querySelector<HTMLElement>('[data-theme-switch]');
 
       if (!switchButton || wrapper.dataset.bound === 'true') {
         return;

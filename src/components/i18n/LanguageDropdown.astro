@@ -21,10 +21,19 @@ const activeLabel = messages.language[locale];
 
 <style>
   .language-dropdown {
+    --background: var(--surface-strong);
+    --foreground: var(--foreground);
+    --primary: var(--primary-600);
+    --primary-foreground: 0 0% 100%;
+    --secondary: var(--surface-container-high);
+    --secondary-foreground: var(--foreground);
     --popover: var(--surface-strong);
     --popover-foreground: var(--foreground);
     --border: var(--primary-300);
+    --input: var(--primary-300);
+    --ring: var(--primary-500);
     --accent: var(--primary-100);
+    --accent-foreground: var(--primary-900);
   }
 </style>
 
@@ -36,20 +45,20 @@ const activeLabel = messages.language[locale];
   data-language-items={JSON.stringify(languageItems)}
   aria-label={messages.language.label}
 >
-  <button
+  <and-button
     slot="trigger"
     type="button"
+    variant="outline"
+    size="default"
     data-language-trigger
     aria-expanded="false"
     aria-haspopup="menu"
-    class="inline-flex h-10 w-full items-center justify-between rounded-md border border-primary-300 bg-[hsl(var(--surface-strong)/0.96)] px-2.5 text-xs font-semibold uppercase tracking-wide text-foreground shadow-sm transition hover:bg-primary-100"
+    custom-class="h-10 w-full text-xs uppercase tracking-wide"
   >
-    <span class="inline-flex items-center gap-1.5 whitespace-nowrap">
-      <and-icon name="compass" size="14" aria-hidden="true"></and-icon>
-      {activeLabel}
-    </span>
-    <and-icon name="chevron-down" size="14" aria-hidden="true"></and-icon>
-  </button>
+    <and-icon slot="start" name="compass" size="14" aria-hidden="true"></and-icon>
+    {activeLabel}
+    <and-icon slot="end" name="chevron-down" size="14" aria-hidden="true"></and-icon>
+  </and-button>
 </and-dropdown>
 
 <script>
@@ -64,7 +73,7 @@ const activeLabel = messages.language[locale];
   };
 
   const updateTriggerExpanded = (dropdown: HTMLElement, isOpen: boolean) => {
-    const trigger = dropdown.querySelector<HTMLButtonElement>('[data-language-trigger]');
+    const trigger = dropdown.querySelector<HTMLElement>('[data-language-trigger]');
 
     if (!trigger) {
       return;

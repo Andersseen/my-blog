@@ -24,6 +24,28 @@
   --primary-800: 47 82% 22%;
   --primary-900: 48 86% 16%;
   --primary-950: 49 90% 12%;
+
+  /* Andersseen semantic token bridge */
+  --primary: var(--primary-600);
+  --primary-foreground: 0 0% 100%;
+  --secondary-foreground: 0 0% 100%;
+  --card: var(--surface-container-low);
+  --card-foreground: var(--foreground);
+  --muted: var(--surface-container);
+  --accent: var(--primary-100);
+  --accent-foreground: var(--primary-900);
+  --destructive: 0 70% 48%;
+  --destructive-foreground: 0 0% 100%;
+  --border: var(--primary-300);
+  --input: var(--primary-300);
+  --ring: var(--primary-500);
+  --success: 160 68% 36%;
+  --success-foreground: 0 0% 100%;
+  --warning: 42 92% 46%;
+  --warning-foreground: 30 30% 12%;
+  --info: 212 84% 48%;
+  --info-foreground: 0 0% 100%;
+  --radius: 1rem;
 }
 
 [data-theme="dark"] {
@@ -50,6 +72,28 @@
   --primary-800: 48 95% 84%;
   --primary-900: 50 100% 89%;
   --primary-950: 52 100% 94%;
+
+  /* Andersseen semantic token bridge */
+  --primary: var(--primary-500);
+  --primary-foreground: 30 30% 12%;
+  --secondary-foreground: 30 30% 12%;
+  --card: var(--surface-container);
+  --card-foreground: var(--foreground);
+  --muted: var(--surface-strong);
+  --accent: var(--primary-300);
+  --accent-foreground: 30 30% 12%;
+  --destructive: 0 70% 58%;
+  --destructive-foreground: 30 30% 12%;
+  --border: var(--primary-300);
+  --input: var(--primary-300);
+  --ring: var(--primary-500);
+  --success: 160 60% 50%;
+  --success-foreground: 30 30% 12%;
+  --warning: 42 90% 58%;
+  --warning-foreground: 30 30% 12%;
+  --info: 212 86% 66%;
+  --info-foreground: 30 30% 12%;
+  --radius: 1rem;
 }
 
 @font-face {
@@ -101,6 +145,13 @@
 }
 
 @layer components {
+  and-badge {
+    --radius: 1rem;
+    border-radius: 1rem !important;
+    padding: 0.22rem 0.56rem !important;
+    line-height: 1.1 !important;
+  }
+
   .home-reveal {
     opacity: 0;
     transform: translateY(14px);

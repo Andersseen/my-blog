@@ -14,15 +14,15 @@ const today = new Date();
 	<div class="flex flex-col items-center justify-between gap-3 sm:flex-row">
 		<p>&copy; {today.getFullYear()} {AUTHOR_NAME}. {messages.footer.rights}</p>
 		<p class="flex items-center gap-3 text-foreground/60">
-			<a class="inline-flex items-center gap-1 hover:text-primary-800" href={AUTHOR_PORTFOLIO_URL} rel="me noopener noreferrer" target="_blank">
+			<and-button href={AUTHOR_PORTFOLIO_URL} target="_blank" rel="me noopener noreferrer" variant="link" size="sm" custom-class="p-0 h-auto">
 				{messages.footer.portfolio}
-				<and-icon name="external-link" size="13" aria-hidden="true"></and-icon>
-			</a>
+				<and-icon slot="end" name="external-link" size="13" aria-hidden="true"></and-icon>
+			</and-button>
 			<span aria-hidden="true">•</span>
-			<a class="inline-flex items-center gap-1 hover:text-primary-800" href={AUTHOR_MEDIUM_URL} rel="me noopener noreferrer" target="_blank">
+			<and-button href={AUTHOR_MEDIUM_URL} target="_blank" rel="me noopener noreferrer" variant="link" size="sm" custom-class="p-0 h-auto">
 				{messages.footer.medium}
-				<and-icon name="external-link" size="13" aria-hidden="true"></and-icon>
-			</a>
+				<and-icon slot="end" name="external-link" size="13" aria-hidden="true"></and-icon>
+			</and-button>
 		</p>
 	</div>
 </footer>

@@ -106,14 +106,16 @@ const navLinks = [
     </div>
 
     <!-- Mobile menu trigger -->
-    <button
+    <and-button
       type="button"
+      variant="outline"
+      size="icon"
       class="menu-trigger md:hidden"
       aria-label={messages.nav.menu}
       data-mobile-menu-open
     >
       <and-icon name="menu" size="18" aria-hidden="true"></and-icon>
-    </button>
+    </and-button>
   </nav>
 
   <div class="h-px bg-[hsl(var(--primary-300)/0.18)]"></div>
@@ -153,7 +155,7 @@ const navLinks = [
 
 <script>
   const drawer = document.querySelector<HTMLElement & { open: boolean }>('[data-mobile-drawer]');
-  const openButton = document.querySelector<HTMLButtonElement>('[data-mobile-menu-open]');
+  const openButton = document.querySelector<HTMLElement>('[data-mobile-menu-open]');
   const closeTriggers = document.querySelectorAll<HTMLElement>('[data-mobile-menu-close]');
 
   openButton?.addEventListener('click', () => {

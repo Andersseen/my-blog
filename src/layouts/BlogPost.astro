@@ -2,7 +2,7 @@
 import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import FormattedDate from '../components/FormattedDate.astro';
-import { getI18n } from '../i18n';
+import { getI18n, toLocalePath } from '../i18n';
 import MainLayout from './MainLayout.astro';
 
 type Props = CollectionEntry<'blog'>['data'];
@@ -13,14 +13,22 @@ const { locale, messages } = getI18n(Astro.url.pathname);
 
 <MainLayout title={title} description={description} image={heroImage} pageType="article" locale={locale} messages={messages}>
 	<article class="mx-auto max-w-3xl space-y-6">
+		<and-breadcrumb nav-label={messages.nav.aria} size="sm">
+			<and-breadcrumb-item href={toLocalePath(locale, '/')}>{messages.nav.home}</and-breadcrumb-item>
+			<and-breadcrumb-item href={toLocalePath(locale, '/blog')}>{messages.nav.blog}</and-breadcrumb-item>
+			<and-breadcrumb-item current>{title}</and-breadcrumb-item>
+		</and-breadcrumb>
+
 		{heroImage && <Image width={1200} height={600} src={heroImage} alt="" class="w-full rounded-xl border border-primary-200" />}
 
 		<header class="space-y-3 border-b border-primary-200 pb-6">
-			<p class="text-sm text-foreground/60">
-				<FormattedDate date={pubDate} />
+			<p class="flex flex-wrap items-center gap-2 text-sm text-foreground/60">
+				<and-badge variant="outline">
+					<FormattedDate date={pubDate} />
+				</and-badge>
 				{
 					updatedDate && (
-						<span class="ml-2 italic">
+						<span class="italic">
 							{messages.blogPost.updatedOn} <FormattedDate date={updatedDate} />
 						</span>
 					)

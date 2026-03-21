@@ -50,63 +50,74 @@ const remaining = posts.slice(6);
     <!-- Featured article: 8 cols × 2 rows -->
     <a
       href={toLocalePath(locale, `/blog/${featured.id}/`)}
-      class="bento-card group relative overflow-hidden rounded-2xl border border-[hsl(var(--primary-300)/0.14)] bg-[hsl(var(--surface-container-low))] md:col-span-8 md:row-span-2"
+      class="group block md:col-span-8 md:row-span-2"
     >
-      {featured.data.heroImage ? (
-        <div class="absolute inset-0">
-          <Image
-            width={1200}
-            height={640}
-            src={featured.data.heroImage}
-            alt={featured.data.title}
-            class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 grayscale group-hover:grayscale-0"
-          />
-          <div class="absolute inset-0 bg-gradient-to-t from-[hsl(var(--background)/0.96)] via-[hsl(var(--surface)/0.45)] to-transparent" />
-        </div>
-      ) : (
-        <div class="absolute inset-0 -z-10">
-          <div class="absolute -left-1/4 -top-1/4 h-3/4 w-3/4 rounded-full bg-[hsl(var(--primary-300)/0.07)] blur-3xl" />
-          <div class="absolute -right-1/4 bottom-0 h-1/2 w-1/2 rounded-full bg-[hsl(var(--secondary)/0.05)] blur-3xl" />
-        </div>
-      )}
+      <and-card
+        variant="elevated"
+        class="bento-card relative h-full overflow-hidden rounded-2xl border border-[hsl(var(--primary-300)/0.14)] bg-[hsl(var(--surface-container-low))]"
+      >
+        {featured.data.heroImage ? (
+          <div class="absolute inset-0">
+            <Image
+              width={1200}
+              height={640}
+              src={featured.data.heroImage}
+              alt={featured.data.title}
+              class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 grayscale group-hover:grayscale-0"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-[hsl(var(--background)/0.96)] via-[hsl(var(--surface)/0.45)] to-transparent" />
+          </div>
+        ) : (
+          <div class="absolute inset-0 -z-10">
+            <div class="absolute -left-1/4 -top-1/4 h-3/4 w-3/4 rounded-full bg-[hsl(var(--primary-300)/0.07)] blur-3xl" />
+            <div class="absolute -right-1/4 bottom-0 h-1/2 w-1/2 rounded-full bg-[hsl(var(--secondary)/0.05)] blur-3xl" />
+          </div>
+        )}
 
-      <div class="relative z-10 flex h-full flex-col justify-end p-8 md:p-12">
-        <div class="space-y-4">
-          <span class="inline-block rounded-lg border border-[hsl(var(--secondary)/0.3)] bg-[hsl(var(--surface)/0.65)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.15em] text-[hsl(var(--secondary))] backdrop-blur-sm">
-            <FormattedDate date={featured.data.pubDate} />
-          </span>
-          <h2 class="text-3xl font-bold leading-tight tracking-tight text-foreground transition-colors group-hover:text-[hsl(var(--primary-600))] md:text-4xl">
-            {featured.data.title}
-          </h2>
-          <p class="line-clamp-2 max-w-xl text-[hsl(var(--muted-foreground))]">
-            {featured.data.description}
-          </p>
+        <div class="relative z-10 flex h-full flex-col justify-end p-8 md:p-12">
+          <div class="space-y-4">
+            <and-badge variant="secondary" class="inline-block w-fit text-[10px] uppercase tracking-[0.15em]">
+              <FormattedDate date={featured.data.pubDate} />
+            </and-badge>
+            <h2 class="text-3xl font-bold leading-tight tracking-tight text-foreground transition-colors group-hover:text-[hsl(var(--primary-600))] md:text-4xl">
+              {featured.data.title}
+            </h2>
+            <p class="line-clamp-2 max-w-xl text-[hsl(var(--muted-foreground))]">
+              {featured.data.description}
+            </p>
+          </div>
         </div>
-      </div>
+      </and-card>
     </a>
 
     <!-- Secondary article: 4 cols × 2 rows -->
     {secondary && (
       <a
         href={toLocalePath(locale, `/blog/${secondary.id}/`)}
-        class="bento-card group flex flex-col rounded-2xl border border-[hsl(var(--primary-300)/0.12)] bg-[hsl(var(--surface-container))] p-8 transition-colors hover:bg-[hsl(var(--surface-container-high))] md:col-span-4 md:row-span-2"
+        class="group block md:col-span-4 md:row-span-2"
       >
-        <div class="mb-auto space-y-6">
-          <div class="editorial-gradient flex h-12 w-12 items-center justify-center rounded-xl shadow-lg shadow-[hsl(var(--primary-500)/0.15)]">
-            <span class="text-xl font-bold text-white">↗</span>
+        <and-card
+          variant="default"
+          padded
+          class="bento-card flex h-full flex-col rounded-2xl border border-[hsl(var(--primary-300)/0.12)] bg-[hsl(var(--surface-container))] p-8 transition-colors hover:bg-[hsl(var(--surface-container-high))]"
+        >
+          <div class="mb-auto space-y-6">
+            <div class="editorial-gradient flex h-12 w-12 items-center justify-center rounded-xl shadow-lg shadow-[hsl(var(--primary-500)/0.15)]">
+              <span class="text-xl font-bold text-white">↗</span>
+            </div>
+            <h3 class="text-2xl font-bold leading-tight text-foreground transition-colors group-hover:text-[hsl(var(--primary-600))]">
+              {secondary.data.title}
+            </h3>
           </div>
-          <h3 class="text-2xl font-bold leading-tight text-foreground transition-colors group-hover:text-[hsl(var(--primary-600))]">
-            {secondary.data.title}
-          </h3>
-        </div>
-        <div class="mt-8 space-y-3">
-          <p class="text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">
-            {secondary.data.description}
-          </p>
-          <span class="block text-[10px] font-semibold uppercase tracking-[0.15em] text-[hsl(var(--muted-foreground))]">
-            <FormattedDate date={secondary.data.pubDate} />
-          </span>
-        </div>
+          <div class="mt-8 space-y-3">
+            <p class="text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">
+              {secondary.data.description}
+            </p>
+            <and-badge variant="outline" class="text-[10px] uppercase tracking-[0.15em]">
+              <FormattedDate date={secondary.data.pubDate} />
+            </and-badge>
+          </div>
+        </and-card>
       </a>
     )}
 
@@ -114,52 +125,64 @@ const remaining = posts.slice(6);
     {compactLeft && (
       <a
         href={toLocalePath(locale, `/blog/${compactLeft.id}/`)}
-        class="bento-card group flex flex-col rounded-2xl border border-[hsl(var(--primary-300)/0.08)] bg-[hsl(var(--surface-container-low))] p-6 transition-all hover:border-[hsl(var(--primary-400)/0.3)] md:col-span-4"
+        class="group block md:col-span-4"
       >
-        <div class="mb-auto">
-          <div class="mb-3 flex items-start justify-between">
-            <span class="text-[10px] font-semibold uppercase tracking-[0.15em] text-[hsl(var(--secondary))]">
-              <FormattedDate date={compactLeft.data.pubDate} />
-            </span>
-            <span class="text-sm text-[hsl(var(--muted-foreground))] opacity-0 transition-opacity group-hover:opacity-100">↗</span>
+        <and-card
+          variant="default"
+          padded
+          class="bento-card flex h-full flex-col rounded-2xl border border-[hsl(var(--primary-300)/0.08)] bg-[hsl(var(--surface-container-low))] p-6 transition-all hover:border-[hsl(var(--primary-400)/0.3)]"
+        >
+          <div class="mb-auto">
+            <div class="mb-3 flex items-start justify-between">
+              <and-badge variant="secondary" class="text-[10px] uppercase tracking-[0.15em]">
+                <FormattedDate date={compactLeft.data.pubDate} />
+              </and-badge>
+              <span class="text-sm text-[hsl(var(--muted-foreground))] opacity-0 transition-opacity group-hover:opacity-100">↗</span>
+            </div>
+            <h3 class="text-xl font-bold leading-snug text-foreground transition-colors group-hover:text-[hsl(var(--primary-600))]">
+              {compactLeft.data.title}
+            </h3>
           </div>
-          <h3 class="text-xl font-bold leading-snug text-foreground transition-colors group-hover:text-[hsl(var(--primary-600))]">
-            {compactLeft.data.title}
-          </h3>
-        </div>
-        <p class="mt-3 line-clamp-2 text-sm text-[hsl(var(--muted-foreground))]">
-          {compactLeft.data.description}
-        </p>
+          <p class="mt-3 line-clamp-2 text-sm text-[hsl(var(--muted-foreground))]">
+            {compactLeft.data.description}
+          </p>
+        </and-card>
       </a>
     )}
 
     <!-- Quote interstitial: glass card -->
-    <div class="flex items-center justify-center rounded-2xl border border-[hsl(var(--primary-300)/0.1)] bg-[hsl(var(--surface-container)/0.6)] p-6 text-center backdrop-blur-md md:col-span-4">
+    <and-card variant="ghost" padded class="flex items-center justify-center rounded-2xl border border-[hsl(var(--primary-300)/0.1)] bg-[hsl(var(--surface-container)/0.6)] p-6 text-center backdrop-blur-md md:col-span-4">
       <p class="text-sm italic leading-relaxed text-[hsl(var(--muted-foreground))]">
         &ldquo;{messages.blog.latestDescription}&rdquo;
       </p>
-    </div>
+    </and-card>
 
     <!-- Row 3 right: compact card -->
     {compactRight && (
       <a
         href={toLocalePath(locale, `/blog/${compactRight.id}/`)}
-        class="bento-card group flex flex-col rounded-2xl border border-[hsl(var(--primary-300)/0.08)] bg-[hsl(var(--surface-container-low))] p-6 transition-all hover:border-[hsl(var(--primary-400)/0.3)] md:col-span-4"
+        class="group block md:col-span-4"
       >
-        <div class="mb-auto">
-          <div class="mb-3 flex items-start justify-between">
-            <span class="text-[10px] font-semibold uppercase tracking-[0.15em] text-[hsl(var(--secondary))]">
-              <FormattedDate date={compactRight.data.pubDate} />
-            </span>
-            <span class="text-sm text-[hsl(var(--muted-foreground))] opacity-0 transition-opacity group-hover:opacity-100">↗</span>
+        <and-card
+          variant="default"
+          padded
+          class="bento-card flex h-full flex-col rounded-2xl border border-[hsl(var(--primary-300)/0.08)] bg-[hsl(var(--surface-container-low))] p-6 transition-all hover:border-[hsl(var(--primary-400)/0.3)]"
+        >
+          <div class="mb-auto">
+            <div class="mb-3 flex items-start justify-between">
+              <and-badge variant="secondary" class="text-[10px] uppercase tracking-[0.15em]">
+                <FormattedDate date={compactRight.data.pubDate} />
+              </and-badge>
+              <span class="text-sm text-[hsl(var(--muted-foreground))] opacity-0 transition-opacity group-hover:opacity-100">↗</span>
+            </div>
+            <h3 class="text-xl font-bold leading-snug text-foreground transition-colors group-hover:text-[hsl(var(--primary-600))]">
+              {compactRight.data.title}
+            </h3>
           </div>
-          <h3 class="text-xl font-bold leading-snug text-foreground transition-colors group-hover:text-[hsl(var(--primary-600))]">
-            {compactRight.data.title}
-          </h3>
-        </div>
-        <p class="mt-3 line-clamp-2 text-sm text-[hsl(var(--muted-foreground))]">
-          {compactRight.data.description}
-        </p>
+          <p class="mt-3 line-clamp-2 text-sm text-[hsl(var(--muted-foreground))]">
+            {compactRight.data.description}
+          </p>
+        </and-card>
       </a>
     )}
 
@@ -167,20 +190,26 @@ const remaining = posts.slice(6);
     {horizontals.map((post) => (
       <a
         href={toLocalePath(locale, `/blog/${post.id}/`)}
-        class="bento-card group flex items-center gap-6 rounded-2xl border border-[hsl(var(--primary-300)/0.1)] bg-[hsl(var(--surface-container-high))] p-8 transition-colors md:col-span-6"
+        class="group block md:col-span-6"
       >
-        <div class="flex-1">
-          <span class="mb-2 block text-[10px] font-semibold uppercase tracking-[0.15em] text-[hsl(var(--secondary))]">
-            <FormattedDate date={post.data.pubDate} />
-          </span>
-          <h3 class="mb-1.5 text-xl font-bold leading-snug text-foreground transition-colors group-hover:text-[hsl(var(--primary-600))]">
-            {post.data.title}
-          </h3>
-          <p class="line-clamp-1 text-sm text-[hsl(var(--muted-foreground))]">
-            {post.data.description}
-          </p>
-        </div>
-        <span class="shrink-0 text-3xl text-[hsl(var(--muted-foreground))] transition-colors group-hover:text-[hsl(var(--primary-600))]">→</span>
+        <and-card
+          variant="default"
+          padded
+          class="bento-card flex h-full items-center gap-6 rounded-2xl border border-[hsl(var(--primary-300)/0.1)] bg-[hsl(var(--surface-container-high))] p-8 transition-colors"
+        >
+          <div class="flex-1">
+            <and-badge variant="secondary" class="mb-2 block w-fit text-[10px] uppercase tracking-[0.15em]">
+              <FormattedDate date={post.data.pubDate} />
+            </and-badge>
+            <h3 class="mb-1.5 text-xl font-bold leading-snug text-foreground transition-colors group-hover:text-[hsl(var(--primary-600))]">
+              {post.data.title}
+            </h3>
+            <p class="line-clamp-1 text-sm text-[hsl(var(--muted-foreground))]">
+              {post.data.description}
+            </p>
+          </div>
+          <span class="shrink-0 text-3xl text-[hsl(var(--muted-foreground))] transition-colors group-hover:text-[hsl(var(--primary-600))]">→</span>
+        </and-card>
       </a>
     ))}
 
