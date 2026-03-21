@@ -6,6 +6,9 @@
   --muted-foreground: 0 0% 33%;
   --surface: 0 0% 100%;
   --surface-strong: 0 0% 98%;
+  --surface-container-low: 0 0% 97%;
+  --surface-container: 0 0% 95%;
+  --surface-container-high: 0 0% 91%;
   --backdrop-top: 214 30% 84%;
   --backdrop-bottom: 206 30% 78%;
   --secondary: 194 66% 42%;
@@ -29,6 +32,9 @@
   --muted-foreground: 0 0% 74%;
   --surface: 0 0% 12%;
   --surface-strong: 0 0% 16%;
+  --surface-container-low: 0 0% 10%;
+  --surface-container: 0 0% 13%;
+  --surface-container-high: 0 0% 19%;
   --backdrop-top: 220 22% 18%;
   --backdrop-bottom: 210 23% 14%;
   --secondary: 194 70% 60%;
@@ -111,8 +117,18 @@
 
   .home-hero {
     position: relative;
-    overflow: hidden;
+    overflow: clip;
     isolation: isolate;
+  }
+
+  .bento-card {
+    transition:
+      transform 0.22s ease,
+      box-shadow 0.22s ease;
+  }
+
+  .bento-card:hover {
+    transform: translateY(-4px);
   }
 
   .home-surface {
