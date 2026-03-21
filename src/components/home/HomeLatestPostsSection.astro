@@ -19,12 +19,15 @@ const { locale, messages, posts } = Astro.props;
       <h2 class="text-2xl font-bold tracking-tight text-foreground">{messages.blog.latestTitle}</h2>
       <p class="text-sm text-[hsl(var(--muted-foreground))]">{messages.blog.latestDescription}</p>
     </div>
-    <a
+    <and-button
       href={toLocalePath(locale, '/blog')}
-      class="shrink-0 rounded-full border border-[hsl(var(--primary-300)/0.4)] bg-[hsl(var(--surface-container))] px-5 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-foreground transition hover:bg-[hsl(var(--surface-container-high))]"
+      variant="outline"
+      size="sm"
+      class="shrink-0"
+      custom-class="rounded-full px-5"
     >
       {messages.nav.blog}
-    </a>
+    </and-button>
   </header>
 
   <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
