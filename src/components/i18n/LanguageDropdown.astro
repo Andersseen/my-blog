@@ -11,10 +11,9 @@ interface Props {
 
 const { locale, messages, currentPath, class: className, slot: slotName } = Astro.props;
 
-const languageItems = LOCALES.map((lang) => ({
+const languageItems = LOCALES.filter((lang) => lang !== locale).map((lang) => ({
   text: messages.language[lang],
   value: toLocalePath(lang, currentPath),
-  disabled: lang === locale,
 }));
 
 const activeLabel = messages.language[locale];
