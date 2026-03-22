@@ -21,10 +21,22 @@ export function mediumLoader(url: string) {
         for (const item of feed.items) {
           if (!item.guid || !item.title) continue;
 
-          // Extract first image from content:encoded
+          // Extract best hero image from figure > img (skip tracking pixels)
           const content = item['content:encoded'] || '';
-          const imgMatch = content.match(/<img[^>]+src="([^">]+)"/);
-          const heroImage = imgMatch ? imgMatch[1] : undefined;
+          const figureImgs = [...content.matchAll(/<figure[^>]*>[\s\S]*?<img[^>]+src=["']([^"']+)["']/gi)]
+            .map(m => m[1])
+            .filter(src => src.startsWith('https://cdn-images-1.medium.com'));
+          
+          // Pick the widest image, upscale CDN URL to max/1024
+          let heroImage: string | undefined;
+          if (figureImgs.length > 0) {
+            const best = figureImgs.reduce((a, b) => {
+              const widthA = parseInt(a.match(/\/max\/(\d+)\//)?.[1] || '0');
+              const widthB = parseInt(b.match(/\/max\/(\d+)\//)?.[1] || '0');
+              return widthB > widthA ? b : a;
+            });
+            heroImage = best.replace(/\/max\/\d+\//, '/max/1024/');
+          }
           
           // Clean up description (strip HTML)
           const description = item.contentSnippet 
