@@ -17,7 +17,7 @@ const { locale, messages, posts } = Astro.props;
   <header class="flex items-end justify-between gap-4">
     <div class="space-y-1">
       <h2 class="text-2xl font-bold tracking-tight text-foreground">{messages.blog.latestTitle}</h2>
-      <p class="text-sm text-[hsl(var(--muted-foreground))]">{messages.blog.latestDescription}</p>
+      <p class="text-sm text-muted-foreground">{messages.blog.latestDescription}</p>
     </div>
     <and-button
       href={toLocalePath(locale, '/blog')}

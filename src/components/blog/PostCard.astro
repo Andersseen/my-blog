@@ -38,7 +38,7 @@ const { post, locale } = Astro.props;
 >
   <and-card
     variant="elevated"
-    class="bento-card flex h-full flex-col overflow-hidden rounded-2xl border border-[hsl(var(--primary-300)/0.18)] bg-[hsl(var(--surface-container-low))] shadow-[0_8px_28px_-16px_hsl(var(--primary-900)/0.25)] transition-shadow group-hover:shadow-[0_14px_40px_-14px_hsl(var(--primary-800)/0.4)]"
+    class="bento-card flex h-full flex-col overflow-hidden rounded-2xl transition-shadow"
   >
     {
       post.data.heroImage && (
@@ -59,7 +59,7 @@ const { post, locale } = Astro.props;
       <h2 class="text-lg font-bold tracking-tight leading-snug text-foreground transition-colors group-hover:text-[hsl(var(--primary-700))]">
         {post.data.title}
       </h2>
-      <p class="mt-2 flex-1 text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">
+      <p class="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
         {post.data.description}
       </p>
       <div class="mt-4 flex items-center justify-between">

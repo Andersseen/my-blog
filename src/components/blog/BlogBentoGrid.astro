@@ -54,7 +54,7 @@ const remaining = posts.slice(6);
     >
       <and-card
         variant="elevated"
-        class="bento-card relative h-full overflow-hidden rounded-2xl border border-[hsl(var(--primary-300)/0.14)] bg-[hsl(var(--surface-container-low))]"
+        class="bento-card relative h-full overflow-hidden rounded-2xl"
       >
         {featured.data.heroImage ? (
           <div class="absolute inset-0">
@@ -69,8 +69,8 @@ const remaining = posts.slice(6);
           </div>
         ) : (
           <div class="absolute inset-0 -z-10">
-            <div class="absolute -left-1/4 -top-1/4 h-3/4 w-3/4 rounded-full bg-[hsl(var(--primary-300)/0.07)] blur-3xl" />
-            <div class="absolute -right-1/4 bottom-0 h-1/2 w-1/2 rounded-full bg-[hsl(var(--secondary)/0.05)] blur-3xl" />
+            <div class="absolute -left-1/4 -top-1/4 h-3/4 w-3/4 rounded-full bg-primary-300/10 blur-3xl" />
+            <div class="absolute -right-1/4 bottom-0 h-1/2 w-1/2 rounded-full bg-secondary/5 blur-3xl" />
           </div>
         )}
 
@@ -79,10 +79,10 @@ const remaining = posts.slice(6);
             <and-badge variant="secondary" class="inline-block w-fit text-[10px] uppercase tracking-[0.15em]">
               <FormattedDate date={featured.data.pubDate} />
             </and-badge>
-            <h2 class="text-3xl font-bold leading-tight tracking-tight text-foreground transition-colors group-hover:text-[hsl(var(--primary-600))] md:text-4xl">
+            <h2 class="text-3xl font-bold leading-tight tracking-tight text-foreground transition-colors group-hover:text-primary-600 md:text-4xl">
               {featured.data.title}
             </h2>
-            <p class="line-clamp-2 max-w-xl text-[hsl(var(--muted-foreground))]">
+            <p class="line-clamp-2 max-w-xl text-muted-foreground">
               {featured.data.description}
             </p>
           </div>
@@ -98,19 +98,18 @@ const remaining = posts.slice(6);
       >
         <and-card
           variant="default"
-          padded
-          class="bento-card flex h-full flex-col rounded-2xl border border-[hsl(var(--primary-300)/0.12)] bg-[hsl(var(--surface-container))] p-8 transition-colors hover:bg-[hsl(var(--surface-container-high))]"
+          class="bento-card flex h-full flex-col rounded-2xl p-8 transition-colors hover:bg-surface-container-high"
         >
           <div class="mb-auto space-y-6">
-            <div class="editorial-gradient flex h-12 w-12 items-center justify-center rounded-xl shadow-lg shadow-[hsl(var(--primary-500)/0.15)]">
+            <div class="editorial-gradient flex h-12 w-12 items-center justify-center rounded-xl shadow-lg shadow-primary-500/15">
               <span class="text-xl font-bold text-white">↗</span>
             </div>
-            <h3 class="text-2xl font-bold leading-tight text-foreground transition-colors group-hover:text-[hsl(var(--primary-600))]">
+            <h3 class="text-2xl font-bold leading-tight text-foreground transition-colors group-hover:text-primary-600">
               {secondary.data.title}
             </h3>
           </div>
           <div class="mt-8 space-y-3">
-            <p class="text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">
+            <p class="text-sm leading-relaxed text-muted-foreground">
               {secondary.data.description}
             </p>
             <and-badge variant="outline" class="text-[10px] uppercase tracking-[0.15em]">
@@ -129,21 +128,20 @@ const remaining = posts.slice(6);
       >
         <and-card
           variant="default"
-          padded
-          class="bento-card flex h-full flex-col rounded-2xl border border-[hsl(var(--primary-300)/0.08)] bg-[hsl(var(--surface-container-low))] p-6 transition-all hover:border-[hsl(var(--primary-400)/0.3)]"
+          class="bento-card flex h-full flex-col rounded-2xl p-6 transition-all hover:border-primary-400/30"
         >
           <div class="mb-auto">
             <div class="mb-3 flex items-start justify-between">
               <and-badge variant="secondary" class="text-[10px] uppercase tracking-[0.15em]">
                 <FormattedDate date={compactLeft.data.pubDate} />
               </and-badge>
-              <span class="text-sm text-[hsl(var(--muted-foreground))] opacity-0 transition-opacity group-hover:opacity-100">↗</span>
+              <span class="text-sm text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100">↗</span>
             </div>
-            <h3 class="text-xl font-bold leading-snug text-foreground transition-colors group-hover:text-[hsl(var(--primary-600))]">
+            <h3 class="text-xl font-bold leading-snug text-foreground transition-colors group-hover:text-primary-600">
               {compactLeft.data.title}
             </h3>
           </div>
-          <p class="mt-3 line-clamp-2 text-sm text-[hsl(var(--muted-foreground))]">
+          <p class="mt-3 line-clamp-2 text-sm text-muted-foreground">
             {compactLeft.data.description}
           </p>
         </and-card>
@@ -151,8 +149,8 @@ const remaining = posts.slice(6);
     )}
 
     <!-- Quote interstitial: glass card -->
-    <and-card variant="ghost" padded class="flex items-center justify-center rounded-2xl border border-[hsl(var(--primary-300)/0.1)] bg-[hsl(var(--surface-container)/0.6)] p-6 text-center backdrop-blur-md md:col-span-4">
-      <p class="text-sm italic leading-relaxed text-[hsl(var(--muted-foreground))]">
+    <and-card variant="ghost" class="flex items-center justify-center rounded-2xl bg-surface-container/60 p-6 text-center backdrop-blur-md md:col-span-4">
+      <p class="text-sm italic leading-relaxed text-muted-foreground">
         &ldquo;{messages.blog.latestDescription}&rdquo;
       </p>
     </and-card>
@@ -165,21 +163,20 @@ const remaining = posts.slice(6);
       >
         <and-card
           variant="default"
-          padded
-          class="bento-card flex h-full flex-col rounded-2xl border border-[hsl(var(--primary-300)/0.08)] bg-[hsl(var(--surface-container-low))] p-6 transition-all hover:border-[hsl(var(--primary-400)/0.3)]"
+          class="bento-card flex h-full flex-col rounded-2xl p-6 transition-all hover:border-primary-400/30"
         >
           <div class="mb-auto">
             <div class="mb-3 flex items-start justify-between">
               <and-badge variant="secondary" class="text-[10px] uppercase tracking-[0.15em]">
                 <FormattedDate date={compactRight.data.pubDate} />
               </and-badge>
-              <span class="text-sm text-[hsl(var(--muted-foreground))] opacity-0 transition-opacity group-hover:opacity-100">↗</span>
+              <span class="text-sm text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100">↗</span>
             </div>
-            <h3 class="text-xl font-bold leading-snug text-foreground transition-colors group-hover:text-[hsl(var(--primary-600))]">
+            <h3 class="text-xl font-bold leading-snug text-foreground transition-colors group-hover:text-primary-600">
               {compactRight.data.title}
             </h3>
           </div>
-          <p class="mt-3 line-clamp-2 text-sm text-[hsl(var(--muted-foreground))]">
+          <p class="mt-3 line-clamp-2 text-sm text-muted-foreground">
             {compactRight.data.description}
           </p>
         </and-card>
@@ -194,21 +191,20 @@ const remaining = posts.slice(6);
       >
         <and-card
           variant="default"
-          padded
-          class="bento-card flex h-full items-center gap-6 rounded-2xl border border-[hsl(var(--primary-300)/0.1)] bg-[hsl(var(--surface-container-high))] p-8 transition-colors"
+          class="bento-card flex h-full items-center gap-6 rounded-2xl p-8 transition-colors"
         >
           <div class="flex-1">
             <and-badge variant="secondary" class="mb-2 block w-fit text-[10px] uppercase tracking-[0.15em]">
               <FormattedDate date={post.data.pubDate} />
             </and-badge>
-            <h3 class="mb-1.5 text-xl font-bold leading-snug text-foreground transition-colors group-hover:text-[hsl(var(--primary-600))]">
+            <h3 class="mb-1.5 text-xl font-bold leading-snug text-foreground transition-colors group-hover:text-primary-600">
               {post.data.title}
             </h3>
-            <p class="line-clamp-1 text-sm text-[hsl(var(--muted-foreground))]">
+            <p class="line-clamp-1 text-sm text-muted-foreground">
               {post.data.description}
             </p>
           </div>
-          <span class="shrink-0 text-3xl text-[hsl(var(--muted-foreground))] transition-colors group-hover:text-[hsl(var(--primary-600))]">→</span>
+          <span class="shrink-0 text-3xl text-muted-foreground transition-colors group-hover:text-primary-600">→</span>
         </and-card>
       </a>
     ))}
