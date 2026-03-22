@@ -11,13 +11,17 @@ interface Props {
       title: string;
       description: string;
       pubDate: Date;
-      heroImage?: ImageMetadata;
+      heroImage?: any;
+      isExternal?: boolean;
+      link?: string;
     };
   };
   locale: Locale;
 }
 
 const { post, locale } = Astro.props;
+const isExternal = post.data.isExternal;
+const href = isExternal ? post.data.link : toLocalePath(locale, `/blog/${post.id}/`);
 ---
 
 <style>
@@ -33,41 +37,58 @@ const { post, locale } = Astro.props;
 </style>
 
 <a
-  href={toLocalePath(locale, `/blog/${post.id}/`)}
+  href={href}
+  target={isExternal ? "_blank" : undefined}
+  rel={isExternal ? "noopener noreferrer" : undefined}
   class="group block h-full"
 >
   <and-card
     variant="elevated"
-    class="bento-card flex h-full flex-col overflow-hidden rounded-2xl border border-[hsl(var(--primary-300)/0.18)] bg-[hsl(var(--surface-container-low))] shadow-[0_8px_28px_-16px_hsl(var(--primary-900)/0.25)] transition-shadow group-hover:shadow-[0_14px_40px_-14px_hsl(var(--primary-800)/0.4)]"
+    class="bento-card flex h-full flex-col overflow-hidden rounded-2xl transition-shadow"
   >
     {
       post.data.heroImage && (
         <div class="relative overflow-hidden">
-          <Image
-            width={780}
-            height={420}
-            src={post.data.heroImage}
-            alt={post.data.title}
-            class="h-44 w-full object-cover grayscale transition-all duration-500 group-hover:grayscale-0 group-hover:scale-105"
-          />
+          {typeof post.data.heroImage === 'string' ? (
+             <img
+              src={post.data.heroImage}
+              alt={post.data.title}
+              loading="lazy"
+              decoding="async"
+              class="h-44 w-full object-cover grayscale transition-all duration-500 group-hover:grayscale-0 group-hover:scale-105"
+            />
+          ) : (
+            <Image
+              width={780}
+              height={420}
+              src={post.data.heroImage}
+              alt={post.data.title}
+              loading="lazy"
+              decoding="async"
+              class="h-44 w-full object-cover grayscale transition-all duration-500 group-hover:grayscale-0 group-hover:scale-105"
+            />
+          )}
           <div class="absolute inset-0 bg-gradient-to-t from-[hsl(var(--surface)/0.6)] to-transparent" />
         </div>
       )
     }
 
     <div class="flex flex-1 flex-col p-5">
-      <h2 class="text-lg font-bold tracking-tight leading-snug text-foreground transition-colors group-hover:text-[hsl(var(--primary-700))]">
+      <div class="flex items-center gap-2 mb-2">
+        {isExternal && <and-badge variant="secondary" class="text-[9px] uppercase">Medium</and-badge>}
+      </div>
+      <h2 class="text-lg font-bold tracking-tight leading-snug text-foreground transition-colors group-hover:text-primary-600">
         {post.data.title}
       </h2>
-      <p class="mt-2 flex-1 text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">
+      <p class="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
         {post.data.description}
       </p>
       <div class="mt-4 flex items-center justify-between">
         <and-badge variant="outline" class="text-[10px] uppercase tracking-[0.15em]">
           <FormattedDate date={post.data.pubDate} />
         </and-badge>
-        <span class="text-xs font-semibold uppercase tracking-widest text-[hsl(var(--primary-600))] opacity-0 transition-opacity group-hover:opacity-100">
-          →
+        <span class="text-xs font-semibold uppercase tracking-widest text-primary-600 opacity-0 transition-opacity group-hover:opacity-100">
+          {isExternal ? '↗' : '→'}
         </span>
       </div>
     </div>

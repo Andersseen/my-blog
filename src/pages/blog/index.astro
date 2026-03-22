@@ -7,7 +7,11 @@ import { getI18n } from '../../i18n';
 
 const { locale, messages } = getI18n(Astro.url.pathname);
 
-const posts = (await getCollection('blog')).sort(
+let blogPosts: any[] = [];
+try { blogPosts = await getCollection('blog'); } catch { /* collection may be empty */ }
+const mediumPosts = await getCollection('medium');
+
+const posts = [...blogPosts, ...mediumPosts].sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 ---
@@ -21,19 +25,19 @@ const posts = (await getCollection('blog')).sort(
 	<section class="space-y-10">
 		<header class="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
 			<div class="max-w-xl space-y-4">
-				<span class="block text-[10px] font-semibold uppercase tracking-[0.2em] text-[hsl(var(--secondary))]">
+				<span class="block text-[10px] font-semibold uppercase tracking-[0.2em] text-secondary">
 					{messages.blog.editorialLabel}
 				</span>
 				<h1 class="text-5xl font-bold tracking-tighter leading-none text-foreground md:text-6xl">
 					{messages.blog.latestTitle}
 				</h1>
-				<p class="max-w-md text-lg leading-relaxed text-[hsl(var(--muted-foreground))]">
+				<p class="max-w-md text-lg leading-relaxed text-muted-foreground">
 					{messages.blog.latestDescription}
 				</p>
 			</div>
 			<div class="flex items-center gap-3">
-				<div class="h-px w-10 bg-[hsl(var(--primary-400)/0.35)]"></div>
-				<span class="font-mono text-sm tabular-nums text-[hsl(var(--muted-foreground))]">
+				<div class="h-px w-10 bg-primary-400/35"></div>
+				<span class="font-mono text-sm tabular-nums text-muted-foreground">
 					No.&nbsp;{String(posts.length).padStart(2, '0')}
 				</span>
 			</div>

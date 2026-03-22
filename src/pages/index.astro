@@ -8,7 +8,11 @@ import { getI18n } from '../i18n';
 
 const { locale, messages } = getI18n(Astro.url.pathname);
 
-const latestPosts = (await getCollection('blog'))
+let blogPosts: any[] = [];
+try { blogPosts = await getCollection('blog'); } catch { /* collection may be empty */ }
+const mediumPosts = await getCollection('medium');
+
+const latestPosts = [...blogPosts, ...mediumPosts]
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 	.slice(0, 3);
 ---

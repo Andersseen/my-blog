@@ -17,8 +17,7 @@ const { locale, messages } = Astro.props;
     <!-- Large hero card (2 cols, spans both right-side rows) -->
     <and-card
       variant="elevated"
-      padded
-      class="bento-card md:col-span-2 md:row-span-2 flex flex-col justify-end rounded-2xl border border-[hsl(var(--primary-300)/0.25)] bg-[hsl(var(--surface-container-low))] p-8 shadow-[0_12px_36px_-20px_hsl(var(--primary-900)/0.3)] min-h-[340px] home-reveal"
+      class="bento-card flex min-h-[340px] flex-col justify-end rounded-2xl p-8 home-reveal md:col-span-2 md:row-span-2"
       style="--reveal-delay: 40ms;"
     >
       <div class="space-y-5">
@@ -28,7 +27,7 @@ const { locale, messages } = Astro.props;
         <h1 class="text-4xl font-bold tracking-tight leading-[1.1] text-foreground sm:text-5xl">
           {messages.home.headline}
         </h1>
-        <p class="text-base leading-relaxed text-[hsl(var(--muted-foreground))]">
+        <p class="text-base leading-relaxed text-muted-foreground">
           {messages.home.description}
         </p>
         <HomeHeroActions locale={locale} messages={messages} />
@@ -43,14 +42,13 @@ const { locale, messages } = Astro.props;
     <!-- Focus / latest teaser card (bottom-right) -->
     <and-card
       variant="default"
-      padded
-      class="bento-card flex flex-col justify-between rounded-2xl border border-[hsl(var(--primary-300)/0.12)] bg-[hsl(var(--surface-container))] p-6 home-reveal"
+      class="bento-card flex flex-col justify-between rounded-2xl p-6 home-reveal"
       style="--reveal-delay: 210ms;"
     >
       <and-badge variant="outline" class="w-fit text-[10px] uppercase tracking-[0.2em]">
         {messages.blog.latestTitle}
       </and-badge>
-      <p class="mt-3 text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">
+      <p class="mt-3 text-sm leading-relaxed text-muted-foreground">
         {messages.blog.latestDescription}
       </p>
     </and-card>
