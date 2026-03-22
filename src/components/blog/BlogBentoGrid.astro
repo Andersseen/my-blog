@@ -20,10 +20,9 @@ const heroSrc = (post: any) =>
   typeof post.data.heroImage === 'string' ? post.data.heroImage : post.data.heroImage?.src;
 
 /**
- * Bento layout pattern (repeats every 6 posts):
+ * Bento layout pattern (repeats every 5 posts):
  *   Row A: featured (8 cols × 2 rows) + secondary (4 cols × 2 rows)
- *   Row B: compact-left (4 cols) + compact-center (4 cols) + compact-right (4 cols)
- *   Row C: (if chunk has 6 items) — not used, we pack them tighter
+ *   Row B: 1-3 compact cards (4 cols each)
  */
 const CHUNK_SIZE = 5;
 const chunks: any[][] = [];
@@ -66,6 +65,8 @@ for (let i = 0; i < posts.length; i += CHUNK_SIZE) {
                 <img
                   src={heroSrc(featured)}
                   alt={featured.data.title}
+                  loading={chunkIndex === 0 ? 'eager' : 'lazy'}
+                  decoding={chunkIndex === 0 ? 'sync' : 'async'}
                   class="h-full w-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105"
                 />
                 <div class="absolute inset-0 bg-gradient-to-t from-[hsl(var(--background)/0.96)] via-[hsl(var(--surface)/0.55)] to-[hsl(var(--surface)/0.15)]" />
@@ -111,6 +112,8 @@ for (let i = 0; i < posts.length; i += CHUNK_SIZE) {
                 <img
                   src={heroSrc(secondary)}
                   alt={secondary.data.title}
+                  loading="lazy"
+                  decoding="async"
                   class="h-full w-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105"
                 />
                 <div class="absolute inset-0 bg-gradient-to-t from-[hsl(var(--background)/0.94)] via-[hsl(var(--surface)/0.55)] to-[hsl(var(--surface)/0.2)]" />
@@ -152,6 +155,8 @@ for (let i = 0; i < posts.length; i += CHUNK_SIZE) {
                 <img
                   src={heroSrc(post)}
                   alt={post.data.title}
+                  loading="lazy"
+                  decoding="async"
                   class="h-full w-full object-cover grayscale transition-all duration-500 group-hover:grayscale-0 group-hover:scale-105"
                 />
                 <div class="absolute inset-0 bg-gradient-to-t from-[hsl(var(--background)/0.94)] via-[hsl(var(--surface)/0.5)] to-[hsl(var(--surface)/0.15)]" />

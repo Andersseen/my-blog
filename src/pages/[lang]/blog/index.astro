@@ -11,7 +11,8 @@ export function getStaticPaths() {
 
 const { locale, messages } = getI18n(Astro.url.pathname);
 
-const blogPosts = await getCollection('blog');
+let blogPosts: any[] = [];
+try { blogPosts = await getCollection('blog'); } catch { /* collection may be empty */ }
 const mediumPosts = await getCollection('medium');
 
 const posts = [...blogPosts, ...mediumPosts].sort(
