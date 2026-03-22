@@ -12,7 +12,10 @@ export function getStaticPaths() {
 
 const { locale, messages } = getI18n(Astro.url.pathname);
 
-const latestPosts = (await getCollection('blog'))
+const blogPosts = await getCollection('blog');
+const mediumPosts = await getCollection('medium');
+
+const latestPosts = [...blogPosts, ...mediumPosts]
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
   .slice(0, 3);
 ---

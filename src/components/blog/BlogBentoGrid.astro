@@ -1,24 +1,32 @@
 ---
-import { Image } from 'astro:assets';
-import type { CollectionEntry } from 'astro:content';
 import FormattedDate from '../FormattedDate.astro';
-import PostCard from './PostCard.astro';
 import { type Dictionary, type Locale, toLocalePath } from '../../i18n';
 
 interface Props {
-  posts: CollectionEntry<'blog'>[];
+  posts: any[];
   locale: Locale;
   messages: Dictionary;
 }
 
 const { posts, locale, messages } = Astro.props;
 
-const featured = posts[0];
-const secondary = posts[1];
-const compactLeft = posts[2];
-const compactRight = posts[3];
-const horizontals = posts.slice(4, 6);
-const remaining = posts.slice(6);
+/** Resolve the correct href for local vs external posts */
+const postHref = (post: any) =>
+  post.data.isExternal ? post.data.link : toLocalePath(locale, `/blog/${post.id}/`);
+
+const isExt = (post: any) => !!post.data.isExternal;
+
+/**
+ * Bento layout pattern (repeats every 6 posts):
+ *   Row A: featured (8 cols × 2 rows) + secondary (4 cols × 2 rows)
+ *   Row B: compact-left (4 cols) + quote (4 cols) + compact-right (4 cols)
+ *   Row C: horizontal-left (6 cols) + horizontal-right (6 cols)
+ */
+const CHUNK_SIZE = 6;
+const chunks: any[][] = [];
+for (let i = 0; i < posts.length; i += CHUNK_SIZE) {
+  chunks.push(posts.slice(i, i + CHUNK_SIZE));
+}
 ---
 
 <style>
@@ -44,181 +52,196 @@ const remaining = posts.slice(6);
   }
 </style>
 
-{featured && (
-  <div class="grid grid-cols-1 gap-5 md:grid-cols-12 md:auto-rows-[210px]">
+{chunks.map((chunk, chunkIndex) => {
+  const featured  = chunk[0];
+  const secondary = chunk[1];
+  const compactLeft  = chunk[2];
+  const compactRight = chunk[3];
+  const horizontals  = chunk.slice(4, 6);
 
-    <!-- Featured article: 8 cols × 2 rows -->
-    <a
-      href={toLocalePath(locale, `/blog/${featured.id}/`)}
-      class="group block md:col-span-8 md:row-span-2"
-    >
-      <and-card
-        variant="elevated"
-        class="bento-card relative h-full overflow-hidden rounded-2xl"
-      >
-        {featured.data.heroImage ? (
-          <div class="absolute inset-0">
-            <Image
-              width={1200}
-              height={640}
-              src={featured.data.heroImage}
-              alt={featured.data.title}
-              class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 grayscale group-hover:grayscale-0"
-            />
-            <div class="absolute inset-0 bg-gradient-to-t from-[hsl(var(--background)/0.96)] via-[hsl(var(--surface)/0.45)] to-transparent" />
-          </div>
-        ) : (
-          <div class="absolute inset-0 -z-10">
-            <div class="absolute -left-1/4 -top-1/4 h-3/4 w-3/4 rounded-full bg-primary-300/10 blur-3xl" />
-            <div class="absolute -right-1/4 bottom-0 h-1/2 w-1/2 rounded-full bg-secondary/5 blur-3xl" />
-          </div>
-        )}
+  return (
+    <div class:list={["grid grid-cols-1 gap-5 md:grid-cols-12 md:auto-rows-[210px]", chunkIndex > 0 && "mt-5"]}>
 
-        <div class="relative z-10 flex h-full flex-col justify-end p-8 md:p-12">
-          <div class="space-y-4">
-            <and-badge variant="secondary" class="inline-block w-fit text-[10px] uppercase tracking-[0.15em]">
-              <FormattedDate date={featured.data.pubDate} />
-            </and-badge>
-            <h2 class="text-3xl font-bold leading-tight tracking-tight text-foreground transition-colors group-hover:text-primary-600 md:text-4xl">
-              {featured.data.title}
-            </h2>
-            <p class="line-clamp-2 max-w-xl text-muted-foreground">
-              {featured.data.description}
-            </p>
-          </div>
-        </div>
-      </and-card>
-    </a>
-
-    <!-- Secondary article: 4 cols × 2 rows -->
-    {secondary && (
-      <a
-        href={toLocalePath(locale, `/blog/${secondary.id}/`)}
-        class="group block md:col-span-4 md:row-span-2"
-      >
-        <and-card
-          variant="default"
-          class="bento-card flex h-full flex-col rounded-2xl p-8 transition-colors hover:bg-surface-container-high"
+      {/* ── Featured: 8 cols × 2 rows ── */}
+      {featured && (
+        <a
+          href={postHref(featured)}
+          target={isExt(featured) ? "_blank" : undefined}
+          rel={isExt(featured) ? "noopener noreferrer" : undefined}
+          class="group block md:col-span-8 md:row-span-2"
         >
-          <div class="mb-auto space-y-6">
-            <div class="editorial-gradient flex h-12 w-12 items-center justify-center rounded-xl shadow-lg shadow-primary-500/15">
-              <span class="text-xl font-bold text-white">↗</span>
+          <and-card variant="elevated" class="bento-card relative h-full overflow-hidden rounded-2xl">
+            {featured.data.heroImage ? (
+              <div class="absolute inset-0">
+                {typeof featured.data.heroImage === 'string' ? (
+                  <img
+                    src={featured.data.heroImage}
+                    alt={featured.data.title}
+                    class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 grayscale group-hover:grayscale-0"
+                  />
+                ) : (
+                  <img
+                    src={featured.data.heroImage.src}
+                    alt={featured.data.title}
+                    class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 grayscale group-hover:grayscale-0"
+                  />
+                )}
+                <div class="absolute inset-0 bg-gradient-to-t from-[hsl(var(--background)/0.96)] via-[hsl(var(--surface)/0.45)] to-transparent" />
+              </div>
+            ) : (
+              <div class="absolute inset-0 -z-10">
+                <div class="absolute -left-1/4 -top-1/4 h-3/4 w-3/4 rounded-full bg-primary-300/10 blur-3xl" />
+                <div class="absolute -right-1/4 bottom-0 h-1/2 w-1/2 rounded-full bg-secondary/5 blur-3xl" />
+              </div>
+            )}
+
+            <div class="relative z-10 flex h-full flex-col justify-end p-8 md:p-12">
+              <div class="space-y-4">
+                <div class="flex items-center gap-2">
+                  {isExt(featured) && <and-badge variant="secondary" class="text-[9px] uppercase">Medium</and-badge>}
+                  <and-badge variant="secondary" class="inline-block w-fit text-[10px] uppercase tracking-[0.15em]">
+                    <FormattedDate date={featured.data.pubDate} />
+                  </and-badge>
+                </div>
+                <h2 class="text-3xl font-bold leading-tight tracking-tight text-foreground transition-colors group-hover:text-primary-600 md:text-4xl">
+                  {featured.data.title}
+                </h2>
+                <p class="line-clamp-2 max-w-xl text-muted-foreground">
+                  {featured.data.description}
+                </p>
+              </div>
             </div>
-            <h3 class="text-2xl font-bold leading-tight text-foreground transition-colors group-hover:text-primary-600">
-              {secondary.data.title}
-            </h3>
-          </div>
-          <div class="mt-8 space-y-3">
-            <p class="text-sm leading-relaxed text-muted-foreground">
-              {secondary.data.description}
-            </p>
-            <and-badge variant="outline" class="text-[10px] uppercase tracking-[0.15em]">
-              <FormattedDate date={secondary.data.pubDate} />
-            </and-badge>
-          </div>
-        </and-card>
-      </a>
-    )}
+          </and-card>
+        </a>
+      )}
 
-    <!-- Row 3 left: compact card -->
-    {compactLeft && (
-      <a
-        href={toLocalePath(locale, `/blog/${compactLeft.id}/`)}
-        class="group block md:col-span-4"
-      >
-        <and-card
-          variant="default"
-          class="bento-card flex h-full flex-col rounded-2xl p-6 transition-all hover:border-primary-400/30"
+      {/* ── Secondary: 4 cols × 2 rows ── */}
+      {secondary && (
+        <a
+          href={postHref(secondary)}
+          target={isExt(secondary) ? "_blank" : undefined}
+          rel={isExt(secondary) ? "noopener noreferrer" : undefined}
+          class="group block md:col-span-4 md:row-span-2"
         >
-          <div class="mb-auto">
-            <div class="mb-3 flex items-start justify-between">
-              <and-badge variant="secondary" class="text-[10px] uppercase tracking-[0.15em]">
-                <FormattedDate date={compactLeft.data.pubDate} />
+          <and-card variant="default" class="bento-card flex h-full flex-col rounded-2xl p-8 transition-colors hover:bg-surface-container-high">
+            <div class="mb-auto space-y-6">
+              <div class="editorial-gradient flex h-12 w-12 items-center justify-center rounded-xl shadow-lg shadow-primary-500/15">
+                <span class="text-xl font-bold text-white">{isExt(secondary) ? '↗' : '→'}</span>
+              </div>
+              <h3 class="text-2xl font-bold leading-tight text-foreground transition-colors group-hover:text-primary-600">
+                {secondary.data.title}
+              </h3>
+            </div>
+            <div class="mt-8 space-y-3">
+              {isExt(secondary) && <and-badge variant="secondary" class="text-[9px] uppercase">Medium</and-badge>}
+              <p class="text-sm leading-relaxed text-muted-foreground">
+                {secondary.data.description}
+              </p>
+              <and-badge variant="outline" class="text-[10px] uppercase tracking-[0.15em]">
+                <FormattedDate date={secondary.data.pubDate} />
               </and-badge>
-              <span class="text-sm text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100">↗</span>
             </div>
-            <h3 class="text-xl font-bold leading-snug text-foreground transition-colors group-hover:text-primary-600">
-              {compactLeft.data.title}
-            </h3>
-          </div>
-          <p class="mt-3 line-clamp-2 text-sm text-muted-foreground">
-            {compactLeft.data.description}
+          </and-card>
+        </a>
+      )}
+
+      {/* ── Compact left ── */}
+      {compactLeft && (
+        <a
+          href={postHref(compactLeft)}
+          target={isExt(compactLeft) ? "_blank" : undefined}
+          rel={isExt(compactLeft) ? "noopener noreferrer" : undefined}
+          class="group block md:col-span-4"
+        >
+          <and-card variant="default" class="bento-card flex h-full flex-col rounded-2xl p-6 transition-all hover:border-primary-400/30">
+            <div class="mb-auto">
+              <div class="mb-3 flex items-start justify-between">
+                <div class="flex items-center gap-2">
+                  {isExt(compactLeft) && <and-badge variant="secondary" class="text-[9px] uppercase">Medium</and-badge>}
+                  <and-badge variant="secondary" class="text-[10px] uppercase tracking-[0.15em]">
+                    <FormattedDate date={compactLeft.data.pubDate} />
+                  </and-badge>
+                </div>
+                <span class="text-sm text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100">{isExt(compactLeft) ? '↗' : '→'}</span>
+              </div>
+              <h3 class="text-xl font-bold leading-snug text-foreground transition-colors group-hover:text-primary-600">
+                {compactLeft.data.title}
+              </h3>
+            </div>
+            <p class="mt-3 line-clamp-2 text-sm text-muted-foreground">
+              {compactLeft.data.description}
+            </p>
+          </and-card>
+        </a>
+      )}
+
+      {/* ── Quote interstitial ── */}
+      {chunkIndex === 0 && (
+        <and-card variant="ghost" class="flex items-center justify-center rounded-2xl bg-surface-container/60 p-6 text-center backdrop-blur-md md:col-span-4">
+          <p class="text-sm italic leading-relaxed text-muted-foreground">
+            &ldquo;{messages.blog.latestDescription}&rdquo;
           </p>
         </and-card>
-      </a>
-    )}
+      )}
 
-    <!-- Quote interstitial: glass card -->
-    <and-card variant="ghost" class="flex items-center justify-center rounded-2xl bg-surface-container/60 p-6 text-center backdrop-blur-md md:col-span-4">
-      <p class="text-sm italic leading-relaxed text-muted-foreground">
-        &ldquo;{messages.blog.latestDescription}&rdquo;
-      </p>
-    </and-card>
-
-    <!-- Row 3 right: compact card -->
-    {compactRight && (
-      <a
-        href={toLocalePath(locale, `/blog/${compactRight.id}/`)}
-        class="group block md:col-span-4"
-      >
-        <and-card
-          variant="default"
-          class="bento-card flex h-full flex-col rounded-2xl p-6 transition-all hover:border-primary-400/30"
+      {/* ── Compact right ── */}
+      {compactRight && (
+        <a
+          href={postHref(compactRight)}
+          target={isExt(compactRight) ? "_blank" : undefined}
+          rel={isExt(compactRight) ? "noopener noreferrer" : undefined}
+          class="group block md:col-span-4"
         >
-          <div class="mb-auto">
-            <div class="mb-3 flex items-start justify-between">
-              <and-badge variant="secondary" class="text-[10px] uppercase tracking-[0.15em]">
-                <FormattedDate date={compactRight.data.pubDate} />
-              </and-badge>
-              <span class="text-sm text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100">↗</span>
+          <and-card variant="default" class="bento-card flex h-full flex-col rounded-2xl p-6 transition-all hover:border-primary-400/30">
+            <div class="mb-auto">
+              <div class="mb-3 flex items-start justify-between">
+                <div class="flex items-center gap-2">
+                  {isExt(compactRight) && <and-badge variant="secondary" class="text-[9px] uppercase">Medium</and-badge>}
+                  <and-badge variant="secondary" class="text-[10px] uppercase tracking-[0.15em]">
+                    <FormattedDate date={compactRight.data.pubDate} />
+                  </and-badge>
+                </div>
+                <span class="text-sm text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100">{isExt(compactRight) ? '↗' : '→'}</span>
+              </div>
+              <h3 class="text-xl font-bold leading-snug text-foreground transition-colors group-hover:text-primary-600">
+                {compactRight.data.title}
+              </h3>
             </div>
-            <h3 class="text-xl font-bold leading-snug text-foreground transition-colors group-hover:text-primary-600">
-              {compactRight.data.title}
-            </h3>
-          </div>
-          <p class="mt-3 line-clamp-2 text-sm text-muted-foreground">
-            {compactRight.data.description}
-          </p>
-        </and-card>
-      </a>
-    )}
-
-    <!-- Row 4: horizontal cards (posts 4+5) -->
-    {horizontals.map((post) => (
-      <a
-        href={toLocalePath(locale, `/blog/${post.id}/`)}
-        class="group block md:col-span-6"
-      >
-        <and-card
-          variant="default"
-          class="bento-card flex h-full items-center gap-6 rounded-2xl p-8 transition-colors"
-        >
-          <div class="flex-1">
-            <and-badge variant="secondary" class="mb-2 block w-fit text-[10px] uppercase tracking-[0.15em]">
-              <FormattedDate date={post.data.pubDate} />
-            </and-badge>
-            <h3 class="mb-1.5 text-xl font-bold leading-snug text-foreground transition-colors group-hover:text-primary-600">
-              {post.data.title}
-            </h3>
-            <p class="line-clamp-1 text-sm text-muted-foreground">
-              {post.data.description}
+            <p class="mt-3 line-clamp-2 text-sm text-muted-foreground">
+              {compactRight.data.description}
             </p>
-          </div>
-          <span class="shrink-0 text-3xl text-muted-foreground transition-colors group-hover:text-primary-600">→</span>
-        </and-card>
-      </a>
-    ))}
+          </and-card>
+        </a>
+      )}
 
-  </div>
-)}
+      {/* ── Horizontal cards ── */}
+      {horizontals.map((post) => (
+        <a
+          href={postHref(post)}
+          target={isExt(post) ? "_blank" : undefined}
+          rel={isExt(post) ? "noopener noreferrer" : undefined}
+          class="group block md:col-span-6"
+        >
+          <and-card variant="default" class="bento-card flex h-full items-center gap-6 rounded-2xl p-8 transition-colors">
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-2">
+                {isExt(post) && <and-badge variant="secondary" class="text-[9px] uppercase">Medium</and-badge>}
+                <and-badge variant="secondary" class="block w-fit text-[10px] uppercase tracking-[0.15em]">
+                  <FormattedDate date={post.data.pubDate} />
+                </and-badge>
+              </div>
+              <h3 class="mb-1.5 text-xl font-bold leading-snug text-foreground transition-colors group-hover:text-primary-600">
+                {post.data.title}
+              </h3>
+              <p class="line-clamp-1 text-sm text-muted-foreground">
+                {post.data.description}
+              </p>
+            </div>
+            <span class="shrink-0 text-3xl text-muted-foreground transition-colors group-hover:text-primary-600">{isExt(post) ? '↗' : '→'}</span>
+          </and-card>
+        </a>
+      ))}
 
-<!-- Remaining posts (7th onwards) — regular grid -->
-{remaining.length > 0 && (
-  <ul class="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-    {remaining.map((post) => (
-      <li class="h-full">
-        <PostCard post={post} locale={locale} />
-      </li>
-    ))}
-  </ul>
-)}
+    </div>
+  );
+})}
