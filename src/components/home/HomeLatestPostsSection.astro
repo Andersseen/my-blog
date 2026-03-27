@@ -1,13 +1,13 @@
 ---
-import type { CollectionEntry } from 'astro:content';
 import PostCard from '../blog/PostCard.astro';
 import type { Dictionary, Locale } from '../../i18n';
 import { toLocalePath } from '../../i18n';
+import type { UnifiedPost } from '../../types/blog';
 
 interface Props {
   locale: Locale;
   messages: Dictionary;
-  posts: any[];
+  posts: UnifiedPost[];
 }
 
 const { locale, messages, posts } = Astro.props;

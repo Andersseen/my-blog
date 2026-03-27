@@ -19,7 +19,7 @@ const { locale, messages } = getI18n(Astro.url.pathname);
 			<and-breadcrumb-item current>{title}</and-breadcrumb-item>
 		</and-breadcrumb>
 
-		{heroImage && <Image width={1200} height={600} src={heroImage} alt="" class="w-full rounded-xl border border-primary-200" />}
+		{heroImage && <Image width={1200} height={600} src={heroImage} alt="" loading="lazy" decoding="async" class="w-full rounded-xl border border-primary-200" />}
 
 		<header class="space-y-3 border-b border-primary-200 pb-6">
 			<p class="flex flex-wrap items-center gap-2 text-sm text-foreground/60">
