@@ -50,19 +50,14 @@ const htmlLang = lang ?? getLangCode(locale);
 <html lang={htmlLang} data-theme="light">
   <head>
     <script is:inline>
-      window.__AND_ANIMATED__ = true;
-    </script>
-    <script is:inline>
       (function () {
         try {
           var t = localStorage.getItem('theme-cache');
-          if (t === 'dark' || t === 'light') {
-            document.documentElement.setAttribute('data-theme', t);
-            document.documentElement.style.colorScheme = t;
-          } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            document.documentElement.setAttribute('data-theme', 'dark');
-            document.documentElement.style.colorScheme = 'dark';
-          }
+          var scheme = t === 'dark' || t === 'light' ? t : 
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', scheme);
+          document.documentElement.style.colorScheme = scheme;
+          window.__AND_ANIMATED__ = true;
         } catch (e) {}
       })();
     </script>

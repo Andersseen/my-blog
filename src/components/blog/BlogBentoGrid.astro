@@ -34,6 +34,11 @@ const heroSrc = (post: UnifiedPost): string | undefined => {
   if (hero && typeof hero === 'object' && 'src' in hero) return (hero as ImageMetadata).src;
   return undefined;
 };
+
+const isGif = (url: string | undefined): boolean => {
+  if (!url) return false;
+  return url.toLowerCase().endsWith('.gif') || url.includes('.gif');
+};
 ---
 
 <style>
@@ -66,12 +71,14 @@ const heroSrc = (post: UnifiedPost): string | undefined => {
           const showDesc = shouldShowDescription(group.layout, postIndex);
           const titleSize = getTitleSize(group.layout, postIndex);
           const isFirstGroup = group.isFirst;
+          const isVeryFirst = isFirstGroup && postIndex === 0;
           const postClass = getPostClasses(group.layout, postIndex, group.posts.length);
           const external = isExt(post);
           const hero = heroSrc(post);
           const eager = isFirstGroup && postIndex < 2;
           const sizes = generateSizes(group.layout, postIndex);
-          const srcset = hero ? generateMediumSrcSet(hero) : undefined;
+          const srcset = hero && !isGif(hero) ? generateMediumSrcSet(hero) : undefined;
+          const heroIsGif = isGif(hero);
           
           return (
             <a
@@ -92,14 +99,22 @@ const heroSrc = (post: UnifiedPost): string | undefined => {
                     <img
                       src={hero}
                       srcset={srcset}
-                      sizes={sizes}
+                      sizes={srcset ? sizes : undefined}
                       alt={post.data.title}
-                      loading={eager ? 'eager' : 'lazy'}
-                      decoding={eager ? 'sync' : 'async'}
+                      loading={isVeryFirst ? 'eager' : 'lazy'}
+                      decoding={isVeryFirst ? 'sync' : 'async'}
+                      fetchpriority={isVeryFirst ? 'high' : undefined}
                       width={featured ? 1024 : 640}
                       height={featured ? 576 : 360}
                       class="h-full w-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105"
                     />
+                    
+                    {heroIsGif && (
+                      <div class="absolute bottom-2 right-2 z-20">
+                        <and-badge variant="secondary" class="text-[9px]">GIF</and-badge>
+                      </div>
+                    )}
+                    
                     <div
                       class:list={[
                         'absolute inset-0 bg-gradient-to-t',
