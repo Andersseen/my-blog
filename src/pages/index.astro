@@ -1,11 +1,11 @@
 ---
 import { getCollection } from 'astro:content';
-import HomeHeroSection from '../components/home/HomeHeroSection.astro';
-import HomeLatestPostsSection from '../components/home/HomeLatestPostsSection.astro';
-import MainLayout from '../layouts/MainLayout.astro';
-import { SITE_TITLE } from '../consts';
-import { getI18n } from '../i18n';
-import { unifyPosts, type BlogPost, type MediumPost } from '../types/blog';
+import HomeHeroSection from '@/components/home/HomeHeroSection.astro';
+import HomeLatestPostsSection from '@/components/home/HomeLatestPostsSection.astro';
+import MainLayout from '@/layouts/MainLayout.astro';
+import { SITE_TITLE } from '@/consts';
+import { getI18n } from '@/i18n';
+import { unifyPosts, type BlogPost, type MediumPost } from '@/types/blog';
 
 const { locale, messages } = getI18n(Astro.url.pathname);
 

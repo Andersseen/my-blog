@@ -48,6 +48,12 @@ const alternateLinks = LOCALES.map((lang) => ({
 <meta name="generator" content={Astro.generator} />
 <meta name="color-scheme" content="light dark" />
 
+<!-- Performance: Preconnect to external domains -->
+<link rel="preconnect" href="https://cdn-images-1.medium.com" />
+<link rel="dns-prefetch" href="https://cdn-images-1.medium.com" />
+<link rel="preconnect" href="https://medium.com" />
+<link rel="dns-prefetch" href="https://medium.com" />
+
 <SeoFavicons />
 
 <link rel="me" href={AUTHOR_PORTFOLIO_URL} />

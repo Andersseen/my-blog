@@ -1,8 +1,8 @@
 ---
 import type { ImageMetadata } from 'astro';
-import FormattedDate from '../FormattedDate.astro';
-import { type Dictionary, type Locale, toLocalePath } from '../../i18n';
-import type { UnifiedPost } from '../../types/blog';
+import FormattedDate from '@/components/FormattedDate.astro';
+import { type Dictionary, type Locale, toLocalePath } from '@/i18n';
+import type { UnifiedPost } from '@/types/blog';
 import {
   generatePostGroups,
   getLayoutClasses,
@@ -10,7 +10,8 @@ import {
   isFeatured,
   getTitleSize,
   shouldShowDescription,
-} from '../../lib/bento-layout';
+} from '@/lib/bento-layout';
+import { generateMediumSrcSet, generateSizes } from '@/lib/image-optimization';
 
 interface Props {
   posts: UnifiedPost[];
@@ -40,10 +41,16 @@ const heroSrc = (post: UnifiedPost): string | undefined => {
     transition:
       transform 0.22s ease,
       box-shadow 0.22s ease;
+    contain: layout style paint;
   }
 
   .bento-card:hover {
     transform: translateY(-4px);
+  }
+  
+  .bento-image {
+    content-visibility: auto;
+    contain: strict;
   }
 </style>
 
@@ -63,6 +70,8 @@ const heroSrc = (post: UnifiedPost): string | undefined => {
           const external = isExt(post);
           const hero = heroSrc(post);
           const eager = isFirstGroup && postIndex < 2;
+          const sizes = generateSizes(group.layout, postIndex);
+          const srcset = hero ? generateMediumSrcSet(hero) : undefined;
           
           return (
             <a
@@ -79,12 +88,16 @@ const heroSrc = (post: UnifiedPost): string | undefined => {
                 ]}
               >
                 {hero ? (
-                  <div class="absolute inset-0">
+                  <div class="absolute inset-0 bento-image">
                     <img
                       src={hero}
+                      srcset={srcset}
+                      sizes={sizes}
                       alt={post.data.title}
                       loading={eager ? 'eager' : 'lazy'}
                       decoding={eager ? 'sync' : 'async'}
+                      width={featured ? 1024 : 640}
+                      height={featured ? 576 : 360}
                       class="h-full w-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105"
                     />
                     <div
