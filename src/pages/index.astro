@@ -1,20 +1,32 @@
 ---
 import { getCollection } from 'astro:content';
-import HomeHeroSection from '../components/home/HomeHeroSection.astro';
-import HomeLatestPostsSection from '../components/home/HomeLatestPostsSection.astro';
-import MainLayout from '../layouts/MainLayout.astro';
-import { SITE_TITLE } from '../consts';
-import { getI18n } from '../i18n';
+import HomeHeroSection from '@/components/home/HomeHeroSection.astro';
+import HomeLatestPostsSection from '@/components/home/HomeLatestPostsSection.astro';
+import MainLayout from '@/layouts/MainLayout.astro';
+import { SITE_TITLE } from '@/consts';
+import { getI18n } from '@/i18n';
+import { unifyPosts, type BlogPost, type MediumPost } from '@/types/blog';
 
 const { locale, messages } = getI18n(Astro.url.pathname);
 
-let blogPosts: any[] = [];
-try { blogPosts = await getCollection('blog'); } catch { /* collection may be empty */ }
-const mediumPosts = await getCollection('medium');
+let blogPosts: BlogPost[] = [];
+try {
+  blogPosts = await getCollection('blog');
+} catch (error) {
+  console.warn('Failed to load blog posts:', error);
+}
 
-const latestPosts = [...blogPosts, ...mediumPosts]
-	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-	.slice(0, 3);
+let mediumPosts: MediumPost[] = [];
+try {
+  mediumPosts = await getCollection('medium');
+} catch (error) {
+  console.warn('Failed to load Medium posts:', error);
+}
+
+const unifiedPosts = unifyPosts(blogPosts, mediumPosts);
+const latestPosts = unifiedPosts
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
 ---
 
 <MainLayout

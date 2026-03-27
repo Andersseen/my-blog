@@ -1,34 +1,44 @@
 ---
-import FormattedDate from '../FormattedDate.astro';
-import { type Dictionary, type Locale, toLocalePath } from '../../i18n';
+import type { ImageMetadata } from 'astro';
+import FormattedDate from '@/components/FormattedDate.astro';
+import { type Dictionary, type Locale, toLocalePath } from '@/i18n';
+import type { UnifiedPost } from '@/types/blog';
+import {
+  generatePostGroups,
+  getLayoutClasses,
+  getPostClasses,
+  isFeatured,
+  getTitleSize,
+  shouldShowDescription,
+} from '@/lib/bento-layout';
+import { generateMediumSrcSet, generateSizes } from '@/lib/image-optimization';
 
 interface Props {
-  posts: any[];
+  posts: UnifiedPost[];
   locale: Locale;
   messages: Dictionary;
 }
 
 const { posts, locale, messages } = Astro.props;
 
-/** Resolve the correct href for local vs external posts */
-const postHref = (post: any) =>
+const postGroups = generatePostGroups(posts);
+
+const postHref = (post: UnifiedPost) =>
   post.data.isExternal ? post.data.link : toLocalePath(locale, `/blog/${post.id}/`);
 
-const isExt = (post: any) => !!post.data.isExternal;
+const isExt = (post: UnifiedPost) => !!post.data.isExternal;
 
-const heroSrc = (post: any) =>
-  typeof post.data.heroImage === 'string' ? post.data.heroImage : post.data.heroImage?.src;
+const heroSrc = (post: UnifiedPost): string | undefined => {
+  const hero = post.data.heroImage;
+  if (typeof hero === 'string') return hero;
+  if (hero && typeof hero === 'object' && 'src' in hero) return (hero as ImageMetadata).src;
+  return undefined;
+};
 
-/**
- * Bento layout pattern (repeats every 5 posts):
- *   Row A: featured (8 cols × 2 rows) + secondary (4 cols × 2 rows)
- *   Row B: 1-3 compact cards (4 cols each)
- */
-const CHUNK_SIZE = 5;
-const chunks: any[][] = [];
-for (let i = 0; i < posts.length; i += CHUNK_SIZE) {
-  chunks.push(posts.slice(i, i + CHUNK_SIZE));
-}
+const isGif = (url: string | undefined): boolean => {
+  if (!url) return false;
+  return url.toLowerCase().endsWith('.gif') || url.includes('.gif');
+};
 ---
 
 <style>
@@ -36,154 +46,145 @@ for (let i = 0; i < posts.length; i += CHUNK_SIZE) {
     transition:
       transform 0.22s ease,
       box-shadow 0.22s ease;
+    contain: layout style paint;
   }
 
   .bento-card:hover {
     transform: translateY(-4px);
   }
+  
+  .bento-image {
+    content-visibility: auto;
+    contain: strict;
+  }
 </style>
 
-{chunks.map((chunk, chunkIndex) => {
-  const featured  = chunk[0];
-  const secondary = chunk[1];
-  const rest      = chunk.slice(2);
+{
+  postGroups.map((group, groupIndex) => {
+    const layoutClasses = getLayoutClasses(group.layout);
+    const hasMargin = groupIndex > 0 ? 'mt-5' : '';
+    
+    return (
+      <div class:list={[layoutClasses, hasMargin]} data-layout={group.layout}>
+        {group.posts.map((post, postIndex) => {
+          const featured = isFeatured(group.layout, postIndex);
+          const showDesc = shouldShowDescription(group.layout, postIndex);
+          const titleSize = getTitleSize(group.layout, postIndex);
+          const isFirstGroup = group.isFirst;
+          const isVeryFirst = isFirstGroup && postIndex === 0;
+          const postClass = getPostClasses(group.layout, postIndex, group.posts.length);
+          const external = isExt(post);
+          const hero = heroSrc(post);
+          const eager = isFirstGroup && postIndex < 2;
+          const sizes = generateSizes(group.layout, postIndex);
+          const srcset = hero && !isGif(hero) ? generateMediumSrcSet(hero) : undefined;
+          const heroIsGif = isGif(hero);
+          
+          return (
+            <a
+              href={postHref(post)}
+              target={external ? '_blank' : undefined}
+              rel={external ? 'noopener noreferrer' : undefined}
+              class:list={['group block', postClass]}
+            >
+              <and-card
+                variant={featured ? 'elevated' : 'default'}
+                class:list={[
+                  'bento-card relative h-full overflow-hidden rounded-2xl',
+                  featured ? 'shadow-lg' : '',
+                ]}
+              >
+                {hero ? (
+                  <div class="absolute inset-0 bento-image">
+                    <img
+                      src={hero}
+                      srcset={srcset}
+                      sizes={srcset ? sizes : undefined}
+                      alt={post.data.title}
+                      loading={isVeryFirst ? 'eager' : 'lazy'}
+                      decoding={isVeryFirst ? 'sync' : 'async'}
+                      fetchpriority={isVeryFirst ? 'high' : undefined}
+                      width={featured ? 1024 : 640}
+                      height={featured ? 576 : 360}
+                      class="h-full w-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105"
+                    />
+                    
+                    {heroIsGif && (
+                      <div class="absolute bottom-2 right-2 z-20">
+                        <and-badge variant="secondary" class="text-[9px]">GIF</and-badge>
+                      </div>
+                    )}
+                    
+                    <div
+                      class:list={[
+                        'absolute inset-0 bg-gradient-to-t',
+                        featured
+                          ? 'from-[hsl(var(--background)/0.96)] via-[hsl(var(--surface)/0.55)] to-[hsl(var(--surface)/0.15)]'
+                          : 'from-[hsl(var(--background)/0.94)] via-[hsl(var(--surface)/0.5)] to-[hsl(var(--surface)/0.15)]',
+                      ]}
+                    />
+                  </div>
+                ) : (
+                  <div class="absolute inset-0 -z-10 bg-gradient-to-br from-primary-100/20 to-secondary/10">
+                    <div class="absolute -left-1/4 -top-1/4 h-3/4 w-3/4 rounded-full bg-primary-300/10 blur-3xl" />
+                    <div class="absolute -right-1/4 bottom-0 h-1/2 w-1/2 rounded-full bg-secondary/5 blur-3xl" />
+                  </div>
+                )}
 
-  return (
-    <div class:list={["grid grid-cols-1 gap-5 md:grid-cols-12 md:auto-rows-[210px]", chunkIndex > 0 && "mt-5"]}>
+                <div
+                  class:list={[
+                    'relative z-10 flex h-full flex-col justify-end',
+                    featured ? 'p-6 md:p-8 lg:p-10' : 'p-5 md:p-6',
+                  ]}
+                >
+                  <div class={featured ? 'space-y-3 md:space-y-4' : 'space-y-2 md:space-y-3'}>
+                    <div class="flex flex-wrap items-center gap-2">
+                      {external && (
+                        <and-badge variant="secondary" class="text-[9px] uppercase">
+                          Medium
+                        </and-badge>
+                      )}
+                      <and-badge
+                        variant={featured ? 'secondary' : 'outline'}
+                        class="text-[10px] uppercase tracking-[0.15em]"
+                      >
+                        <FormattedDate date={post.data.pubDate} />
+                      </and-badge>
+                    </div>
 
-      {/* ── Featured: 8 cols × 2 rows — full-bleed hero image ── */}
-      {featured && (
-        <a
-          href={postHref(featured)}
-          target={isExt(featured) ? "_blank" : undefined}
-          rel={isExt(featured) ? "noopener noreferrer" : undefined}
-          class="group block md:col-span-8 md:row-span-2"
-        >
-          <and-card variant="elevated" class="bento-card relative h-full overflow-hidden rounded-2xl">
-            {heroSrc(featured) ? (
-              <div class="absolute inset-0">
-                <img
-                  src={heroSrc(featured)}
-                  alt={featured.data.title}
-                  loading={chunkIndex === 0 ? 'eager' : 'lazy'}
-                  decoding={chunkIndex === 0 ? 'sync' : 'async'}
-                  class="h-full w-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105"
-                />
-                <div class="absolute inset-0 bg-gradient-to-t from-[hsl(var(--background)/0.96)] via-[hsl(var(--surface)/0.55)] to-[hsl(var(--surface)/0.15)]" />
-              </div>
-            ) : (
-              <div class="absolute inset-0 -z-10">
-                <div class="absolute -left-1/4 -top-1/4 h-3/4 w-3/4 rounded-full bg-primary-300/10 blur-3xl" />
-                <div class="absolute -right-1/4 bottom-0 h-1/2 w-1/2 rounded-full bg-secondary/5 blur-3xl" />
-              </div>
-            )}
+                    <h2
+                      class:list={[
+                        'font-bold leading-tight tracking-tight text-foreground transition-colors group-hover:text-primary-600',
+                        titleSize,
+                      ]}
+                    >
+                      {post.data.title}
+                    </h2>
 
-            <div class="relative z-10 flex h-full flex-col justify-end p-8 md:p-12">
-              <div class="space-y-4">
-                <div class="flex items-center gap-2">
-                  {isExt(featured) && <and-badge variant="secondary" class="text-[9px] uppercase">Medium</and-badge>}
-                  <and-badge variant="secondary" class="inline-block w-fit text-[10px] uppercase tracking-[0.15em]">
-                    <FormattedDate date={featured.data.pubDate} />
-                  </and-badge>
+                    {showDesc && (
+                      <p class="line-clamp-2 text-muted-foreground">{post.data.description}</p>
+                    )}
+
+                    {external && (
+                      <span class="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary-600 opacity-0 transition-opacity group-hover:opacity-100">
+                        Leer en Medium
+                        <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                          />
+                        </svg>
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <h2 class="text-3xl font-bold leading-tight tracking-tight text-foreground transition-colors group-hover:text-primary-600 md:text-4xl">
-                  {featured.data.title}
-                </h2>
-                <p class="line-clamp-2 max-w-xl text-muted-foreground">
-                  {featured.data.description}
-                </p>
-              </div>
-            </div>
-          </and-card>
-        </a>
-      )}
-
-      {/* ── Secondary: 4 cols × 2 rows — hero image with overlay ── */}
-      {secondary && (
-        <a
-          href={postHref(secondary)}
-          target={isExt(secondary) ? "_blank" : undefined}
-          rel={isExt(secondary) ? "noopener noreferrer" : undefined}
-          class="group block md:col-span-4 md:row-span-2"
-        >
-          <and-card variant="default" class="bento-card relative h-full overflow-hidden rounded-2xl">
-            {heroSrc(secondary) ? (
-              <div class="absolute inset-0">
-                <img
-                  src={heroSrc(secondary)}
-                  alt={secondary.data.title}
-                  loading="lazy"
-                  decoding="async"
-                  class="h-full w-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105"
-                />
-                <div class="absolute inset-0 bg-gradient-to-t from-[hsl(var(--background)/0.94)] via-[hsl(var(--surface)/0.55)] to-[hsl(var(--surface)/0.2)]" />
-              </div>
-            ) : (
-              <div class="absolute inset-0 -z-10">
-                <div class="absolute -left-1/4 -top-1/4 h-3/4 w-3/4 rounded-full bg-primary-300/10 blur-3xl" />
-              </div>
-            )}
-
-            <div class="relative z-10 flex h-full flex-col justify-end p-8">
-              <div class="space-y-3">
-                <div class="flex items-center gap-2">
-                  {isExt(secondary) && <and-badge variant="secondary" class="text-[9px] uppercase">Medium</and-badge>}
-                  <and-badge variant="outline" class="text-[10px] uppercase tracking-[0.15em]">
-                    <FormattedDate date={secondary.data.pubDate} />
-                  </and-badge>
-                </div>
-                <h3 class="text-xl font-bold leading-tight text-foreground transition-colors group-hover:text-primary-600">
-                  {secondary.data.title}
-                </h3>
-              </div>
-            </div>
-          </and-card>
-        </a>
-      )}
-
-      {/* ── Remaining cards: 4 cols each — compact with hero ── */}
-      {rest.map((post) => (
-        <a
-          href={postHref(post)}
-          target={isExt(post) ? "_blank" : undefined}
-          rel={isExt(post) ? "noopener noreferrer" : undefined}
-          class="group block md:col-span-4"
-        >
-          <and-card variant="default" class="bento-card relative h-full overflow-hidden rounded-2xl">
-            {heroSrc(post) ? (
-              <div class="absolute inset-0">
-                <img
-                  src={heroSrc(post)}
-                  alt={post.data.title}
-                  loading="lazy"
-                  decoding="async"
-                  class="h-full w-full object-cover grayscale transition-all duration-500 group-hover:grayscale-0 group-hover:scale-105"
-                />
-                <div class="absolute inset-0 bg-gradient-to-t from-[hsl(var(--background)/0.94)] via-[hsl(var(--surface)/0.5)] to-[hsl(var(--surface)/0.15)]" />
-              </div>
-            ) : (
-              <div class="absolute inset-0 -z-10">
-                <div class="absolute -left-1/4 -top-1/4 h-3/4 w-3/4 rounded-full bg-primary-300/10 blur-3xl" />
-              </div>
-            )}
-
-            <div class="relative z-10 flex h-full flex-col justify-end p-6">
-              <div class="space-y-2">
-                <div class="flex items-center gap-2">
-                  {isExt(post) && <and-badge variant="secondary" class="text-[9px] uppercase">Medium</and-badge>}
-                  <and-badge variant="secondary" class="text-[10px] uppercase tracking-[0.15em]">
-                    <FormattedDate date={post.data.pubDate} />
-                  </and-badge>
-                </div>
-                <h3 class="text-lg font-bold leading-snug text-foreground transition-colors group-hover:text-primary-600">
-                  {post.data.title}
-                </h3>
-              </div>
-            </div>
-          </and-card>
-        </a>
-      ))}
-
-    </div>
-  );
-})}
+              </and-card>
+            </a>
+          );
+        })}
+      </div>
+    );
+  })
+}

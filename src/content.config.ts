@@ -1,10 +1,12 @@
-import { defineCollection, z } from "astro:content";
-import { glob } from "astro/loaders";
-import { mediumLoader } from "./utils/medium-loader";
+import { defineCollection, z } from 'astro:content';
+import { glob } from 'astro/loaders';
+import { mediumLoader } from './utils/medium-loader';
+
+const MEDIUM_RSS_URL = process.env.MEDIUM_RSS_URL || 'https://medium.com/feed/@andriipap';
 
 const blog = defineCollection({
   // Load Markdown and MDX files in the `src/content/blog/` directory.
-  loader: glob({ base: "./src/content/blog", pattern: "**/*.{md,mdx}" }),
+  loader: glob({ base: './src/content/blog', pattern: '**/*.{md,mdx}' }),
   // Type-check frontmatter using a schema
   schema: ({ image }) =>
     z.object({
@@ -19,7 +21,7 @@ const blog = defineCollection({
 });
 
 const medium = defineCollection({
-  loader: mediumLoader("https://medium.com/feed/@andriipap"),
+  loader: mediumLoader(MEDIUM_RSS_URL),
   schema: z.object({
     title: z.string(),
     description: z.string(),
