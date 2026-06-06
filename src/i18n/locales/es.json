@@ -12,7 +12,10 @@
     "about": "Acerca",
     "aria": "Navegacion principal",
     "menu": "Menu",
-    "closeMenu": "Cerrar"
+    "closeMenu": "Cerrar",
+    "search": "Buscar",
+    "searchPlaceholder": "Buscar articulos...",
+    "skipToContent": "Saltar al contenido principal"
   },
   "language": {
     "label": "Idioma",
@@ -51,7 +54,16 @@
     "editorialLabel": "Diario editorial"
   },
   "blogPost": {
-    "updatedOn": "Actualizado el"
+    "updatedOn": "Actualizado el",
+    "heroImageAlt": "Imagen destacada de"
+  },
+  "error": {
+    "notFoundTitle": "Pagina no encontrada",
+    "notFoundDescription": "El contenido que buscas no existe o ha sido movido.",
+    "backToHome": "Volver al inicio",
+    "serverErrorTitle": "Error del servidor",
+    "serverErrorDescription": "Algo salio mal. Por favor, intenta de nuevo mas tarde.",
+    "retry": "Intentar de nuevo"
   },
   "footer": {
     "rights": "All rights reserved.",

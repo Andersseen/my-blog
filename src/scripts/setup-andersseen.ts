@@ -10,6 +10,7 @@ import "@andersseen/web-components/components/and-breadcrumb-item.js";
 import { enableAnimations } from "@andersseen/web-components";
 import {
   COMPONENT_ICONS,
+  CHEVRON_DOWN,
   CLOSE,
   COMPASS,
   EXTERNAL_LINK,
@@ -29,6 +30,7 @@ declare global {
 const PROJECT_ICONS: Record<string, string> = {
   close: CLOSE,
   compass: COMPASS,
+  "chevron-down": CHEVRON_DOWN,
   "external-link": EXTERNAL_LINK,
   menu: MENU,
   moon: MOON,

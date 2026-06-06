@@ -47,8 +47,9 @@ export function generatePostGroups(posts: UnifiedPost[]): PostGroup[] {
     );
 
     if (availableLayouts.length === 0) {
-      // Fallback: usar el layout más pequeño disponible
-      const fallback = LAYOUTS.find(l => l.minRequired <= remaining.length);
+      // Fallback: usar el layout más pequeño disponible, evitando repetir si es posible
+      const fallback = LAYOUTS.find(l => l.minRequired <= remaining.length && l.type !== lastLayout)
+        || LAYOUTS.find(l => l.minRequired <= remaining.length);
       if (!fallback) break;
       availableLayouts.push(fallback);
     }
