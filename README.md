@@ -46,7 +46,44 @@ Run all commands from repository root.
 
 Deployed to **Cloudflare Pages** via GitHub Actions. See `.github/workflows/`.
 
-Security headers configured in `public/_headers`:
+### Auto-Sync with Medium
+
+The blog automatically stays in sync with your Medium publications through a **two-layer system**:
+
+1. **Cloudflare Worker Cron Trigger** (`src/workers/medium-sync/`)
+   - Runs every 30 minutes
+   - Fetches your Medium RSS feed
+   - Compares the latest post GUID with the previous one stored in KV
+   - If a new post is detected, triggers a GitHub Actions redeploy instantly
+   - Exposes a status page at your Worker's URL for manual checks
+
+2. **GitHub Actions Scheduled Workflow**
+   - Runs weekly on Sundays at midnight as a fallback (`0 0 * * 0`)
+   - Ensures maximum 1-week delay even if the Worker misses a detection
+
+### Required Secrets & Setup
+
+For the auto-sync Worker to function, configure these in your GitHub repository settings:
+
+| Secret | Description |
+|--------|-------------|
+| `CLOUDFLARE_API_TOKEN` | API token with `Cloudflare Workers:Edit` and `Account:Read` permissions |
+| `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare account ID |
+| `GITHUB_TOKEN` (Worker secret) | Personal Access Token with `repo` and `actions` scopes. Set via `wrangler secret put GITHUB_TOKEN` |
+
+And in `wrangler.toml`, replace:
+- `YOUR_KV_NAMESPACE_ID` with your production KV namespace ID
+- `YOUR_PREVIEW_KV_NAMESPACE_ID` with your preview KV namespace ID
+- `GITHUB_REPO` if your username/repo differs
+
+To create the KV namespace:
+```bash
+wrangler kv:namespace create "MEDIUM_SYNC_KV"
+```
+
+### Security Headers
+
+Configured in `public/_headers`:
 - `X-Frame-Options: DENY`
 - `X-Content-Type-Options: nosniff`
 - `Referrer-Policy: strict-origin-when-cross-origin`

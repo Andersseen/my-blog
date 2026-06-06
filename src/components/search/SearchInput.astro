@@ -37,27 +37,37 @@ const { messages } = Astro.props;
 </div>
 
 <script>
+  async function loadPagefindScript() {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = '/pagefind/pagefind.js';
+      script.onload = () => resolve(window.pagefind);
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+
   async function initPagefind() {
     const searchInput = document.querySelector('[data-pagefind-ui]');
     if (!searchInput || typeof window === 'undefined') return;
 
-    // Only load pagefind on blog pages or when user focuses search
     searchInput.addEventListener('focus', async () => {
       if (window.__pagefindLoaded) return;
       try {
-        // Dynamic import only at runtime, not at build time
-        const pagefindModule = await import(/* @vite-ignore */ '/pagefind/pagefind.js');
-        const pagefind = pagefindModule.default || pagefindModule;
+        const pagefind = await loadPagefindScript();
+        if (!pagefind) {
+          console.warn('Pagefind not available');
+          return;
+        }
         await pagefind.init();
         window.__pagefindLoaded = true;
-        
+
         searchInput.addEventListener('input', async (e) => {
           const target = e.target;
           const query = target.value;
           if (query.length < 2) return;
-          
+
           const results = await pagefind.search(query);
-          // Results can be rendered in a custom dropdown or linked to /search page
           console.log('Pagefind results:', results);
         });
       } catch (err) {
