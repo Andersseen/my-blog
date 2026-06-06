@@ -19,7 +19,7 @@
     "test:e2e:ui": "playwright test --ui",
     "search:build": "pagefind --site dist",
     "search:serve": "pagefind --site dist --serve",
-    "lighthouse": "lighthouse https://www.andriipap.dev --output=html --output-path=./lighthouse-report.html",
+    "lighthouse": "lighthouse https://www.andersseen.dev --output=html --output-path=./lighthouse-report.html",
     "lighthouse:local": "lighthouse http://127.0.0.1:4321 --output=html --output-path=./lighthouse-report.html",
     "worker:deploy": "wrangler deploy",
     "worker:dev": "wrangler dev",

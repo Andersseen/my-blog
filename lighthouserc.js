@@ -1,7 +1,7 @@
 module.exports = {
   ci: {
     collect: {
-      url: ['https://www.andriipap.dev/', 'https://www.andriipap.dev/blog'],
+      url: ['https://www.andersseen.dev/', 'https://www.andersseen.dev/blog'],
       numberOfRuns: 3,
     },
     assert: {

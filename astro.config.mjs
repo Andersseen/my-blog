@@ -13,7 +13,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://www.andriipap.dev',
+  site: 'https://www.andersseen.dev',
   integrations: [
     mdx(),
     sitemap(),

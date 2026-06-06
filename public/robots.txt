@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.andriipap.dev/sitemap-index.xml
+Sitemap: https://www.andersseen.dev/sitemap-index.xml
