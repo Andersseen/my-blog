@@ -66,14 +66,21 @@ const structuredData = {
             '@type': 'BlogPosting',
             headline: title,
             description,
-            image: imageURL,
-            mainEntityOfPage: `${pageURL}#webpage`,
+            image: {
+              '@type': 'ImageObject',
+              url: imageURL,
+            },
+            mainEntityOfPage: {
+              '@type': 'WebPage',
+              '@id': `${pageURL}#webpage`,
+            },
             author: {
               '@id': `${SITE_URL}/#person`,
             },
             publisher: {
               '@id': `${SITE_URL}/#person`,
             },
+            inLanguage: language,
           },
         ]
       : []),

@@ -1,12 +1,48 @@
 import Parser from 'rss-parser';
 import type { LoaderContext } from 'astro/loaders';
+import { writeFileSync, existsSync, readFileSync } from 'fs';
+import { join } from 'path';
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
 const REQUEST_TIMEOUT = 10000;
+const CACHE_FILE = join(process.cwd(), '.cache', 'medium-feed.json');
+const CACHE_TTL_MS = 1000 * 60 * 60; // 1 hour
 
 async function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+interface CachedFeed {
+  timestamp: number;
+  items: any[];
+}
+
+function readCache(): CachedFeed | null {
+  try {
+    if (!existsSync(CACHE_FILE)) return null;
+    const data = JSON.parse(readFileSync(CACHE_FILE, 'utf-8'));
+    if (Date.now() - data.timestamp < CACHE_TTL_MS) {
+      return data;
+    }
+  } catch {
+    // ignore cache errors
+  }
+  return null;
+}
+
+function writeCache(items: any[]): void {
+  try {
+    const dir = join(process.cwd(), '.cache');
+    if (!existsSync(dir)) {
+      // Node 20+ has { recursive: true } for mkdirSync, but let's be safe
+      const fs = require('fs');
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    writeFileSync(CACHE_FILE, JSON.stringify({ timestamp: Date.now(), items }));
+  } catch {
+    // ignore cache write errors
+  }
 }
 
 async function fetchMediumFeed(
@@ -84,7 +120,7 @@ function cleanDescription(contentSnippet: string | undefined): string {
 /**
  * Custom Astro Loader for Medium RSS Feed
  * Fetches posts, extracts the first image, and normalizes the data for the Content Layer.
- * Includes retry logic and timeout handling.
+ * Includes retry logic, timeout handling, and filesystem caching.
  */
 export function mediumLoader(url: string) {
   const parser = new Parser();
@@ -94,55 +130,69 @@ export function mediumLoader(url: string) {
     load: async (context: LoaderContext) => {
       const { store, logger, parseData } = context;
 
+      let feedItems: any[] = [];
+      let usedCache = false;
+
       try {
         const feed = await fetchMediumFeed(parser, url, logger);
-        let successCount = 0;
-        let skipCount = 0;
+        feedItems = feed.items;
+        writeCache(feedItems);
+      } catch (error) {
+        const cached = readCache();
+        if (cached && cached.items.length > 0) {
+          logger.warn('Fetch failed, using cached Medium feed');
+          feedItems = cached.items;
+          usedCache = true;
+        } else {
+          logger.error(
+            `Failed to load Medium feed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          );
+          return;
+        }
+      }
 
-        for (const item of feed.items) {
-          if (!item.guid || !item.title) {
-            skipCount++;
-            continue;
-          }
+      let successCount = 0;
+      let skipCount = 0;
 
-          try {
-            const content = item['content:encoded'] || '';
-            const heroImage = extractHeroImage(content);
-            const description = cleanDescription(item.contentSnippet);
-
-            const parsedData = await parseData({
-              id: item.guid,
-              data: {
-                title: item.title,
-                description: description,
-                pubDate: new Date(item.pubDate || ''),
-                link: item.link,
-                heroImage: heroImage,
-                categories: item.categories || [],
-                isExternal: true,
-              },
-            });
-
-            store.set({
-              id: item.guid,
-              data: parsedData,
-            });
-
-            successCount++;
-          } catch (itemError) {
-            logger.warn(
-              `Failed to process item ${item.guid}: ${itemError instanceof Error ? itemError.message : 'Unknown error'}`,
-            );
-            skipCount++;
-          }
+      for (const item of feedItems) {
+        if (!item.guid || !item.title) {
+          skipCount++;
+          continue;
         }
 
-        logger.info(`Medium loader completed: ${successCount} posts loaded, ${skipCount} skipped`);
-      } catch (error) {
-        logger.error(
-          `Failed to load Medium feed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        );
+        try {
+          const content = item['content:encoded'] || '';
+          const heroImage = extractHeroImage(content);
+          const description = cleanDescription(item.contentSnippet);
+
+          const parsedData = await parseData({
+            id: item.guid,
+            data: {
+              title: item.title,
+              description: description,
+              pubDate: new Date(item.pubDate || ''),
+              link: item.link,
+              heroImage: heroImage,
+              categories: item.categories || [],
+              isExternal: true,
+            },
+          });
+
+          store.set({
+            id: item.guid,
+            data: parsedData,
+          });
+
+          successCount++;
+        } catch (itemError) {
+          logger.warn(
+            `Failed to process item ${item.guid}: ${itemError instanceof Error ? itemError.message : 'Unknown error'}`,
+          );
+          skipCount++;
+        }
       }
+
+      logger.info(`Medium loader completed: ${successCount} posts loaded, ${skipCount} skipped${usedCache ? ' (from cache)' : ''}`);
     },
   };
 }

@@ -12,7 +12,10 @@
     "about": "Про мене",
     "aria": "Основна навігація",
     "menu": "Меню",
-    "closeMenu": "Закрити"
+    "closeMenu": "Закрити",
+    "search": "Пошук",
+    "searchPlaceholder": "Шукати статті...",
+    "skipToContent": "Перейти до основного вмісту"
   },
   "language": {
     "label": "Мова",
@@ -51,7 +54,16 @@
     "editorialLabel": "Редакційний журнал"
   },
   "blogPost": {
-    "updatedOn": "Оновлено"
+    "updatedOn": "Оновлено",
+    "heroImageAlt": "Головне зображення"
+  },
+  "error": {
+    "notFoundTitle": "Сторінку не знайдено",
+    "notFoundDescription": "Вміст, який ви шукаєте, не існує або був переміщений.",
+    "backToHome": "Повернутися на головну",
+    "serverErrorTitle": "Помилка сервера",
+    "serverErrorDescription": "Щось пішло не так. Будь ласка, спробуйте пізніше.",
+    "retry": "Спробувати знову"
   },
   "footer": {
     "rights": "Усі права захищено.",

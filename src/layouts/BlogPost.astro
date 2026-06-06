@@ -2,43 +2,118 @@
 import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import FormattedDate from '../components/FormattedDate.astro';
-import { getI18n, toLocalePath } from '../i18n';
+import { getI18n, toLocalePath, getLangCode } from '../i18n';
+import { SITE_URL, AUTHOR_NAME } from '../consts';
 import MainLayout from './MainLayout.astro';
 
 type Props = CollectionEntry<'blog'>['data'];
 
 const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 const { locale, messages } = getI18n(Astro.url.pathname);
+const pageURL = new URL(Astro.url.pathname, Astro.site).toString();
+const language = getLangCode(locale);
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: messages.nav.home,
+      item: new URL(toLocalePath(locale, '/'), Astro.site).toString(),
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: messages.nav.blog,
+      item: new URL(toLocalePath(locale, '/blog'), Astro.site).toString(),
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: title,
+      item: pageURL,
+    },
+  ],
+};
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: title,
+  description,
+  image: heroImage ? new URL(heroImage.src, Astro.site).toString() : undefined,
+  datePublished: pubDate.toISOString(),
+  dateModified: updatedDate?.toISOString() || pubDate.toISOString(),
+  author: {
+    '@type': 'Person',
+    name: AUTHOR_NAME,
+    url: SITE_URL,
+  },
+  publisher: {
+    '@type': 'Person',
+    name: AUTHOR_NAME,
+    url: SITE_URL,
+  },
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': pageURL,
+  },
+  inLanguage: language,
+};
 ---
 
 <MainLayout title={title} description={description} image={heroImage} pageType="article" locale={locale} messages={messages}>
-	<article class="mx-auto max-w-3xl space-y-6">
+	<article class="mx-auto max-w-3xl space-y-6" itemscope itemtype="https://schema.org/BlogPosting">
+		<script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+		<script is:inline type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+
 		<and-breadcrumb nav-label={messages.nav.aria} size="sm">
 			<and-breadcrumb-item href={toLocalePath(locale, '/')}>{messages.nav.home}</and-breadcrumb-item>
 			<and-breadcrumb-item href={toLocalePath(locale, '/blog')}>{messages.nav.blog}</and-breadcrumb-item>
 			<and-breadcrumb-item current>{title}</and-breadcrumb-item>
 		</and-breadcrumb>
 
-		{heroImage && <Image width={1200} height={600} src={heroImage} alt="" loading="lazy" decoding="async" class="w-full rounded-xl border border-primary-200" />}
+		{heroImage && <Image width={1200} height={600} src={heroImage} alt={`${messages.blog.heroImageAlt || 'Imagen destacada de'} ${title}`} loading="eager" decoding="async" class="w-full rounded-xl border border-primary-200" itemprop="image" />}
 
 		<header class="space-y-3 border-b border-primary-200 pb-6">
 			<p class="flex flex-wrap items-center gap-2 text-sm text-foreground/60">
 				<and-badge variant="outline">
-					<FormattedDate date={pubDate} />
+					<FormattedDate date={pubDate} locale={locale} />
 				</and-badge>
 				{
 					updatedDate && (
 						<span class="italic">
-							{messages.blogPost.updatedOn} <FormattedDate date={updatedDate} />
+							{messages.blogPost.updatedOn} <FormattedDate date={updatedDate} locale={locale} />
 						</span>
 					)
 				}
 			</p>
-			<h1 class="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">{title}</h1>
+			<h1 class="text-3xl font-bold tracking-tight text-foreground sm:text-4xl" itemprop="headline">{title}</h1>
 		</header>
 
-		<div class="prose prose-lg max-w-none text-foreground">
+		<div class="prose prose-lg max-w-none text-foreground" itemprop="articleBody">
 			<slot />
 		</div>
 	</article>
+
+	<section class="mx-auto mt-16 max-w-3xl" aria-label="Comentarios">
+		<script src="https://giscus.app/client.js"
+			data-repo="andersseen/my-blog"
+			data-repo-id="YOUR_REPO_ID"
+			data-category="General"
+			data-category-id="YOUR_CATEGORY_ID"
+			data-mapping="pathname"
+			data-strict="0"
+			data-reactions-enabled="1"
+			data-emit-metadata="0"
+			data-input-position="bottom"
+			data-theme="preferred_color_scheme"
+			data-lang={language}
+			data-loading="lazy"
+			crossorigin="anonymous"
+			async>
+		</script>
+	</section>
 </MainLayout>

@@ -1,0 +1,19 @@
+name = "my-blog-medium-sync"
+main = "src/workers/medium-sync/index.ts"
+compatibility_date = "2025-06-01"
+
+# Cron trigger: every 30 minutes
+triggers = { crons = ["*/30 * * * *"] }
+
+[[kv_namespaces]]
+binding = "MEDIUM_SYNC_KV"
+id = "YOUR_KV_NAMESPACE_ID"
+preview_id = "YOUR_PREVIEW_KV_NAMESPACE_ID"
+
+[vars]
+MEDIUM_RSS_URL = "https://medium.com/feed/@andriipap"
+GITHUB_REPO = "andersseen/my-blog"
+WORKFLOW_FILENAME = "deploy-pages-on-pr-merge.yml"
+
+# Secrets to set via wrangler secret put:
+# GITHUB_TOKEN (PAT with repo and actions scope)

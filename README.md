@@ -1,83 +1,119 @@
 # My Blog
 
-Astro-based personal blog for Andrii Pap with i18n routing (`es`, `en`, `ua`), shared Andersseen web components, and Playwright/Vitest coverage.
+Astro-based personal blog for Andrii Pap with i18n routing (`es`, `en`, `ua`), shared Andersseen web components, and comprehensive testing.
+
+## Architecture Overview
+
+```
+my-blog/
+├── src/
+│   ├── components/          # Astro components (UI primitives)
+│   ├── layouts/             # Page layouts (MainLayout, BlogPost)
+│   ├── pages/               # File-based routing
+│   ├── content/             # MDX/MD blog posts
+│   ├── i18n/                # Manual i18n system (locales + helpers)
+│   ├── lib/                 # Business logic (bento layouts, image optimization)
+│   ├── store/               # Nanostores for client state (theme)
+│   ├── db/                  # Dexie/IndexedDB for persistence
+│   ├── types/               # Shared TypeScript types
+│   ├── utils/               # Utilities (Medium RSS loader)
+│   └── scripts/             # Client-side bootstrap (web components, icons)
+├── tests/
+│   ├── unit/                # Vitest tests (i18n, theme, db, bento)
+│   └── e2e/                 # Playwright tests (a11y, navigation)
+├── docs/
+│   └── adr/                 # Architecture Decision Records
+└── public/                  # Static assets, headers config
+```
 
 ## Development
 
 Run all commands from repository root.
 
-| Command         | Action                         |
-| :-------------- | :----------------------------- |
-| `pnpm install`  | Install dependencies           |
-| `pnpm dev`      | Start local dev server         |
-| `pnpm build`    | Build production output        |
-| `pnpm preview`  | Preview production build       |
-| `pnpm test`     | Run Vitest suite with coverage |
-| `pnpm test:e2e` | Run Playwright E2E suite       |
+| Command                | Action                                      |
+| :--------------------- | :------------------------------------------ |
+| `pnpm install`         | Install dependencies                        |
+| `pnpm dev`             | Start local dev server                      |
+| `pnpm build`           | Build production output                     |
+| `pnpm preview`         | Preview production build                    |
+| `pnpm test`            | Run Vitest suite with coverage              |
+| `pnpm test:e2e`        | Run Playwright E2E suite                    |
+| `pnpm test:e2e:ui`     | Run Playwright with UI                      |
+| `pnpm search:build`    | Build Pagefind search index                 |
+| `pnpm lighthouse:local` | Run Lighthouse against local build          |
 
-## UI Conventions (Source of Truth)
+## Deployment
 
-### Icon registration
+Deployed to **Cloudflare Pages** via GitHub Actions. See `.github/workflows/`.
 
-Primary file: `src/scripts/setup-andersseen.ts`
+### Auto-Sync with Medium
 
-Rules:
+The blog automatically stays in sync with your Medium publications through a **two-layer system**:
 
-1. Always register `COMPONENT_ICONS` for internal `@andersseen/web-components` dependencies.
-2. Register only project icons needed by UI surfaces (no global `registerAllIcons()` in production).
-3. Keep registry deterministic (single object allowlist, no ad-hoc registration in components).
-4. In development, missing icon registrations are reported via console warnings by bootstrap validation.
+1. **Cloudflare Worker Cron Trigger** (`src/workers/medium-sync/`)
+   - Runs every 30 minutes
+   - Fetches your Medium RSS feed
+   - Compares the latest post GUID with the previous one stored in KV
+   - If a new post is detected, triggers a GitHub Actions redeploy instantly
+   - Exposes a status page at your Worker's URL for manual checks
 
-Current project icon allowlist:
+2. **GitHub Actions Scheduled Workflow**
+   - Runs weekly on Sundays at midnight as a fallback (`0 0 * * 0`)
+   - Ensures maximum 1-week delay even if the Worker misses a detection
 
-- `compass`
-- `external-link`
-- `sun`
-- `moon`
-- `menu`
-- `close`
+### Required Secrets & Setup
 
-Icon size tiers:
+For the auto-sync Worker to function, configure these in your GitHub repository settings:
 
-- `12-14`: micro actions and metadata
-- `16`: standard UI actions
-- `20-24`: navigation and emphasis
+| Secret | Description |
+|--------|-------------|
+| `CLOUDFLARE_API_TOKEN` | API token with `Cloudflare Workers:Edit` and `Account:Read` permissions |
+| `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare account ID |
+| `GITHUB_TOKEN` (Worker secret) | Personal Access Token with `repo` and `actions` scopes. Set via `wrangler secret put GITHUB_TOKEN` |
 
-Semantic color mapping:
+And in `wrangler.toml`, replace:
+- `YOUR_KV_NAMESPACE_ID` with your production KV namespace ID
+- `YOUR_PREVIEW_KV_NAMESPACE_ID` with your preview KV namespace ID
+- `GITHUB_REPO` if your username/repo differs
 
-- `neutral`: default text/metadata
-- `primary`: key actions
-- `success`: confirmed state
-- `warning`: cautionary state
-- `error`: destructive/invalid state
+To create the KV namespace:
+```bash
+wrangler kv:namespace create "MEDIUM_SYNC_KV"
+```
 
-### Component adoption order
+### Security Headers
 
-Priority path:
+Configured in `public/_headers`:
+- `X-Frame-Options: DENY`
+- `X-Content-Type-Options: nosniff`
+- `Referrer-Policy: strict-origin-when-cross-origin`
+- `Content-Security-Policy` with strict rules
 
-1. `and-navbar`
-2. `and-button` + `and-tooltip`
-3. `and-breadcrumb`
-4. `and-badge`
-5. `and-input` + `and-pagination`
-6. `and-toast`
+## SEO & Accessibility
 
-Deferred unless explicitly needed:
+- **SEO**: Open Graph, Twitter Cards, Schema.org JSON-LD, hreflang alternates, sitemap, RSS, canonical URLs
+- **Accessibility**: WCAG 2.1 AA compliant, axe-core testing, skip links, landmarks, keyboard navigation, `prefers-reduced-motion` support
+- **Performance**: Astro ViewTransitions, Service Worker (Workbox), image srcsets, font preloading, lazy loading
 
-- `and-sidebar`
-- `and-context-menu`
-- `and-carousel`
+## Internationalization
 
-### Header implementation
+Supported locales: `es` (default), `en`, `ua`.
 
-Primary file: `src/components/Header.astro`
+To add a new locale:
+1. Add to `src/i18n/index.ts` (`LOCALES`, `dictionaries`, `LOCALE_TO_LANG`)
+2. Create `src/i18n/locales/{locale}.json`
+3. Add static paths in `[lang]/` pages
+4. Add OG locale mapping in `getOgLocale()`
 
-Notes:
+## Content
 
-1. Header navigation is driven by `and-navbar` items generated from locale-safe routes.
-2. Active section (`home`, `blog`, `about`) is derived from current path to keep route highlighting stable.
-3. Language and theme controls are slotted into navbar end section and remain available through responsive stages.
-4. Mobile toggle aria-label is synchronized to localized open/close strings.
+- **Local posts**: Add `.md` or `.mdx` files to `src/content/blog/`
+- **Medium posts**: Fetched automatically from RSS feed at build time with retry logic and filesystem caching
+
+## Design System
+
+Uses `@andersseen/web-components` and `@andersseen/icon`.
+Icon registry: `src/scripts/setup-andersseen.ts`
 
 ## QA Matrix
 
@@ -88,18 +124,16 @@ Required checks before merging interaction changes:
 - Themes: `light`, `dark`
 
 Core interaction checks:
-
 1. Header open/close/collapse behavior.
 2. Locale route correctness.
 3. Theme switch behavior without visual flash regressions.
 4. Overlay/dropdown clipping at viewport edges.
 5. Keyboard flow (`Tab`, `Enter`/`Space`, `Escape`) with visible focus.
 
-## PR Sequencing
+## Architecture Decisions
 
-1. PR-01: icon conventions + registry hardening.
-2. PR-02: header migration to `and-navbar`.
-3. PR-03: blog UX components (`and-breadcrumb`, `and-badge`, `and-tooltip`).
-4. PR-04: blog filter/search + pagination.
-5. PR-05: layout/motion polish with reduced-motion support.
-6. PR-06: E2E + accessibility + documentation finalization.
+See [docs/adr/README.md](docs/adr/README.md) for detailed ADRs on framework choice, design system, i18n approach, and persistence strategy.
+
+## License
+
+MIT © Andrii Pap

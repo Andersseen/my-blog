@@ -12,7 +12,10 @@
     "about": "About",
     "aria": "Primary navigation",
     "menu": "Menu",
-    "closeMenu": "Close"
+    "closeMenu": "Close",
+    "search": "Search",
+    "searchPlaceholder": "Search articles...",
+    "skipToContent": "Skip to main content"
   },
   "language": {
     "label": "Language",
@@ -51,7 +54,16 @@
     "editorialLabel": "Editorial Journal"
   },
   "blogPost": {
-    "updatedOn": "Updated on"
+    "updatedOn": "Updated on",
+    "heroImageAlt": "Featured image of"
+  },
+  "error": {
+    "notFoundTitle": "Page not found",
+    "notFoundDescription": "The content you are looking for does not exist or has been moved.",
+    "backToHome": "Back to home",
+    "serverErrorTitle": "Server error",
+    "serverErrorDescription": "Something went wrong. Please try again later.",
+    "retry": "Try again"
   },
   "footer": {
     "rights": "All rights reserved.",

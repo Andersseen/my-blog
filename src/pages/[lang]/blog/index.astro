@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BlogBentoGrid from '../../../components/blog/BlogBentoGrid.astro';
+import SearchInput from '../../../components/search/SearchInput.astro';
 import MainLayout from '../../../layouts/MainLayout.astro';
 import { SITE_TITLE } from '../../../consts';
 import { getI18n } from '../../../i18n';
@@ -50,12 +51,15 @@ const posts = unifyPosts(blogPosts, mediumPosts).sort(
           {messages.blog.latestDescription}
         </p>
       </div>
-      <div class="flex items-center gap-3">
-        <div class="h-px w-10 bg-primary-400/35"></div>
-        <span class="font-mono text-sm tabular-nums text-muted-foreground">
-          No.&nbsp;{String(posts.length).padStart(2, '0')}
-        </span>
-      </div>
+		<div class="flex items-center gap-3">
+			<div class="h-px w-10 bg-primary-400/35"></div>
+			<span class="font-mono text-sm tabular-nums text-muted-foreground">
+				No.&nbsp;{String(posts.length).padStart(2, '0')}
+			</span>
+		</div>
+		</header>
+
+		<SearchInput messages={messages} />
     </header>
 
     <BlogBentoGrid posts={posts} locale={locale} messages={messages} />

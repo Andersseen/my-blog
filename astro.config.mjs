@@ -13,7 +13,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://www.andriipap.dev',
+  site: 'https://www.andersseen.dev',
   integrations: [
     mdx(),
     sitemap(),
@@ -39,6 +39,11 @@ export default defineConfig({
         '@/i18n': path.resolve(__dirname, './src/i18n/index.ts'),
         '@/consts': path.resolve(__dirname, './src/consts.ts'),
         '@/styles': path.resolve(__dirname, './src/styles'),
+      },
+    },
+    build: {
+      rollupOptions: {
+        external: ['/pagefind/pagefind.js'],
       },
     },
   },
