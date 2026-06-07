@@ -19,7 +19,9 @@ test.describe("Blog", () => {
   test("blog index loads successfully", async ({ page }) => {
     const response = await page.goto("/blog");
     expect(response?.status()).toBe(200);
-    await expect(page.locator("h1")).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: /Ultimos articulos|Latest articles|Останні статті/i }),
+    ).toBeVisible();
   });
 
   test("theme toggle works", async ({ page }) => {

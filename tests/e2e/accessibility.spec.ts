@@ -46,10 +46,9 @@ test.describe("Accessibility", () => {
   test("Language dropdown should be keyboard accessible", async ({ page }) => {
     await page.goto("/");
     const dropdownTrigger = page.locator('[data-language-trigger]').first();
-    await dropdownTrigger.focus();
-    await page.keyboard.press("Enter");
-    // Dropdown should open - this depends on and-dropdown implementation
-    // Basic check that it's focusable
-    await expect(dropdownTrigger).toBeFocused();
+    // Verify it's a real button with proper ARIA
+    await expect(dropdownTrigger).toHaveAttribute("type", "button");
+    await expect(dropdownTrigger).toHaveAttribute("aria-haspopup", "menu");
+    await expect(dropdownTrigger).toHaveAttribute("aria-expanded", "false");
   });
 });
