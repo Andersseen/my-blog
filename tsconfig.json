@@ -1,7 +1,7 @@
 {
   "extends": "astro/tsconfigs/strict",
   "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist"],
+  "exclude": ["dist", "src/workers", "pwa.config.ts"],
   "compilerOptions": {
     "strictNullChecks": true,
     "baseUrl": ".",
