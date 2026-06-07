@@ -9,8 +9,9 @@ test.describe("404 Page", () => {
 
   test("404 page has link back to home", async ({ page }) => {
     await page.goto("/non-existent-page");
-    const homeLink = page.locator('a[href="/"]');
-    await expect(homeLink).toBeVisible();
+    // The 404 page links back to home; wait for it to be visible
+    const homeLink = page.locator('a[href="/"]').first();
+    await expect(homeLink).toBeVisible({ timeout: 5000 });
   });
 });
 
@@ -23,10 +24,21 @@ test.describe("Blog", () => {
 
   test("theme toggle works", async ({ page }) => {
     await page.goto("/");
+    // Wait for the theme toggle web component to hydrate
     const toggle = page.locator('[data-theme-switch]');
-    await toggle.click();
+    await expect(toggle).toBeVisible({ timeout: 5000 });
+
+    // Get initial theme
     const html = page.locator("html");
-    const theme = await html.getAttribute("data-theme");
-    expect(theme).toMatch(/light|dark/);
+    const initialTheme = await html.getAttribute("data-theme");
+    expect(initialTheme).toMatch(/light|dark/);
+
+    // Click and verify theme changed
+    await toggle.click();
+    // Small wait for the theme transition
+    await page.waitForTimeout(300);
+    const newTheme = await html.getAttribute("data-theme");
+    expect(newTheme).toMatch(/light|dark/);
+    expect(newTheme).not.toBe(initialTheme);
   });
 });
