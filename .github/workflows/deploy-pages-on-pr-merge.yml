@@ -81,6 +81,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build
+        run: pnpm build
+
+      - name: Start preview server
+        run: pnpm preview --host 127.0.0.1 --port 4321 &
+
+      - name: Wait for server
+        run: sleep 5
+
       - name: Run Lighthouse CI
         run: |
           npm install -g @lhci/cli
