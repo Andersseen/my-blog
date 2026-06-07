@@ -1,11 +1,11 @@
 ---
 import { getCollection } from 'astro:content';
-import BlogBentoGrid from '../../../components/blog/BlogBentoGrid.astro';
-import SearchInput from '../../../components/search/SearchInput.astro';
-import MainLayout from '../../../layouts/MainLayout.astro';
-import { SITE_TITLE } from '../../../consts';
-import { getI18n } from '../../../i18n';
-import { unifyPosts, type BlogPost, type MediumPost } from '../../../types/blog';
+import BlogBentoGrid from '@/components/blog/BlogBentoGrid.astro';
+import SearchInput from '@/components/search/SearchInput.astro';
+import MainLayout from '@/layouts/MainLayout.astro';
+import { SITE_TITLE } from '@/consts';
+import { getI18n } from '@/i18n';
+import { unifyPosts, type BlogPost, type MediumPost } from '@/types/blog';
 
 export function getStaticPaths() {
   return [{ params: { lang: 'en' } }, { params: { lang: 'ua' } }];
@@ -60,7 +60,6 @@ const posts = unifyPosts(blogPosts, mediumPosts).sort(
 		</header>
 
 		<SearchInput messages={messages} />
-    </header>
 
     <BlogBentoGrid posts={posts} locale={locale} messages={messages} />
   </section>

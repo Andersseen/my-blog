@@ -1,7 +1,7 @@
 ---
-import MainLayout from '../layouts/MainLayout.astro';
-import { getI18n } from '../i18n';
-import { SITE_TITLE } from '../consts';
+import MainLayout from '@/layouts/MainLayout.astro';
+import { getI18n } from '@/i18n';
+import { SITE_TITLE } from '@/consts';
 
 const { locale, messages } = getI18n(Astro.url.pathname);
 ---

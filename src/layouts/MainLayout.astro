@@ -1,10 +1,10 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
-import SkipLink from '../components/SkipLink.astro';
+import BaseHead from '@/components/BaseHead.astro';
+import Footer from '@/components/Footer.astro';
+import Header from '@/components/Header.astro';
+import SkipLink from '@/components/SkipLink.astro';
 import type { ImageMetadata } from 'astro';
-import { type Dictionary, type Locale, getI18n, getLangCode } from '../i18n';
+import { type Dictionary, type Locale, getI18n, getLangCode } from '@/i18n';
 
 interface Props {
   title: string;
@@ -63,21 +63,7 @@ const htmlLang = lang ?? getLangCode(locale);
       })();
     </script>
     <BaseHead title={title} description={description} image={image} pageType={pageType} locale={locale} />
-    <script is:inline>
-      // Native View Transitions API fallback
-      if (typeof document !== 'undefined' && 'startViewTransition' in document) {
-        document.addEventListener('click', (e) => {
-          const link = e.target.closest('a');
-          if (link && link.origin === location.origin && !link.hasAttribute('data-no-transition')) {
-            e.preventDefault();
-            const href = link.href;
-            document.startViewTransition(() => {
-              window.location.href = href;
-            });
-          }
-        });
-      }
-    </script>
+
   </head>
   <body class="min-h-screen bg-background text-foreground antialiased">
     <SkipLink messages={messages} />
@@ -97,8 +83,8 @@ const htmlLang = lang ?? getLangCode(locale);
     </div>
 
     <script>
-      import '../scripts/setup-andersseen';
-      import { initTheme } from '../store/theme';
+      import '@/scripts/setup-andersseen';
+      import { initTheme } from '@/store/theme';
 
       void initTheme();
 
