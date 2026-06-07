@@ -88,18 +88,8 @@ const htmlLang = lang ?? getLangCode(locale);
 
       void initTheme();
 
-      // Register Service Worker
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then((registration) => {
-              console.log('SW registered:', registration.scope);
-            })
-            .catch((error) => {
-              console.warn('SW registration failed:', error);
-            });
-        });
-      }
+      // Service Worker disabled temporarily to fix redirect caching issues
+      // TODO: Re-enable with proper Workbox/vite-plugin-pwa config
     </script>
   </body>
 </html>
