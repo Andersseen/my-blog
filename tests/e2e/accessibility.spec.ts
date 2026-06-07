@@ -38,14 +38,14 @@ test.describe("Accessibility", () => {
 
   test("Theme toggle should have proper ARIA attributes", async ({ page }) => {
     await page.goto("/");
-    const themeToggle = page.locator('[data-theme-switch]');
+    const themeToggle = page.locator('[data-theme-switch]').first();
     await expect(themeToggle).toHaveAttribute("role", "switch");
     await expect(themeToggle).toHaveAttribute("aria-checked");
   });
 
   test("Language dropdown should be keyboard accessible", async ({ page }) => {
     await page.goto("/");
-    const dropdownTrigger = page.locator('[data-language-trigger]');
+    const dropdownTrigger = page.locator('[data-language-trigger]').first();
     await dropdownTrigger.focus();
     await page.keyboard.press("Enter");
     // Dropdown should open - this depends on and-dropdown implementation

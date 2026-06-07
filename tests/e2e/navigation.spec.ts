@@ -25,7 +25,8 @@ test.describe("Blog", () => {
   test("theme toggle works", async ({ page }) => {
     await page.goto("/");
     // Wait for the theme toggle web component to hydrate
-    const toggle = page.locator('[data-theme-switch]');
+    // Use .first() because there are two instances (desktop + mobile drawer)
+    const toggle = page.locator('[data-theme-switch]').first();
     await expect(toggle).toBeVisible({ timeout: 5000 });
 
     // Get initial theme
