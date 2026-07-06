@@ -134,6 +134,17 @@ Core interaction checks:
 
 See [docs/adr/README.md](docs/adr/README.md) for detailed ADRs on framework choice, design system, i18n approach, and persistence strategy.
 
+## Docs for AI Agents
+
+This repo is set up for AI-assisted, spec-driven development:
+
+- [AGENTS.md](AGENTS.md) — operating manual (rules, commands, definition of done). `CLAUDE.md` imports it.
+- [docs/ai/CONTEXT.md](docs/ai/CONTEXT.md) — why the project exists, goals, non-goals
+- [docs/ai/ARCHITECTURE.md](docs/ai/ARCHITECTURE.md) — system map and data flows
+- [docs/ai/CONVENTIONS.md](docs/ai/CONVENTIONS.md) — code style and hard rules
+- [docs/ai/STATE.md](docs/ai/STATE.md) — current status, known issues, backlog (keep updated!)
+- [docs/specs/](docs/specs/README.md) — spec-driven development workflow + template
+
 ## License
 
 MIT © Andrii Pap
