@@ -14,6 +14,7 @@ interface Props {
   pageType?: 'website' | 'article';
   locale?: Locale;
   messages?: Dictionary;
+  noindex?: boolean;
 }
 
 const detectedI18n = getI18n(Astro.url.pathname);
@@ -26,6 +27,7 @@ const {
   locale = detectedI18n.locale,
   messages = detectedI18n.messages,
   lang,
+  noindex = false,
 } = Astro.props;
 
 const htmlLang = lang ?? getLangCode(locale);
@@ -62,7 +64,7 @@ const htmlLang = lang ?? getLangCode(locale);
         } catch (e) {}
       })();
     </script>
-    <BaseHead title={title} description={description} image={image} pageType={pageType} locale={locale} />
+    <BaseHead title={title} description={description} image={image} pageType={pageType} locale={locale} noindex={noindex} />
 
   </head>
   <body class="min-h-screen bg-background text-foreground antialiased">
@@ -87,9 +89,6 @@ const htmlLang = lang ?? getLangCode(locale);
       import { initTheme } from '@/store/theme';
 
       void initTheme();
-
-      // Service Worker disabled temporarily to fix redirect caching issues
-      // TODO: Re-enable with proper Workbox/vite-plugin-pwa config
     </script>
   </body>
 </html>

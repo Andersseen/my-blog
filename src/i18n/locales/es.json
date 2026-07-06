@@ -45,13 +45,14 @@
     "title": "Sobre este proyecto",
     "paragraphs": [
       "Este blog esta disenado para crecer sin friccion: capas desacopladas, tipado estricto, estado global controlado y persistencia local en IndexedDB para preferencias y futuras sesiones.",
-      "La UI esta construida con componentes Astro modulares y Angular queda configurado para islas dinamicas cuando realmente aporten interactividad."
+      "La UI esta construida con componentes Astro modulares, sin JavaScript por defecto: solo se añaden islas interactivas cuando realmente aportan valor."
     ]
   },
   "blog": {
     "latestTitle": "Ultimos articulos",
     "latestDescription": "Contenido tecnico y notas de arquitectura.",
-    "editorialLabel": "Diario editorial"
+    "editorialLabel": "Diario editorial",
+    "heroImageAlt": "Imagen destacada de"
   },
   "blogPost": {
     "updatedOn": "Actualizado el",

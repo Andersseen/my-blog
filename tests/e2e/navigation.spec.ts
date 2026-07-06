@@ -4,7 +4,9 @@ test.describe("404 Page", () => {
   test("shows custom 404 for unknown routes", async ({ page }) => {
     const response = await page.goto("/non-existent-page");
     expect(response?.status()).toBe(404);
-    await expect(page.locator("h1")).toContainText(/not found|no encontrada|не знайдено/i);
+    await expect(
+      page.getByRole("heading", { name: /not found|no encontrada|не знайдено/i }),
+    ).toBeVisible();
   });
 
   test("404 page has link back to home", async ({ page }) => {

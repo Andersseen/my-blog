@@ -35,11 +35,13 @@ systems, written in Spanish, English, and Ukrainian.
 - **No backend / no database server.** Everything is static at build time. Client persistence
   (theme) uses IndexedDB/localStorage only.
 - **No CMS.** Local posts are `.md`/`.mdx` files committed to `src/content/blog/`.
-- **No comments, no auth, no user accounts.**
+- **No auth, no user accounts.** Comments exist (Giscus, GitHub-Discussions-backed, in
+  `BlogPost.astro`) but require no account on this site itself — auth happens on GitHub's side.
 - **No SSR.** The site is fully prerendered; the only server-side code is the Medium-sync
   Worker, which never serves pages.
-- **No heavy frameworks on the client.** Angular islands are *possible* (integration is wired)
-  but none exist and none should be added without strong justification.
+- **No client-side frameworks by default.** The Angular integration that used to be wired here
+  was removed (2026-07-06, never shipped a component). Any future framework island needs a spec
+  that justifies the cost — see docs/specs/.
 
 ## Related projects (same author)
 

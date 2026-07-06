@@ -22,7 +22,7 @@ Medium RSS, deployed to Cloudflare Pages.
 - **Package manager**: `pnpm` ONLY (v10, Node >= 22.12). Never use npm or yarn.
 - **Deploy**: Cloudflare Pages via GitHub Actions on push to `main`. A Cloudflare Worker (`src/workers/medium-sync/`) triggers redeploys when Medium publishes a new post.
 - **i18n**: `es` is default (no URL prefix), `en` and `ua` are prefixed (`/en/...`, `/ua/...`). Manual system in `src/i18n/`.
-- **Angular**: the `@analogjs/astro-angular` integration is configured but there are **zero Angular components today**. Do not add one without a spec that justifies it.
+- **No Angular.** The `@analogjs/astro-angular` integration was removed (2026-07-06, zero components ever shipped). If islands are needed later, write a spec first — see docs/specs/.
 
 ## Commands
 

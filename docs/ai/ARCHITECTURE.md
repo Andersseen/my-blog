@@ -39,9 +39,13 @@ Manual i18n, no library (see ADR-003). Default locale `es` has NO prefix; `en`/`
 /ua          /ua/blog         /ua/blog/<slug>    ← ua (src/pages/[lang]/...)
 ```
 
-**Consequence: page trees are DUPLICATED.** `src/pages/blog/index.astro` (es) and
-`src/pages/[lang]/blog/index.astro` (en/ua) render the same view. Any page-level change must
-be applied to BOTH trees, or extracted into a shared component/layout.
+**Page trees are still doubled for routing (`src/pages/...` vs `src/pages/[lang]/...`), but the
+bodies are NOT duplicated.** Home, blog-index, and blog-post pages are thin wrappers around
+shared components in `src/components/pages/` (`HomePage.astro`, `BlogIndexPage.astro`,
+`BlogPostPage.astro`). Each `src/pages/...` file only supplies routing (`getStaticPaths` for the
+`[lang]` variants) and renders the shared component — no markup/logic to keep in sync by hand.
+When adding a new page that needs both an `es` and `en`/`ua` route, follow this pattern: put the
+real content in a `src/components/pages/*.astro` component, then add two thin page files.
 
 Helpers in `src/i18n/index.ts` (aliased as `@/i18n`):
 - `getI18n(pathname)` → `{ locale, messages }` — the standard way pages get translations
@@ -113,6 +117,7 @@ of relative `../../` imports.
 | `src/scripts/setup-andersseen.ts` | Web Components + icon registration |
 | `src/styles/global.css` | Design tokens (light + dark) |
 | `wrangler.toml` | Medium-sync Worker config |
+| `src/components/pages/*.astro` | Shared page bodies (Home, BlogIndex, BlogPost) |
 
 ## Tests
 

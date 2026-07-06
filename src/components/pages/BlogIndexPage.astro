@@ -1,0 +1,62 @@
+---
+import { getCollection } from 'astro:content';
+import BlogBentoGrid from '@/components/blog/BlogBentoGrid.astro';
+import SearchInput from '@/components/search/SearchInput.astro';
+import MainLayout from '@/layouts/MainLayout.astro';
+import { SITE_TITLE } from '@/consts';
+import { getI18n } from '@/i18n';
+import { unifyPosts, type BlogPost, type MediumPost } from '@/types/blog';
+
+const { locale, messages } = getI18n(Astro.url.pathname);
+
+let blogPosts: BlogPost[] = [];
+try {
+  blogPosts = await getCollection('blog');
+} catch (error) {
+  console.warn('Failed to load blog posts:', error);
+}
+
+let mediumPosts: MediumPost[] = [];
+try {
+  mediumPosts = await getCollection('medium');
+} catch (error) {
+  console.warn('Failed to load Medium posts:', error);
+}
+
+const posts = unifyPosts(blogPosts, mediumPosts).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+---
+
+<MainLayout
+  title={`${SITE_TITLE} | ${messages.meta.blogTitle}`}
+  description={messages.meta.blogDescription}
+  locale={locale}
+  messages={messages}
+>
+  <section class="space-y-10">
+    <header class="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+      <div class="max-w-xl space-y-4">
+        <span class="block text-[10px] font-semibold uppercase tracking-[0.2em] text-secondary">
+          {messages.blog.editorialLabel}
+        </span>
+        <h1 class="text-5xl font-bold tracking-tighter leading-none text-foreground md:text-6xl">
+          {messages.blog.latestTitle}
+        </h1>
+        <p class="max-w-md text-lg leading-relaxed text-muted-foreground">
+          {messages.blog.latestDescription}
+        </p>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="h-px w-10 bg-primary-400/35"></div>
+        <span class="font-mono text-sm tabular-nums text-muted-foreground">
+          No.&nbsp;{String(posts.length).padStart(2, '0')}
+        </span>
+      </div>
+    </header>
+
+    <SearchInput messages={messages} />
+
+    <BlogBentoGrid posts={posts} locale={locale} messages={messages} />
+  </section>
+</MainLayout>

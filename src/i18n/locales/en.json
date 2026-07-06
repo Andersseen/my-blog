@@ -45,13 +45,14 @@
     "title": "About this project",
     "paragraphs": [
       "This blog is designed to scale without friction: decoupled layers, strict typing, controlled global state and local IndexedDB persistence for preferences and future sessions.",
-      "The UI is built with modular Astro components, while Angular is configured for dynamic islands when interactivity truly adds value."
+      "The UI is built with modular Astro components, zero JavaScript by default: interactive islands are added only when they truly add value."
     ]
   },
   "blog": {
     "latestTitle": "Latest articles",
     "latestDescription": "Technical content and architecture notes.",
-    "editorialLabel": "Editorial Journal"
+    "editorialLabel": "Editorial Journal",
+    "heroImageAlt": "Featured image for"
   },
   "blogPost": {
     "updatedOn": "Updated on",
