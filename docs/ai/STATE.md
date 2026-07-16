@@ -1,6 +1,6 @@
 # STATE — Current status of the project
 
-> **Snapshot: 2026-07-06.**
+> **Snapshot: 2026-07-16.**
 > This file is the session-to-session memory of the project. If you complete meaningful work
 > (fix a known issue, add debt, change status), UPDATE THIS FILE in the same PR — that is how
 > the next agent (or the next session) knows where things stand. Keep it honest and short;
@@ -56,6 +56,24 @@
   (`getStaticPaths`) and render the shared component. Verified all 3 locales still render
   correctly translated output post-refactor.
 
+## Planning session (2026-07-16)
+
+- Added `docs/ai/HANDOFF_CONTEXT.md` and `docs/roadmap/IMPROVEMENT_PLAN.md` so future sessions
+  can continue from a phased roadmap instead of re-analyzing the project from zero.
+- Verified `pnpm test` passes (6 suites, 33 tests) and `pnpm build` succeeds even when Medium is
+  unreachable in the sandbox.
+
+## Fixed this session (2026-07-16)
+
+- Completed roadmap Phase 1: added ambient Pagefind typings in `src/types/pagefind.d.ts`, typed
+  `SearchInput.astro`'s Pagefind loader/input events, removed hardcoded search fallbacks, and
+  registered/used the `search` icon from `@andersseen/icon` instead of inline SVG.
+- Cleaned safe `astro check` hints in touched/local code (`SkipLink.astro`, `BlogBentoGrid.astro`,
+  `PostCard.astro`, `image-optimization.ts`, theme behavior test). `pnpm astro check` now exits
+  successfully; remaining hints are non-blocking and outside this phase.
+- Fixed an existing bento layout edge case surfaced by `pnpm test`: random selection could choose
+  `SINGLE` with one post left, producing consecutive `SINGLE` layouts despite the test contract.
+
 ## Known issues / tech debt (verify before relying on them — fix + remove entries as you go)
 
 1. **Lighthouse CI stays disabled — do not re-enable yet.** Root causes, found via a local
@@ -73,13 +91,13 @@
    - **Performance on `/blog` (71/100 in the current sample, needs 90): LCP ~14.9s, ~20MB page
      weight** when the bento grid's featured post has an animated GIF hero image. Confirmed by
      hand: Medium's CDN does NOT resize actual animated GIFs — requesting `/max/320/` vs
-     `/max/1024/` on the same GIF returns byte-identical files. `generateMediumSrcSet()` in
-     `src/lib/image-optimization.ts` already knows this and skips srcset generation for GIFs
-     (`isGif()` check) — that logic is correct, not a bug. The tradeoff is real: either accept
-     occasional slow LCP when a Medium post's cover is an animated GIF, or stop rendering GIF
-     heroes at full size in the bento grid (visual regression), or build a build-time image
-     transcoding step (Sharp is already a dependency) to serve a static frame instead. This is a
-     product decision, not a quick fix — see if it's worth a spec.
+     `/max/1024/` on the same GIF returns byte-identical files. The current
+     `src/lib/image-optimization.ts` does not yet contain the `isGif()` guard that older notes
+     claimed existed. Re-verify and implement the GIF policy before relying on this optimization.
+     The tradeoff is real: either accept occasional slow LCP when a Medium post's cover is an
+     animated GIF, stop rendering GIF heroes at full size in the bento grid, or build a build-time
+     image transcoding step (Sharp is already a dependency) to serve a static frame instead. This
+     is a product decision, not a quick fix — see if it's worth a spec.
    - Home page alone (no GIF-heavy posts in the top 3) scores: performance 95, seo 100 — so the
      thresholds are close to reachable; the blockers above are what's actually stopping it.
 2. **`wrangler.toml` has placeholder KV IDs** (`YOUR_KV_NAMESPACE_ID`). The real namespace is
@@ -87,11 +105,6 @@
 3. **No local posts yet.** `src/content/blog/` is empty; 100% of content comes from Medium.
    The local-post path (BlogPost layout, frontmatter schema) is built but largely unexercised —
    expect rough edges the first time a real `.mdx` post lands.
-4. **Pagefind's `window.pagefind` isn't typed.** `astro check` reports 7 TS errors in
-   `SearchInput.astro` (`Property 'pagefind' does not exist on type 'Window'`, etc.). Pagefind
-   works correctly at runtime (it's loaded dynamically); this is a missing `declare global`
-   ambient type, not a functional bug. Cosmetic — fix by adding a `.d.ts` if it starts blocking
-   a stricter CI type-check step.
 
 ## Recent history (context for the code you'll see)
 

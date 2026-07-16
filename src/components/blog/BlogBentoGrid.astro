@@ -19,7 +19,7 @@ interface Props {
   messages: Dictionary;
 }
 
-const { posts, locale, messages } = Astro.props;
+const { posts, locale } = Astro.props;
 
 const postGroups = generatePostGroups(posts);
 
@@ -52,7 +52,7 @@ const isGif = (url: string | undefined): boolean => {
   .bento-card:hover {
     transform: translateY(-4px);
   }
-  
+
   .bento-image {
     content-visibility: auto;
     contain: strict;
@@ -63,7 +63,7 @@ const isGif = (url: string | undefined): boolean => {
   postGroups.map((group, groupIndex) => {
     const layoutClasses = getLayoutClasses(group.layout);
     const hasMargin = groupIndex > 0 ? 'mt-5' : '';
-    
+
     return (
       <div class:list={[layoutClasses, hasMargin]} data-layout={group.layout}>
         {group.posts.map((post, postIndex) => {
@@ -75,11 +75,10 @@ const isGif = (url: string | undefined): boolean => {
           const postClass = getPostClasses(group.layout, postIndex, group.posts.length);
           const external = isExt(post);
           const hero = heroSrc(post);
-          const eager = isFirstGroup && postIndex < 2;
           const sizes = generateSizes(group.layout, postIndex);
           const srcset = hero && !isGif(hero) ? generateMediumSrcSet(hero) : undefined;
           const heroIsGif = isGif(hero);
-          
+
           return (
             <a
               href={postHref(post)}
@@ -108,13 +107,15 @@ const isGif = (url: string | undefined): boolean => {
                       height={featured ? 576 : 360}
                       class="h-full w-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105"
                     />
-                    
+
                     {heroIsGif && (
                       <div class="absolute bottom-2 right-2 z-20">
-                        <and-badge variant="secondary" class="text-[9px]">GIF</and-badge>
+                        <and-badge variant="secondary" class="text-[9px]">
+                          GIF
+                        </and-badge>
                       </div>
                     )}
-                    
+
                     <div
                       class:list={[
                         'absolute inset-0 bg-gradient-to-t',
