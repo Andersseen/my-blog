@@ -4,6 +4,10 @@
 > Goal: improve the project in independent phases so each phase can start in a new session.
 > Each phase should begin by reading `docs/ai/HANDOFF_CONTEXT.md` and verifying the current repo
 > state before editing.
+>
+> **Current position:** Phases 1 and 2 are done on branch `feat/roadmap-improvements`. The next
+> implementation request should start at **Phase 3 — Search UX Completion**. Do not redo Phase 1
+> or Phase 2 unless the user explicitly asks for a regression/follow-up.
 
 ## North Star
 
@@ -17,111 +21,65 @@ The project is in a healthy but unfinished state:
 
 - Core architecture is solid: Astro SSG, manual i18n, shared page bodies, Medium loader, tests,
   Cloudflare Pages deployment.
-- Quality gates are partially active: unit tests and build pass; E2E is wired in CI.
-- Type-checking is not clean because Pagefind globals are untyped.
+- Quality gates are active for the current branch: `pnpm astro check`, `pnpm test`,
+  `pnpm build`, and `pnpm test:e2e` pass after Phase 2.
+- Type-checking is clean enough for `astro check` to exit successfully. Remaining diagnostics are
+  non-blocking hints documented in `docs/ai/STATE.md`.
 - Performance and Lighthouse work is blocked by external design-system ARIA issues, Medium image
   behavior, and possible GIF-heavy bento heroes.
-- Local content exists architecturally but has no real post to exercise the path.
+- Local content now has a proof post:
+  `src/content/blog/building-this-blog-as-a-product.mdx`, rendered in all three locale route trees.
 - Some docs and conventions have drifted from code.
 
-## Phase 0 — Baseline And Memory Hygiene
+## Completed Phases
 
-Purpose: make the repo's memory match reality before deeper work.
+### Phase 1 — Clean Type Health And Small Convention Drift
 
-Scope:
+Status: **Done** in commit `15081bc` (`fix(blog): clean type health and convention drift`).
 
-- Update `docs/ai/STATE.md` with findings from the latest verification.
-- Fix stale README claims about Service Worker / Workbox and ViewTransitions if still present.
-- Decide whether `docs/ai/HANDOFF_CONTEXT.md` should stay as a permanent onboarding file.
-- Add this roadmap to any docs index if desired.
+What shipped:
 
-Acceptance criteria:
+- Ambient Pagefind typings in `src/types/pagefind.d.ts`.
+- Typed `SearchInput.astro` loader/input events.
+- Removed hardcoded search fallbacks.
+- Registered and used the `search` icon from `@andersseen/icon`.
+- Cleaned safe local `astro check` hints.
+- Fixed a bento layout edge case where `SINGLE` layouts could repeat consecutively.
 
-- `STATE.md` no longer claims GIF handling exists unless the code actually has it.
-- README performance section matches the current architecture.
-- Future sessions know whether to rely on this roadmap and handoff doc.
+Verification:
 
-Suggested verification:
+- `pnpm astro check`
+- `pnpm test`
+- `pnpm build`
 
-```bash
-pnpm test
-pnpm build
-```
+### Phase 2 — Content Pipeline Proof
 
-Notes:
+Status: **Done** in commit `f8bf6b4` (`feat(blog): prove local content pipeline`).
 
-- This is documentation-only unless you choose to fix tiny lint/type warnings at the same time.
-- No spec is required if limited to docs.
+What shipped:
 
-## Phase 1 — Clean Type Health And Small Convention Drift
+- First real local MDX post: `src/content/blog/building-this-blog-as-a-product.mdx`.
+- Local post renders at `/blog/building-this-blog-as-a-product/`,
+  `/en/blog/building-this-blog-as-a-product/`, and
+  `/ua/blog/building-this-blog-as-a-product/`.
+- Current local-content strategy documented: one shared post source across all locales until a
+  future spec introduces language-specific content.
+- RSS, sitemap, optimized local hero image, and article JSON-LD verified.
+- E2E coverage expanded for the local post routes and RSS.
+- Spec closed: `docs/specs/2026-07-16-local-content-proof.md`.
 
-Purpose: remove current friction so later sessions can trust `astro check`.
+Verification:
 
-Scope:
+- `pnpm astro check`
+- `pnpm test`
+- `pnpm build`
+- `pnpm test:e2e`
 
-- Add ambient Pagefind typings or local typed wrappers for:
-  - `window.pagefind`
-  - `window.__pagefindLoaded`
-  - `pagefind.init()`
-  - `pagefind.search()`
-- Narrow `SearchInput.astro` event target to `HTMLInputElement`.
-- Remove unused imports/variables reported by `astro check` where safe.
-- Move visible fallbacks in `SearchInput.astro` to i18n or remove them if keys are guaranteed.
-- Consider replacing inline search SVG with the icon registry if the design system has the icon.
-
-Acceptance criteria:
-
-- `pnpm astro check` exits successfully, or remaining warnings are documented and non-blocking.
-- `pnpm test` passes.
-- `pnpm build` passes.
-- No hardcoded user-visible fallback strings remain in `SearchInput.astro`.
-
-Suggested verification:
-
-```bash
-pnpm astro check
-pnpm test
-pnpm build
-```
-
-Spec requirement:
-
-- Probably no spec if the work stays inside search typings and small hygiene.
-
-## Phase 2 — Content Pipeline Proof
-
-Purpose: prove the local MDX content path before the blog depends on it.
-
-Scope:
-
-- Add a first real local `.mdx` post or a deliberate fixture post strategy.
-- Verify local post routing for `/blog/<slug>`, `/en/blog/<slug>`, and `/ua/blog/<slug>`.
-- Check hero image handling, alt text, metadata, RSS output, sitemap, and JSON-LD.
-- Decide how local posts should behave across languages:
-  - same post visible in all locales, or
-  - language-specific content model.
-- Document the decision in an ADR or spec.
-
-Acceptance criteria:
-
-- At least one local post renders correctly in all configured routes, or the chosen multilingual
-  strategy is documented before implementation.
-- Blog index mixes local and Medium posts in date order.
-- Error states for empty Medium/local content are intentional.
-
-Suggested verification:
-
-```bash
-pnpm test
-pnpm build
-pnpm test:e2e
-```
-
-Spec requirement:
-
-- Required. This touches content model, routing behavior, SEO, and user-visible pages.
+## Next Phase
 
 ## Phase 3 — Search UX Completion
+
+Status: **Next / not started**.
 
 Purpose: turn the current lazy Pagefind loader into a real search experience.
 
