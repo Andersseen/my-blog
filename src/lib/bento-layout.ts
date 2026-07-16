@@ -43,13 +43,22 @@ export function generatePostGroups(posts: UnifiedPost[]): PostGroup[] {
 
   while (remaining.length > 0) {
     const availableLayouts = LAYOUTS.filter(
-      l => l.minRequired <= remaining.length && (groups.length === 0 || l.type !== lastLayout), // Evitar repetir el mismo layout consecutivamente
+      l =>
+        l.minRequired <= remaining.length &&
+        (groups.length === 0 || l.type !== lastLayout) && // Evitar repetir el mismo layout consecutivamente
+        !(l.type === 'SINGLE' && remaining.length - l.count === 1),
     );
 
     if (availableLayouts.length === 0) {
+      if (lastLayout === 'SINGLE' && groups.length > 0) {
+        groups[groups.length - 1].posts.push(...remaining);
+        break;
+      }
+
       // Fallback: usar el layout más pequeño disponible, evitando repetir si es posible
-      const fallback = LAYOUTS.find(l => l.minRequired <= remaining.length && l.type !== lastLayout)
-        || LAYOUTS.find(l => l.minRequired <= remaining.length);
+      const fallback =
+        LAYOUTS.find(l => l.minRequired <= remaining.length && l.type !== lastLayout) ||
+        LAYOUTS.find(l => l.minRequired <= remaining.length);
       if (!fallback) break;
       availableLayouts.push(fallback);
     }

@@ -44,8 +44,8 @@ single-file bug fixes, dependency bumps.
 
 ## Index
 
-| Spec | Status |
-| :--- | :--- |
-| _(none yet)_ | |
+| Spec                                                              | Status |
+| :---------------------------------------------------------------- | :----- |
+| [Local Content Pipeline Proof](2026-07-16-local-content-proof.md) | Done   |
 
 Keep this index updated — it's the quickest way to see what's in flight.

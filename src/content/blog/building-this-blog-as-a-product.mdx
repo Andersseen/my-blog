@@ -1,0 +1,35 @@
+---
+title: 'Building This Blog As A Product'
+description: 'A local proof post for the Andersseen blog content pipeline, covering the publishing model, multilingual routing, and static-first constraints.'
+pubDate: 2026-07-16
+heroImage: ../../assets/blog-placeholder-1.jpg
+---
+
+This is the first local post published from the repository itself. It exists to prove that the
+blog can render committed MDX content alongside Medium posts without changing the static
+architecture.
+
+## Español
+
+Este blog no es solo una lista de artículos. Es una pequeña pieza de producto: rápida,
+multilingue, accesible y mantenible. Publicar este post desde `src/content/blog` verifica que el
+camino local funciona antes de depender de él para contenido más importante.
+
+## English
+
+Local posts are intentionally shared across every configured locale for now. The same source
+renders at `/blog/...`, `/en/blog/...`, and `/ua/blog/...`, while the surrounding navigation,
+metadata, dates, breadcrumbs, and layout copy keep using the active locale.
+
+## Українською
+
+Цей допис також перевіряє український маршрут. Контент поки що спільний для всіх мов, але сторінка
+має коректно відкриватися з українським префіксом, локалізованою навігацією та правильними SEO
+даними.
+
+## What This Proves
+
+- The local Astro content collection can load a real MDX post.
+- The blog index can include local posts together with Medium posts.
+- The article layout can render a local optimized hero image.
+- RSS, sitemap, and JSON-LD can describe local content from the same source.

@@ -1,13 +1,13 @@
-import "@andersseen/web-components/components/and-icon.js";
-import "@andersseen/web-components/components/and-dropdown.js";
-import "@andersseen/web-components/components/and-navbar.js";
-import "@andersseen/web-components/components/and-drawer.js";
-import "@andersseen/web-components/components/and-button.js";
-import "@andersseen/web-components/components/and-card.js";
-import "@andersseen/web-components/components/and-badge.js";
-import "@andersseen/web-components/components/and-breadcrumb.js";
-import "@andersseen/web-components/components/and-breadcrumb-item.js";
-import { enableAnimations } from "@andersseen/web-components";
+import '@andersseen/web-components/components/and-icon.js';
+import '@andersseen/web-components/components/and-dropdown.js';
+import '@andersseen/web-components/components/and-navbar.js';
+import '@andersseen/web-components/components/and-drawer.js';
+import '@andersseen/web-components/components/and-button.js';
+import '@andersseen/web-components/components/and-card.js';
+import '@andersseen/web-components/components/and-badge.js';
+import '@andersseen/web-components/components/and-breadcrumb.js';
+import '@andersseen/web-components/components/and-breadcrumb-item.js';
+import { enableAnimations } from '@andersseen/web-components';
 import {
   COMPONENT_ICONS,
   CHEVRON_DOWN,
@@ -16,9 +16,10 @@ import {
   EXTERNAL_LINK,
   MENU,
   MOON,
+  SEARCH,
   SUN,
   registerIcons,
-} from "@andersseen/icon";
+} from '@andersseen/icon';
 
 declare global {
   interface Window {
@@ -30,10 +31,11 @@ declare global {
 const PROJECT_ICONS: Record<string, string> = {
   close: CLOSE,
   compass: COMPASS,
-  "chevron-down": CHEVRON_DOWN,
-  "external-link": EXTERNAL_LINK,
+  'chevron-down': CHEVRON_DOWN,
+  'external-link': EXTERNAL_LINK,
   menu: MENU,
   moon: MOON,
+  search: SEARCH,
   sun: SUN,
 };
 
@@ -43,23 +45,21 @@ const ICON_REGISTRY: Record<string, string> = {
 };
 
 const assertRegisteredIcons = (): void => {
-  if (!import.meta.env.DEV || typeof document === "undefined") {
+  if (!import.meta.env.DEV || typeof document === 'undefined') {
     return;
   }
 
   const missing = new Set<string>();
 
-  document
-    .querySelectorAll<HTMLElement>("and-icon[name]")
-    .forEach((iconElement) => {
-      const iconName = iconElement.getAttribute("name");
+  document.querySelectorAll<HTMLElement>('and-icon[name]').forEach(iconElement => {
+    const iconName = iconElement.getAttribute('name');
 
-      if (iconName && !(iconName in ICON_REGISTRY)) {
-        missing.add(iconName);
-      }
-    });
+    if (iconName && !(iconName in ICON_REGISTRY)) {
+      missing.add(iconName);
+    }
+  });
 
-  missing.forEach((iconName) => {
+  missing.forEach(iconName => {
     console.warn(
       `[andersseen] Missing icon registration for \"${iconName}\" in src/scripts/setup-andersseen.ts.`,
     );
@@ -67,7 +67,7 @@ const assertRegisteredIcons = (): void => {
 };
 
 const setupAndersseen = (): void => {
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     return;
   }
 
@@ -82,7 +82,7 @@ const setupAndersseen = (): void => {
 
   window.__andersseenReady = true;
 
-  if (typeof requestAnimationFrame === "function") {
+  if (typeof requestAnimationFrame === 'function') {
     requestAnimationFrame(() => {
       assertRegisteredIcons();
     });

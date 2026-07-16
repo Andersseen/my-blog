@@ -1,5 +1,3 @@
-import type { UnifiedPost } from '@/types/blog';
-
 interface ImageSize {
   width: number;
   suffix: string;
@@ -29,11 +27,7 @@ export function generateMediumSrcSet(originalUrl: string): string {
 /**
  * Determina el tamaño de imagen óptimo según el layout y posición
  */
-export function getOptimalImageSize(
-  layout: string,
-  postIndex: number,
-  isFeatured: boolean,
-): number {
+export function getOptimalImageSize(layout: string, isFeatured: boolean): number {
   if (isFeatured) {
     return 1024;
   }
@@ -49,7 +43,7 @@ export function getOptimalImageSize(
 /**
  * Genera atributo sizes para responsive images
  */
-export function generateSizes(layout: string, postIndex: number): string {
+export function generateSizes(_layout: string, postIndex: number): string {
   const isFirstTwo = postIndex < 2;
 
   if (isFirstTwo) {

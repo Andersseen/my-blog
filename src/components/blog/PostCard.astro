@@ -1,6 +1,5 @@
 ---
 import { Image } from 'astro:assets';
-import type { ImageMetadata } from 'astro';
 import FormattedDate from '../FormattedDate.astro';
 import { type Locale, toLocalePath } from '../../i18n';
 import type { UnifiedPost } from '../../types/blog';
@@ -29,8 +28,8 @@ const href = isExternal ? post.data.link : toLocalePath(locale, `/blog/${post.id
 
 <a
   href={href}
-  target={isExternal ? "_blank" : undefined}
-  rel={isExternal ? "noopener noreferrer" : undefined}
+  target={isExternal ? '_blank' : undefined}
+  rel={isExternal ? 'noopener noreferrer' : undefined}
   class="group block h-full"
 >
   <and-card
@@ -41,7 +40,7 @@ const href = isExternal ? post.data.link : toLocalePath(locale, `/blog/${post.id
       post.data.heroImage && (
         <div class="relative overflow-hidden">
           {typeof post.data.heroImage === 'string' ? (
-             <img
+            <img
               src={post.data.heroImage}
               alt={post.data.title}
               loading="lazy"
@@ -66,9 +65,17 @@ const href = isExternal ? post.data.link : toLocalePath(locale, `/blog/${post.id
 
     <div class="flex flex-1 flex-col p-5">
       <div class="flex items-center gap-2 mb-2">
-        {isExternal && <and-badge variant="secondary" class="text-[9px] uppercase">Medium</and-badge>}
+        {
+          isExternal && (
+            <and-badge variant="secondary" class="text-[9px] uppercase">
+              Medium
+            </and-badge>
+          )
+        }
       </div>
-      <h2 class="text-lg font-bold tracking-tight leading-snug text-foreground transition-colors group-hover:text-primary-600">
+      <h2
+        class="text-lg font-bold tracking-tight leading-snug text-foreground transition-colors group-hover:text-primary-600"
+      >
         {post.data.title}
       </h2>
       <p class="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
@@ -78,7 +85,9 @@ const href = isExternal ? post.data.link : toLocalePath(locale, `/blog/${post.id
         <and-badge variant="outline" class="text-[10px] uppercase tracking-[0.15em]">
           <FormattedDate date={post.data.pubDate} />
         </and-badge>
-        <span class="text-xs font-semibold uppercase tracking-widest text-primary-600 opacity-0 transition-opacity group-hover:opacity-100">
+        <span
+          class="text-xs font-semibold uppercase tracking-widest text-primary-600 opacity-0 transition-opacity group-hover:opacity-100"
+        >
           {isExternal ? '↗' : '→'}
         </span>
       </div>
