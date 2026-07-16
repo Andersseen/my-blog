@@ -30,12 +30,14 @@ Verification run on 2026-07-16:
 
 - `pnpm test` passes: 6 files, 33 tests.
 - `pnpm build` succeeds in the sandbox, even when Medium DNS fails.
+- `pnpm test:e2e` passes: 14 tests, including local-post route and RSS coverage.
 - `pnpm astro check` exits successfully after Phase 1. Remaining diagnostics are non-blocking
   hints around `commitlint.config.js`, generated `coverage/prettify.js`, `astro:content`/Zod
   deprecations, and the Giscus inline-script hint.
-- Network was unavailable for Medium during verification (`getaddrinfo ENOTFOUND medium.com`).
-  The build tolerated this and generated pages without Medium posts.
-- Local content is still empty: `src/content/blog/` has no real posts.
+- Network was unavailable for Medium during verification (`getaddrinfo ENOTFOUND medium.com`), but
+  the build tolerated this and used cache/fallback behavior.
+- Local content now includes `src/content/blog/building-this-blog-as-a-product.mdx`, rendered at
+  `/blog/...`, `/en/blog/...`, and `/ua/blog/...`.
 
 Important mismatch found:
 
@@ -63,14 +65,11 @@ Important mismatch found:
    Accessibility excludes in `tests/e2e/accessibility.spec.ts` hide known issues from
    `@andersseen/web-components`.
 
-3. The blog has no local posts yet.
-   The local MDX path exists but has not been proven with real content.
-
-4. Documentation drift exists.
+3. Documentation drift exists.
    `README.md` still mentions Service Worker / Workbox and Astro ViewTransitions in the
    performance section, while project memory says service workers were intentionally removed.
 
-5. Some current components do not fully follow conventions.
+4. Some current components do not fully follow conventions.
    Examples observed:
    - Raw arrow glyphs in `PostCard.astro`.
    - Remaining `astro check` hints are non-blocking and mostly outside application code.
@@ -78,6 +77,8 @@ Important mismatch found:
 ## Files To Know
 
 - `src/content.config.ts`: local blog and Medium collections.
+- `src/content/blog/building-this-blog-as-a-product.mdx`: first local proof post; current strategy
+  is shared local content across all locales.
 - `src/utils/medium-loader.ts`: RSS fetch, retry, timeout, cache fallback.
 - `src/types/blog.ts`: `UnifiedPost` and `unifyPosts()`.
 - `src/lib/bento-layout.ts`: pure bento grouping logic.

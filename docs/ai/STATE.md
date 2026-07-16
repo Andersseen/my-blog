@@ -11,13 +11,15 @@
 - Static build and deploy to Cloudflare Pages via GitHub Actions (push to `main`).
 - Trilingual routing (`/` es, `/en`, `/ua`) with correct hreflang (`es`/`en`/`uk`), sitemap, RSS.
 - Medium posts fetched at build time with retry + 1h filesystem cache.
+- Local MDX content path is exercised by `src/content/blog/building-this-blog-as-a-product.mdx`,
+  rendered in all three locale route trees.
 - Medium auto-sync Worker (cron every 30 min → GitHub Actions dispatch) + weekly fallback deploy.
 - Theme system (light/dark) with anti-FOUC (localStorage) + Dexie persistence.
 - Bento grid on blog listing, Pagefind search on built site.
 - Home and blog-index page bodies live once in `src/components/pages/` and are reused by
   both the `es` and `[lang]` page trees — no more copy-pasted markup between them.
 - 404/500 pages correctly emit `noindex,nofollow` (was silently dropped before — see below).
-- Unit tests (6 suites, 33 tests) and E2E (12 tests incl. axe accessibility) both pass locally
+- Unit tests (6 suites, 33 tests) and E2E (14 tests incl. axe accessibility) both pass locally
   and run in the deploy pipeline.
 - Giscus comments are wired in `BlogPost.astro` (real feature, not a leftover) but use
   placeholder `data-repo-id` / `data-category-id` — same pattern as the wrangler KV IDs, needs
@@ -73,6 +75,9 @@
   successfully; remaining hints are non-blocking and outside this phase.
 - Fixed an existing bento layout edge case surfaced by `pnpm test`: random selection could choose
   `SINGLE` with one post left, producing consecutive `SINGLE` layouts despite the test contract.
+- Completed roadmap Phase 2: added the first local MDX post, documented the shared-across-locales
+  content strategy in `docs/specs/2026-07-16-local-content-proof.md`, and expanded E2E coverage for
+  the local post routes plus RSS.
 
 ## Known issues / tech debt (verify before relying on them — fix + remove entries as you go)
 
@@ -102,9 +107,6 @@
      thresholds are close to reachable; the blockers above are what's actually stopping it.
 2. **`wrangler.toml` has placeholder KV IDs** (`YOUR_KV_NAMESPACE_ID`). The real namespace is
    configured out-of-band. Don't "fix" the placeholders with invented values.
-3. **No local posts yet.** `src/content/blog/` is empty; 100% of content comes from Medium.
-   The local-post path (BlogPost layout, frontmatter schema) is built but largely unexercised —
-   expect rough edges the first time a real `.mdx` post lands.
 
 ## Recent history (context for the code you'll see)
 
@@ -120,7 +122,8 @@
 - Decide the GIF-hero performance tradeoff (accept slow LCP / drop GIF heroes / build a Sharp
   transcoding step) before attempting to re-enable Lighthouse CI.
 - Consider proxying Medium images through own infra to drop the third-party-cookie flag.
-- Write the first local `.mdx` post to exercise the local-content path end to end.
+- Decide whether future local posts need a language-specific content model, or keep the current
+  shared-across-locales strategy.
 - Set real Giscus `data-repo-id`/`data-category-id` and real wrangler KV namespace IDs
   (both out-of-band, both currently placeholders).
 
