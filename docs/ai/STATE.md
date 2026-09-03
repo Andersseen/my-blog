@@ -58,6 +58,13 @@
   (`getStaticPaths`) and render the shared component. Verified all 3 locales still render
   correctly translated output post-refactor.
 
+## Fixed this session (2026-09-03)
+
+- Integrated Umami analytics (self-hosted at `umami.andersseen.dev`). The tracker script is
+  injected in `BaseHead.astro` via `PUBLIC_UMAMI_URL` + `PUBLIC_UMAMI_WEBSITE_ID` env vars,
+  gated so builds without the vars still succeed. The deploy workflow passes the vars from
+  GitHub Actions `vars` (repository variables). `.env.example` documents the local-dev setup.
+
 ## Planning session (2026-07-16)
 
 - Added `docs/ai/HANDOFF_CONTEXT.md` and `docs/roadmap/IMPROVEMENT_PLAN.md` so future sessions

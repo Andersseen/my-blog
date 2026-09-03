@@ -48,6 +48,10 @@ const alternateLinks = LOCALES.map((lang) => ({
 	hreflang: getLangCode(lang),
 	href: new URL(toLocalePath(lang, basePath), Astro.site),
 }));
+
+// Umami analytics — env vars are PUBLIC_ so Astro exposes them at build time
+const umamiUrl = import.meta.env.PUBLIC_UMAMI_URL;
+const umamiWebsiteId = import.meta.env.PUBLIC_UMAMI_WEBSITE_ID;
 ---
 
 <meta charset="utf-8" />
@@ -62,6 +66,11 @@ const alternateLinks = LOCALES.map((lang) => ({
 <link rel="dns-prefetch" href="https://medium.com" />
 <link rel="preconnect" href="https://giscus.app" />
 <link rel="dns-prefetch" href="https://giscus.app" />
+
+{/* Umami analytics — only rendered when env vars are present at build time */}
+{umamiUrl && umamiWebsiteId && (
+	<script is:inline defer src={umamiUrl} data-website-id={umamiWebsiteId}></script>
+)}
 
 <SeoFavicons />
 
