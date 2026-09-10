@@ -62,8 +62,9 @@
 
 - Integrated Umami analytics (self-hosted at `umami.andersseen.dev`). The tracker script is
   injected in `BaseHead.astro` via `PUBLIC_UMAMI_URL` + `PUBLIC_UMAMI_WEBSITE_ID` env vars,
-  gated so builds without the vars still succeed. The deploy workflow passes the vars from
-  GitHub Actions `vars` (repository variables). `.env.example` documents the local-dev setup.
+  gated so builds without the vars still succeed. The deploy workflow passes the vars to
+  `pnpm build` with repo-var overrides and safe defaults (the Website ID is public by design
+  — it ships in the HTML of every page). `.env.example` documents the local-dev setup.
 
 ## Planning session (2026-07-16)
 

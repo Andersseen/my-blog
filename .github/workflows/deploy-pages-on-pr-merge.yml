@@ -43,8 +43,9 @@ jobs:
 
       - name: Build production
         env:
-          PUBLIC_UMAMI_URL: ${{ vars.PUBLIC_UMAMI_URL }}
-          PUBLIC_UMAMI_WEBSITE_ID: ${{ vars.PUBLIC_UMAMI_WEBSITE_ID }}
+          # Repo vars can override; defaults guarantee the tracker is always built in.
+          PUBLIC_UMAMI_URL: ${{ vars.PUBLIC_UMAMI_URL || 'https://umami.andersseen.dev/script.js' }}
+          PUBLIC_UMAMI_WEBSITE_ID: ${{ vars.PUBLIC_UMAMI_WEBSITE_ID || 'ec8efe43-e0c2-4baa-a490-e133cf8c18b6' }}
         run: pnpm build
 
       - name: Install Playwright browsers
