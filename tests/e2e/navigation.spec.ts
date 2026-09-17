@@ -28,6 +28,14 @@ test.describe('Blog', () => {
     ).toBeVisible();
   });
 
+  test('blog index works with trailing slash', async ({ page }) => {
+    const response = await page.goto('/blog/');
+    expect(response?.status()).toBe(200);
+    await expect(
+      page.getByRole('heading', { name: /Ultimos articulos|Latest articles|Останні статті/i }),
+    ).toBeVisible();
+  });
+
   test('local post renders in all locales', async ({ page }) => {
     const routes = [
       `/blog/${localPostSlug}`,

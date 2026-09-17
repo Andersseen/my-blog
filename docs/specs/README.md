@@ -46,6 +46,7 @@ single-file bug fixes, dependency bumps.
 
 | Spec                                                              | Status |
 | :---------------------------------------------------------------- | :----- |
+| [SEO Icons And Routes](2026-09-17-seo-icons-routes.md)            | Done   |
 | [Local Content Pipeline Proof](2026-07-16-local-content-proof.md) | Done   |
 
 Keep this index updated — it's the quickest way to see what's in flight.

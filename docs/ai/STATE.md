@@ -1,6 +1,6 @@
 # STATE — Current status of the project
 
-> **Snapshot: 2026-07-16.**
+> **Snapshot: 2026-09-17.**
 > This file is the session-to-session memory of the project. If you complete meaningful work
 > (fix a known issue, add debt, change status), UPDATE THIS FILE in the same PR — that is how
 > the next agent (or the next session) knows where things stand. Keep it honest and short;
@@ -65,6 +65,17 @@
   gated so builds without the vars still succeed. The deploy workflow passes the vars to
   `pnpm build` with repo-var overrides and safe defaults (the Website ID is public by design
   — it ships in the HTML of every page). `.env.example` documents the local-dev setup.
+
+## Fixed this session (2026-09-17)
+
+- Replaced the old blue `AP` favicon/app icon set with the current Andersseen “A” mark across
+  SVG, PNG, Apple touch, maskable, `.ico`, manifest, and versioned favicon links. This should
+  force tools such as Umami to refresh stale branding after the next deploy.
+- Added `X-Robots-Tag: noindex, follow` for `/rss.xml` in `public/_headers`, keeping the feed
+  crawlable for discovery/readers while telling search engines not to index the XML feed as a
+  page. Verified the built `dist/_headers` includes the rule.
+- Re-checked production `/blog` on 2026-09-17: it currently responds `308 -> /blog/ -> 200`.
+  Added E2E coverage for `/blog/` so trailing-slash access stays covered.
 
 ## Planning session (2026-07-16)
 
