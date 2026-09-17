@@ -17,26 +17,27 @@ self-hosted Umami origin despite rendering its tracker script.
 
 - Publish main-branch artifacts to the Cloudflare Pages production deployment.
 - Route internal navigation to the static directory URLs, avoiding the Pages slash redirect.
+- Serve direct requests for `/blog`, `/en/blog`, and `/ua/blog` without a browser redirect.
 - Allow the configured Umami script and its telemetry connection under CSP.
 
 ## Non-goals
 
-- Change the external compatibility behavior of `/blog`; Cloudflare Pages may keep redirecting it
-  to `/blog/`.
 - Add Pages Functions, a Worker, dependencies, or client-side routing.
 
 ## User-visible behavior
 
 After the next merge, `andersseen.dev` receives the built production artifact. Navigation from
 the header, home actions, and article breadcrumbs targets `/blog/`, `/en/blog/`, or `/ua/blog/`
-directly. Existing external links to `/blog` remain valid through Cloudflare Pages' redirect.
+directly. Requests without the trailing slash render through a Cloudflare Pages rewrite and retain
+the canonical directory URL for search engines.
 
 ## Technical plan
 
 | File                                                        | Change                                                                               |
 | :---------------------------------------------------------- | :----------------------------------------------------------------------------------- |
 | `.github/workflows/deploy-pages-on-pr-merge.yml`            | Remove `--branch main` so Wrangler creates a production deployment.                  |
-| `public/_headers`                                           | Permit the Umami origin for scripts and connections.                                 |
+| `public/_headers`                                           | Permit the Umami origin and add canonical headers for extensionless blog routes.     |
+| `public/_redirects`                                         | Rewrite extensionless blog listing URLs to their directory assets with status `200`. |
 | `src/i18n/index.ts`                                         | Preserve a deliberate trailing slash passed to `toLocalePath`.                       |
 | `src/components/Header.astro`                               | Point the navbar blog item to the directory URL.                                     |
 | `src/components/home/*.astro`, `src/layouts/BlogPost.astro` | Use the direct blog directory URL for internal links and breadcrumbs.                |
@@ -71,6 +72,7 @@ normal navigation to the blog listing.
 - [ ] The deploy command has no `--branch` flag.
 - [ ] Umami is permitted by the deployed CSP for its script and telemetry requests.
 - [ ] Internal blog links resolve to localized directory URLs with a trailing slash.
+- [ ] Extensionless blog listing URLs are rewritten without a browser redirect and declare their canonical URL.
 - [ ] `pnpm test`, `pnpm build`, and `pnpm test:e2e` pass.
 - [ ] `docs/ai/STATE.md` updated.
 
@@ -78,6 +80,6 @@ normal navigation to the blog listing.
 
 Removed `--branch main` from the direct-upload command, so the workflow now creates a Cloudflare
 Pages production deployment instead of a `main` preview deployment. Internal blog links use
-localized directory URLs, avoiding the Pages slash redirect for normal navigation. The CSP and
-preconnect hints now include the self-hosted Umami origin. No dependencies or client-side routing
-were added.
+localized directory URLs, and extensionless blog routes proxy to those assets with a `200` rewrite
+plus canonical link headers. The CSP and preconnect hints now include the self-hosted Umami origin.
+No dependencies or client-side routing were added.

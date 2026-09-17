@@ -22,3 +22,12 @@
 
 /rss.xml
   X-Robots-Tag: noindex, follow
+
+/blog
+  Link: </blog/>; rel="canonical"
+
+/en/blog
+  Link: </en/blog/>; rel="canonical"
+
+/ua/blog
+  Link: </ua/blog/>; rel="canonical"

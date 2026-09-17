@@ -26,6 +26,16 @@ describe('static SEO assets', () => {
     expect(headers).toContain("connect-src 'self' https://giscus.app https://umami.andersseen.dev");
   });
 
+  it('rewrites extensionless blog routes without an additional browser redirect', () => {
+    const redirects = readFileSync('public/_redirects', 'utf8');
+    const headers = readFileSync('public/_headers', 'utf8');
+
+    expect(redirects).toContain('/blog /blog/ 200');
+    expect(redirects).toContain('/en/blog /en/blog/ 200');
+    expect(redirects).toContain('/ua/blog /ua/blog/ 200');
+    expect(headers).toContain('Link: </blog/>; rel="canonical"');
+  });
+
   it('uses versioned Andersseen icons in favicon metadata and manifest', () => {
     const favicons = readFileSync('src/components/seo/SeoFavicons.astro', 'utf8');
     const manifest = readFileSync('public/site.webmanifest', 'utf8');

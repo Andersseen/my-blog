@@ -81,8 +81,9 @@
   so the navbar and article grid use wide screens more comfortably.
 - Corrected the Pages deployment workflow: `--branch main` creates a preview deployment for a
   Direct Upload project, so it was removed to publish `main` builds to the production deployment
-  behind `andersseen.dev`. Internal blog links now use `/blog/` directly, and CSP permits the
-  configured Umami script and telemetry origin.
+  behind `andersseen.dev`. Internal blog links now use `/blog/` directly; extensionless blog
+  routes use a `200` rewrite with canonical headers rather than the Pages redirect. CSP permits
+  the configured Umami script and telemetry origin.
 
 ## Planning session (2026-07-16)
 
