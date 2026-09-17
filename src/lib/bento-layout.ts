@@ -1,6 +1,6 @@
 import type { UnifiedPost } from '../types/blog';
 
-type LayoutType =
+export type LayoutType =
   | 'FEATURED_LEFT'
   | 'FEATURED_RIGHT'
   | 'DUAL'
@@ -12,18 +12,20 @@ type LayoutType =
 interface LayoutConfig {
   type: LayoutType;
   count: number;
-  minRequired: number;
 }
 
 const LAYOUTS: LayoutConfig[] = [
-  { type: 'FEATURED_LEFT', count: 5, minRequired: 5 },
-  { type: 'FEATURED_RIGHT', count: 5, minRequired: 5 },
-  { type: 'DUAL', count: 2, minRequired: 2 },
-  { type: 'TRIPLE', count: 3, minRequired: 3 },
-  { type: 'QUAD', count: 4, minRequired: 4 },
-  { type: 'GRID_6', count: 6, minRequired: 6 },
-  { type: 'SINGLE', count: 1, minRequired: 1 },
+  { type: 'FEATURED_LEFT', count: 5 },
+  { type: 'FEATURED_RIGHT', count: 5 },
+  { type: 'DUAL', count: 2 },
+  { type: 'TRIPLE', count: 3 },
+  { type: 'QUAD', count: 4 },
+  { type: 'GRID_6', count: 6 },
+  { type: 'SINGLE', count: 1 },
 ];
+
+const FEATURED_LAYOUT: LayoutConfig = LAYOUTS[0];
+const CLOSED_LAYOUTS = LAYOUTS.filter(layout => !layout.type.startsWith('FEATURED'));
 
 export interface PostGroup {
   layout: LayoutType;
@@ -31,66 +33,68 @@ export interface PostGroup {
   isFirst: boolean;
 }
 
-/**
- * Genera grupos de posts con layouts dinámicos
- * No repite patrones - cada grupo puede tener un layout diferente
- */
-export function generatePostGroups(posts: UnifiedPost[]): PostGroup[] {
-  const groups: PostGroup[] = [];
-  let remaining = [...posts];
-  let isFirst = true;
-  let lastLayout: LayoutType | null = null;
+export function getLayoutPostCount(layout: LayoutType): number {
+  return LAYOUTS.find(config => config.type === layout)?.count ?? 0;
+}
 
-  while (remaining.length > 0) {
-    const availableLayouts = LAYOUTS.filter(
-      l =>
-        l.minRequired <= remaining.length &&
-        (groups.length === 0 || l.type !== lastLayout) && // Evitar repetir el mismo layout consecutivamente
-        !(l.type === 'SINGLE' && remaining.length - l.count === 1),
-    );
+function comparePlans(left: LayoutConfig[], right: LayoutConfig[]): number {
+  const leftSingles = left.filter(layout => layout.type === 'SINGLE').length;
+  const rightSingles = right.filter(layout => layout.type === 'SINGLE').length;
 
-    if (availableLayouts.length === 0) {
-      if (lastLayout === 'SINGLE' && groups.length > 0) {
-        groups[groups.length - 1].posts.push(...remaining);
-        break;
-      }
+  if (leftSingles !== rightSingles) return leftSingles - rightSingles;
+  if (left.length !== right.length) return left.length - right.length;
+  return right[0]!.count - left[0]!.count;
+}
 
-      // Fallback: usar el layout más pequeño disponible, evitando repetir si es posible
-      const fallback =
-        LAYOUTS.find(l => l.minRequired <= remaining.length && l.type !== lastLayout) ||
-        LAYOUTS.find(l => l.minRequired <= remaining.length);
-      if (!fallback) break;
-      availableLayouts.push(fallback);
-    }
+function createClosedLayoutPlan(postCount: number, previousLayout?: LayoutType): LayoutConfig[] {
+  const plans = new Map<string, LayoutConfig[] | null>();
 
-    // Seleccionar layout (primero siempre es featured, luego aleatorio ponderado)
-    let selected: LayoutConfig;
-    if (isFirst) {
-      selected =
-        availableLayouts.find(l => ['FEATURED_LEFT', 'FEATURED_RIGHT'].includes(l.type)) ||
-        availableLayouts[0];
-    } else {
-      // Preferir layouts que usen más posts cuando hay muchos disponibles
-      const sorted = availableLayouts.sort((a, b) => b.count - a.count);
-      // 60% probabilidad de usar el que más posts consume, 40% de usar uno aleatorio
-      selected =
-        Math.random() > 0.4 ? sorted[0] : sorted[Math.floor(Math.random() * sorted.length)];
-    }
+  const plan = (remaining: number, lastLayout?: LayoutType): LayoutConfig[] | null => {
+    if (remaining === 0) return [];
 
-    const postsForGroup = remaining.slice(0, selected.count);
-    remaining = remaining.slice(selected.count);
+    const key = `${remaining}:${lastLayout ?? ''}`;
+    if (plans.has(key)) return plans.get(key)!;
 
-    groups.push({
-      layout: selected.type,
-      posts: postsForGroup,
-      isFirst,
+    const candidates = CLOSED_LAYOUTS.flatMap(layout => {
+      if (layout.count > remaining || layout.type === lastLayout) return [];
+
+      const next = plan(remaining - layout.count, layout.type);
+      return next ? [[layout, ...next]] : [];
     });
 
-    lastLayout = selected.type;
-    isFirst = false;
-  }
+    const bestPlan = candidates.reduce<LayoutConfig[] | null>(
+      (best, candidate) => (!best || comparePlans(candidate, best) < 0 ? candidate : best),
+      null,
+    );
 
-  return groups;
+    plans.set(key, bestPlan);
+    return bestPlan;
+  };
+
+  return plan(postCount, previousLayout) ?? [];
+}
+
+export function generatePostGroups(posts: UnifiedPost[]): PostGroup[] {
+  const layoutPlan =
+    posts.length >= FEATURED_LAYOUT.count
+      ? [
+          FEATURED_LAYOUT,
+          ...createClosedLayoutPlan(posts.length - FEATURED_LAYOUT.count, FEATURED_LAYOUT.type),
+        ]
+      : createClosedLayoutPlan(posts.length);
+
+  let offset = 0;
+
+  return layoutPlan.map((layout, index) => {
+    const group = {
+      layout: layout.type,
+      posts: posts.slice(offset, offset + layout.count),
+      isFirst: index === 0,
+    };
+
+    offset += layout.count;
+    return group;
+  });
 }
 
 /**
@@ -145,7 +149,7 @@ export function getPostClasses(layout: LayoutType, postIndex: number, _totalPost
 
     case 'GRID_6':
       if (postIndex < 2) return 'md:col-span-6';
-      return 'md:col-span-4';
+      return 'md:col-span-3';
 
     case 'SINGLE':
       return 'md:col-span-12 md:row-span-1';

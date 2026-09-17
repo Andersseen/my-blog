@@ -76,6 +76,9 @@
   page. Verified the built `dist/_headers` includes the rule.
 - Re-checked production `/blog` on 2026-09-17: it currently responds `308 -> /blog/ -> 200`.
   Added E2E coverage for `/blog/` so trailing-slash access stays covered.
+- Replaced random bento grouping with an exact-count planner: every desktop group now fills its
+  declared grid rectangle, including the final rows. The shared shell widened from `6xl` to `7xl`
+  so the navbar and article grid use wide screens more comfortably.
 
 ## Planning session (2026-07-16)
 
