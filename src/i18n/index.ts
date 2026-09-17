@@ -47,14 +47,17 @@ export const stripLocaleFromPath = (pathname: string): string => {
 
 export const toLocalePath = (locale: Locale, path: string): string => {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  const trimmedPath =
-    normalizedPath === "/" ? "/" : normalizedPath.replace(/\/+$/, "");
+  const preserveTrailingSlash = normalizedPath !== "/" && normalizedPath.endsWith("/");
+  const trimmedPath = normalizedPath === "/" ? "/" : normalizedPath.replace(/\/+$/, "");
 
-  if (locale === DEFAULT_LOCALE) {
-    return trimmedPath;
-  }
+  const localizedPath =
+    locale === DEFAULT_LOCALE
+      ? trimmedPath
+      : trimmedPath === "/"
+        ? `/${locale}`
+        : `/${locale}${trimmedPath}`;
 
-  return trimmedPath === "/" ? `/${locale}` : `/${locale}${trimmedPath}`;
+  return preserveTrailingSlash ? `${localizedPath}/` : localizedPath;
 };
 
 export const getLangCode = (locale: Locale): string => {
