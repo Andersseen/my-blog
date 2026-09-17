@@ -3,7 +3,7 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=()
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://giscus.app; style-src 'self' 'unsafe-inline' https://giscus.app; img-src 'self' data: https://cdn-images-1.medium.com https://medium.com https://github.com https://avatars.githubusercontent.com; font-src 'self'; connect-src 'self' https://giscus.app; frame-src https://giscus.app; manifest-src 'self'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://giscus.app https://umami.andersseen.dev; style-src 'self' 'unsafe-inline' https://giscus.app; img-src 'self' data: https://cdn-images-1.medium.com https://medium.com https://github.com https://avatars.githubusercontent.com; font-src 'self'; connect-src 'self' https://giscus.app https://umami.andersseen.dev; frame-src https://giscus.app; manifest-src 'self'
 
 /dist/*
   Cache-Control: public, max-age=31536000, immutable
@@ -22,3 +22,12 @@
 
 /rss.xml
   X-Robots-Tag: noindex, follow
+
+/blog
+  Link: </blog/>; rel="canonical"
+
+/en/blog
+  Link: </en/blog/>; rel="canonical"
+
+/ua/blog
+  Link: </ua/blog/>; rel="canonical"

@@ -27,7 +27,7 @@ const breadcrumbSchema = {
       '@type': 'ListItem',
       position: 2,
       name: messages.nav.blog,
-      item: new URL(toLocalePath(locale, '/blog'), Astro.site).toString(),
+      item: new URL(toLocalePath(locale, '/blog/'), Astro.site).toString(),
     },
     {
       '@type': 'ListItem',
@@ -71,7 +71,7 @@ const articleSchema = {
 
 		<and-breadcrumb nav-label={messages.nav.aria} size="sm">
 			<and-breadcrumb-item href={toLocalePath(locale, '/')}>{messages.nav.home}</and-breadcrumb-item>
-			<and-breadcrumb-item href={toLocalePath(locale, '/blog')}>{messages.nav.blog}</and-breadcrumb-item>
+			<and-breadcrumb-item href={toLocalePath(locale, '/blog/')}>{messages.nav.blog}</and-breadcrumb-item>
 			<and-breadcrumb-item current>{title}</and-breadcrumb-item>
 		</and-breadcrumb>
 
