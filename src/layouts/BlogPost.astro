@@ -2,16 +2,16 @@
 import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import FormattedDate from '../components/FormattedDate.astro';
-import { getI18n, toLocalePath, getLangCode } from '../i18n';
+import { getPageI18n } from '../i18n';
 import { SITE_URL, AUTHOR_NAME } from '../consts';
 import MainLayout from './MainLayout.astro';
 
 type Props = CollectionEntry<'blog'>['data'];
 
 const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
-const { locale, messages } = getI18n(Astro.url.pathname);
+const etyma = await getPageI18n(Astro);
+const { locale, t, path } = etyma;
 const pageURL = new URL(Astro.url.pathname, Astro.site).toString();
-const language = getLangCode(locale);
 
 const breadcrumbSchema = {
   '@context': 'https://schema.org',
@@ -20,14 +20,14 @@ const breadcrumbSchema = {
     {
       '@type': 'ListItem',
       position: 1,
-      name: messages.nav.home,
-      item: new URL(toLocalePath(locale, '/'), Astro.site).toString(),
+      name: t('nav.home'),
+      item: new URL(path('/'), Astro.site).toString(),
     },
     {
       '@type': 'ListItem',
       position: 2,
-      name: messages.nav.blog,
-      item: new URL(toLocalePath(locale, '/blog/'), Astro.site).toString(),
+      name: t('nav.blog'),
+      item: new URL(path('/blog/'), Astro.site).toString(),
     },
     {
       '@type': 'ListItem',
@@ -60,22 +60,22 @@ const articleSchema = {
     '@type': 'WebPage',
     '@id': pageURL,
   },
-  inLanguage: language,
+  inLanguage: locale,
 };
 ---
 
-<MainLayout title={title} description={description} image={heroImage} pageType="article" locale={locale} messages={messages}>
+<MainLayout title={title} description={description} image={heroImage} pageType="article" etyma={etyma}>
 	<article class="mx-auto max-w-3xl space-y-6" itemscope itemtype="https://schema.org/BlogPosting">
 		<script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
 		<script is:inline type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
 
-		<and-breadcrumb nav-label={messages.nav.aria} size="sm">
-			<and-breadcrumb-item href={toLocalePath(locale, '/')}>{messages.nav.home}</and-breadcrumb-item>
-			<and-breadcrumb-item href={toLocalePath(locale, '/blog/')}>{messages.nav.blog}</and-breadcrumb-item>
+		<and-breadcrumb nav-label={t('nav.aria')} size="sm">
+			<and-breadcrumb-item href={path('/')}>{t('nav.home')}</and-breadcrumb-item>
+			<and-breadcrumb-item href={path('/blog/')}>{t('nav.blog')}</and-breadcrumb-item>
 			<and-breadcrumb-item current>{title}</and-breadcrumb-item>
 		</and-breadcrumb>
 
-		{heroImage && <Image width={1200} height={600} src={heroImage} alt={`${messages.blog.heroImageAlt} ${title}`} loading="eager" decoding="async" class="w-full rounded-xl border border-primary-200" itemprop="image" />}
+		{heroImage && <Image width={1200} height={600} src={heroImage} alt={t('blog.heroImageAlt', { title })} loading="eager" decoding="async" class="w-full rounded-xl border border-primary-200" itemprop="image" />}
 
 		<header class="space-y-3 border-b border-primary-200 pb-6">
 			<p class="flex flex-wrap items-center gap-2 text-sm text-foreground/60">
@@ -85,7 +85,7 @@ const articleSchema = {
 				{
 					updatedDate && (
 						<span class="italic">
-							{messages.blogPost.updatedOn} <FormattedDate date={updatedDate} locale={locale} />
+							{t('blogPost.updatedOn')} <FormattedDate date={updatedDate} locale={locale} />
 						</span>
 					)
 				}
@@ -110,7 +110,7 @@ const articleSchema = {
 			data-emit-metadata="0"
 			data-input-position="bottom"
 			data-theme="preferred_color_scheme"
-			data-lang={language}
+			data-lang={locale}
 			data-loading="lazy"
 			crossorigin="anonymous"
 			async>

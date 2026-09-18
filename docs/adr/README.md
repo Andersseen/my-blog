@@ -30,7 +30,7 @@ Este directorio contiene registros de decisiones arquitectónicas importantes to
 
 ## ADR-003: i18n manual vs. librerías
 
-**Estado:** Aceptada
+**Estado:** Superseded por ADR-007 (2026-09-18)
 
 **Contexto:** Evaluamos `astro-i18next`, `astro-i18n`, y soluciones manuales.
 
@@ -40,6 +40,49 @@ Este directorio contiene registros de decisiones arquitectónicas importantes to
 - ✅ Control total sobre URLs y slugs
 - ✅ Sin dependencias externas pesadas
 - ⚠️ Más boilerplate para añadir idiomas
+- ⚠️ (Motivo de la superación) Sin garantías de tipado entre catálogos, sin
+  interpolación de mensajes, y el mapeo `ua` → `uk` vivía solo en dos helpers
+  ad hoc — ver ADR-007.
+
+## ADR-007: Migración a routing i18n nativo de Astro + @etyma/astro
+
+**Estado:** Aceptada (2026-09-18)
+
+**Contexto:** `@etyma/astro` (paquete propio, entonces pre-release) llegó a un punto en
+el que podía dogfoodearse en un proyecto real. My Blog fue el primer consumidor
+real: se desarrolló contra tarballs empaquetados (`.tgz`) de `@etyma/core`/`@etyma/astro`
+antes de su primer release público, y hoy consume las versiones publicadas en npm
+(`@etyma/astro` ^0.1.1).
+
+**Decisión:** Astro pasa a ser dueño del routing i18n (`astro.config.mjs`
+`i18n` block, con la locale `uk` mapeada al path `ua` vía `{ path, codes }`).
+Etyma pasa a ser dueño de los mensajes: catálogos JSON con sintaxis
+MessageFormat 2, claves tipadas de punta a punta, y `createAstroI18n(Astro, i18n)`
+por render. El árbol de páginas `src/pages/[lang]/...` se reemplazó por
+carpetas reales `src/pages/en/...` y `src/pages/ua/...`, ya que el routing
+nativo de Astro funciona por carpeta, no por segmento dinámico.
+
+**Consecuencias:**
+- ✅ El locale real (`uk`) y el segmento de URL (`ua`) son conceptos distintos
+  y explícitos en la config — el bug histórico `hreflang="ua"` deja de ser
+  posible por diseño, no por convención.
+- ✅ Claves de traducción tipadas (`t('nav.blgo')` no compila); antes
+  `Dictionary` se inferí­a del JSON sin ninguna garantía entre locales.
+- ✅ `etyma validate` (CLI) reemplaza cualquier test manual de paridad de
+  claves entre catálogos.
+- ✅ El sitemap ahora emite `xhtml:link` hreflang por URL (antes no tenía
+  ninguno).
+- ⚠️ Los valores de array en un catálogo (listas de bullets) no son un tipo
+  de mensaje válido en Etyma — se reescribieron como claves planas
+  numeradas (`home.editorialPoint1..4`). Ver `docs/ai/STATE.md`.
+- ✅ El dogfooding encontró dos bugs reales en `@etyma/astro` 0.1.0, ya
+  corregidos upstream en 0.1.1: `path()` duplicaba el prefijo de locale si se le
+  pasaba un path ya prefijado (ahora lanza error), e importar el paquete fuera
+  del pipeline de Vite de Astro fallaba por un import estático de `astro:i18n`
+  (ahora es perezoso, así que `src/i18n/index.ts` se puede importar desde Vitest).
+- ⚠️ Open Graph (`og:locale`, formato `es_ES`) es un concepto distinto de un
+  código de idioma BCP-47 y Etyma no lo cubre a propósito — se mantiene un
+  mapeo pequeño y propio en `src/i18n/og-locale.ts`.
 
 ## ADR-004: Persistencia de tema en IndexedDB + localStorage
 

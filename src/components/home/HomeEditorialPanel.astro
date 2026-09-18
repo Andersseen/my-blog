@@ -1,11 +1,18 @@
 ---
-import type { Dictionary } from '../../i18n';
+import type { Translate } from '../../i18n';
 
 interface Props {
-  messages: Dictionary;
+  t: Translate;
 }
 
-const { messages } = Astro.props;
+const { t } = Astro.props;
+
+const editorialPoints = [
+  t('home.editorialPoint1'),
+  t('home.editorialPoint2'),
+  t('home.editorialPoint3'),
+  t('home.editorialPoint4'),
+];
 ---
 
 <style>
@@ -22,11 +29,11 @@ const { messages } = Astro.props;
 
 <and-card variant="elevated" padded class="bento-card h-full flex flex-col rounded-2xl border border-[hsl(var(--primary-300)/0.18)] bg-[hsl(var(--surface-container-low))] p-6 shadow-[0_8px_28px_-16px_hsl(var(--primary-900)/0.25)]">
   <and-badge variant="outline" class="w-fit text-[10px] uppercase tracking-[0.2em]">
-    {messages.home.editorialTitle}
+    {t('home.editorialTitle')}
   </and-badge>
   <ul class="mt-5 space-y-3 text-sm text-[hsl(var(--muted-foreground))]">
     {
-      messages.home.editorialPoints.map((point) => (
+      editorialPoints.map((point) => (
         <li class="flex items-start gap-2.5">
           <span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[hsl(var(--primary-500))]"></span>
           <span>{point}</span>

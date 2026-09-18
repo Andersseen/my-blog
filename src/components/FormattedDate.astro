@@ -6,10 +6,12 @@ interface Props {
 
 const { date, locale = 'es' } = Astro.props;
 
+// BCP-47 language codes only (e.g. "uk", never the "ua" URL path) — Intl maps
+// the bare language subtag to a sensible region on its own.
 const localeMap: Record<string, string> = {
 	es: 'es-ES',
 	en: 'en-US',
-	ua: 'uk-UA',
+	uk: 'uk-UA',
 };
 
 const resolvedLocale = localeMap[locale] || locale;

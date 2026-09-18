@@ -1,17 +1,19 @@
 ---
 import { Image } from 'astro:assets';
 import FormattedDate from '../FormattedDate.astro';
-import { type Locale, toLocalePath } from '../../i18n';
+import type { Locale } from '@etyma/core';
+import type { LocalePath } from '../../i18n';
 import type { UnifiedPost } from '../../types/blog';
 
 interface Props {
   post: UnifiedPost;
+  path: LocalePath;
   locale: Locale;
 }
 
-const { post, locale } = Astro.props;
+const { post, path, locale } = Astro.props;
 const isExternal = post.data.isExternal;
-const href = isExternal ? post.data.link : toLocalePath(locale, `/blog/${post.id}/`);
+const href = isExternal ? post.data.link : path(`/blog/${post.id}/`);
 ---
 
 <style>
@@ -83,7 +85,7 @@ const href = isExternal ? post.data.link : toLocalePath(locale, `/blog/${post.id
       </p>
       <div class="mt-4 flex items-center justify-between">
         <and-badge variant="outline" class="text-[10px] uppercase tracking-[0.15em]">
-          <FormattedDate date={post.data.pubDate} />
+          <FormattedDate date={post.data.pubDate} locale={locale} />
         </and-badge>
         <span
           class="text-xs font-semibold uppercase tracking-widest text-primary-600 opacity-0 transition-opacity group-hover:opacity-100"

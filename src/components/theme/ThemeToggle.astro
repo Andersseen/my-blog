@@ -1,13 +1,13 @@
 ---
-import type { Dictionary } from '../../i18n';
+import type { Translate } from '../../i18n';
 
 interface Props {
   class?: string;
-  messages: Dictionary;
+  t: Translate;
   slot?: string;
 }
 
-const { class: className, messages, slot: slotName } = Astro.props;
+const { class: className, t, slot: slotName } = Astro.props;
 ---
 
 <style>
@@ -29,9 +29,9 @@ const { class: className, messages, slot: slotName } = Astro.props;
 <div
   slot={slotName}
   data-theme-switcher
-  data-theme-aria={messages.theme.aria}
-  data-theme-light={messages.theme.light}
-  data-theme-dark={messages.theme.dark}
+  data-theme-aria={t('theme.aria')}
+  data-theme-light={t('theme.light')}
+  data-theme-dark={t('theme.dark')}
   class:list={[
     'inline-flex items-center',
     className,
@@ -43,11 +43,11 @@ const { class: className, messages, slot: slotName } = Astro.props;
     size="icon"
     role="switch"
     aria-checked="false"
-    aria-label={messages.theme.aria}
+    aria-label={t('theme.aria')}
     data-theme-switch
     custom-class="h-10 w-10"
   >
-    <span class="sr-only" data-theme-current>{messages.theme.light}</span>
+    <span class="sr-only" data-theme-current>{t('theme.light')}</span>
     <and-icon data-theme-icon name="sun" size="16" aria-hidden="true"></and-icon>
   </and-button>
 </div>

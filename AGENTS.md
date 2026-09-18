@@ -21,7 +21,10 @@ Medium RSS, deployed to Cloudflare Pages.
 - **Design system**: `@andersseen/web-components` + `@andersseen/icon` (external packages, do not fork locally)
 - **Package manager**: `pnpm` ONLY (v10, Node >= 22.12). Never use npm or yarn.
 - **Deploy**: Cloudflare Pages via GitHub Actions on push to `main`. A Cloudflare Worker (`src/workers/medium-sync/`) triggers redeploys when Medium publishes a new post.
-- **i18n**: `es` is default (no URL prefix), `en` and `ua` are prefixed (`/en/...`, `/ua/...`). Manual system in `src/i18n/`.
+- **i18n**: `es` is default (no URL prefix), `en` and `ua` are prefixed (`/en/...`, `/ua/...`).
+  Astro owns routing (`astro.config.mjs` `i18n` block); `@etyma/astro` (from npm, pre-1.0 —
+  expect minor-version API changes) owns messages. The Ukrainian URL path is `ua`, its real language
+  code is `uk` — never confuse the two. See ADR-007.
 - **No Angular.** The `@analogjs/astro-angular` integration was removed (2026-07-06, zero components ever shipped). If islands are needed later, write a spec first — see docs/specs/.
 
 ## Commands
@@ -33,14 +36,19 @@ pnpm build            # production build to dist/
 pnpm test             # Vitest unit tests with coverage  ← must pass before done
 pnpm test:e2e         # Playwright E2E (needs a build; includes axe a11y checks)
 pnpm search:build     # Pagefind index (run after build)
+pnpm i18n:validate    # etyma validate — catalog key parity + MF2 syntax across es/en/uk
 ```
 
 ## Hard rules (violating these = broken PR)
 
 1. **Never edit** `dist/`, `playwright-report/`, `test-results/`, `.astro/`, or `pnpm-lock.yaml` by hand.
-2. **Every user-visible string** goes through i18n: add the key to ALL THREE files
-   `src/i18n/locales/{es,en,ua}.json`. Never hardcode UI text in components.
-3. **Every internal link** must use `toLocalePath(locale, path)` from `@/i18n` — never concatenate locale prefixes by hand.
+2. **Every user-visible string** goes through Etyma: add the key to ALL THREE catalogs
+   `src/i18n/locales/{es,en,uk}.json` (note: `uk.json`, the language, not `ua.json`, the URL
+   path) and read it with `etyma.t('namespace.key')`. Never hardcode UI text in components.
+   Run `pnpm etyma validate ./src/i18n/locales --source es` to check catalogs stay in sync.
+3. **Every internal link** must use `etyma.path(path)` — never concatenate locale prefixes by
+   hand. Get `etyma` via `getPageI18n(Astro)` from `@/i18n` in a page/layout, or as a prop
+   in a component that receives it from its parent.
 4. **Colors only via CSS custom properties** (HSL triplets) defined in `src/styles/global.css`.
    Any new token must be defined in BOTH `:root` (light) and `[data-theme='dark']`.
 5. **Zero client-side JS by default.** Astro components stay static; adding a `<script>` or an island needs a reason (state, interaction) — say it in the PR/commit.
@@ -56,7 +64,9 @@ pnpm search:build     # Pagefind index (run after build)
 - [ ] `pnpm test:e2e` passes if you touched pages, layouts, navigation, or theme
 - [ ] New UI strings exist in `es`, `en`, and `ua` locale files
 - [ ] Works in both `light` and `dark` themes (toggle via header button)
-- [ ] Works on the default locale (`/`) AND prefixed locales (`/en`, `/ua`) — page trees are duplicated, see ARCHITECTURE.md
+- [ ] Works on the default locale (`/`) AND prefixed locales (`/en`, `/ua`) — page trees are
+      duplicated per Astro-native locale folder (`src/pages/`, `src/pages/en/`, `src/pages/ua/`),
+      see ARCHITECTURE.md
 - [ ] Keyboard navigation works, focus is visible (this site targets WCAG 2.1 AA)
 - [ ] `docs/ai/STATE.md` updated if you changed status, fixed a known issue, or added debt
 

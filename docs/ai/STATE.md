@@ -1,6 +1,6 @@
 # STATE — Current status of the project
 
-> **Snapshot: 2026-09-17.**
+> **Snapshot: 2026-09-18.**
 > This file is the session-to-session memory of the project. If you complete meaningful work
 > (fix a known issue, add debt, change status), UPDATE THIS FILE in the same PR — that is how
 > the next agent (or the next session) knows where things stand. Keep it honest and short;
@@ -9,62 +9,56 @@
 ## What works today (verified)
 
 - Static build and deploy to Cloudflare Pages via GitHub Actions (push to `main`).
-- Trilingual routing (`/` es, `/en`, `/ua`) with correct hreflang (`es`/`en`/`uk`), sitemap, RSS.
+- Trilingual routing (`/` es, `/en`, `/ua`) with correct hreflang (`es`/`en`/`uk`), sitemap
+  (with per-URL `xhtml:link` alternates), RSS. Routing is Astro-native (`i18n` block in
+  `astro.config.mjs`); messages are `@etyma/astro` (from npm, pre-1.0 — see ADR-007). `/ua` correctly
+  resolves to language code `uk` throughout: `<html lang>`, hreflang, canonical, sitemap,
+  og:locale.
 - Medium posts fetched at build time with retry + 1h filesystem cache.
 - Local MDX content path is exercised by `src/content/blog/building-this-blog-as-a-product.mdx`,
   rendered in all three locale route trees.
 - Medium auto-sync Worker (cron every 30 min → GitHub Actions dispatch) + weekly fallback deploy.
 - Theme system (light/dark) with anti-FOUC (localStorage) + Dexie persistence.
 - Bento grid on blog listing, Pagefind search on built site.
-- Home and blog-index page bodies live once in `src/components/pages/` and are reused by
-  both the `es` and `[lang]` page trees — no more copy-pasted markup between them.
+- Home and blog-index page bodies live once in `src/components/pages/` and are reused by all
+  three page trees (`es`, `en`, `ua`) — no more copy-pasted markup between them.
 - 404/500 pages correctly emit `noindex,nofollow` (was silently dropped before — see below).
-- Unit tests (6 suites, 33 tests) and E2E (14 tests incl. axe accessibility) both pass locally
-  and run in the deploy pipeline.
+- Unit tests (7 suites, 36 tests) and E2E (27 tests incl. axe accessibility and the
+  `seo-i18n.spec.ts` locale-routing regression suite) both pass locally and run in the deploy
+  pipeline.
 - Giscus comments are wired in `BlogPost.astro` (real feature, not a leftover) but use
   placeholder `data-repo-id` / `data-category-id` — same pattern as the wrangler KV IDs, needs
   real values set out-of-band, don't invent them.
 
-## Fixed this session (2026-07-06)
+## Fixed this session (2026-09-18)
 
-- Removed dead PWA leftovers: `pwa.config.ts` (never imported), `vite-plugin-pwa` dependency,
-  stale "re-enable service worker" comment in `MainLayout.astro`. No service worker is planned;
-  `site.webmanifest` + icon `<link>`s in `SeoFavicons.astro` are unrelated and were kept (they're
-  normal favicon/PWA-icon metadata, not tied to a service worker).
-- Removed the dormant Angular integration end-to-end (user-confirmed removal): dropped
-  `@analogjs/astro-angular`, all `@angular/*` packages, and `rxjs` from `package.json`; removed
-  the `angular()` integration from `astro.config.mjs`; deleted `tsconfig.app.json` (existed only
-  to feed that integration). Cut ~112 packages from `node_modules`, build got faster
-  (~5s → ~1.5s). If Angular islands are wanted later, write a spec first (see docs/specs/).
-  Also corrected `home.description`/`about.paragraphs` copy in all 3 locales that explicitly
-  claimed "Angular is configured for dynamic islands" — that claim was live, user-facing text
-  and would have been false post-removal.
-- Fixed a real SEO bug found via Lighthouse: `hreflang="ua"` is not a valid language code (ISO
-  code for Ukrainian is `uk`). `BaseHead.astro` now uses `getLangCode()` instead of the raw
-  locale. SEO score on Lighthouse went 92 → 100.
-- Fixed a real bug found via `astro check`: `noindex` was accepted as a prop by `404.astro` /
-  `500.astro` but `MainLayout.astro` never declared or forwarded it to `BaseHead`, so error pages
-  were silently indexable. Now forwarded end-to-end; verified `<meta name="robots" content="noindex,nofollow,noarchive">` renders on `/404` and `/500` in the built output.
-- Added the missing `blog.heroImageAlt` i18n key (all 3 locales) — `BlogPost.astro` referenced
-  it with a hardcoded Spanish-only fallback, so translated locales would have silently shown
-  Spanish alt text on hero images once local posts exist.
-- Fixed a flaky local E2E test (`navigation.spec.ts` 404 test): the locator was an unscoped
-  `h1`, which also matches Astro's dev-toolbar overlay elements (`Audit`, `Settings`, etc.) when
-  running against `pnpm dev`. Scoped to `getByRole('heading', ...)`. Only affected local runs
-  (CI uses `pnpm preview`, no dev toolbar) but was worth fixing since it was already found.
-- Refactored the duplicated page trees for home and blog-index: extracted
-  `src/components/pages/{HomePage,BlogIndexPage,BlogPostPage}.astro`; the `src/pages/...` (es)
-  and `src/pages/[lang]/...` (en/ua) files are now thin wrappers that just supply routing
-  (`getStaticPaths`) and render the shared component. Verified all 3 locales still render
-  correctly translated output post-refactor.
+Migrated the custom i18n system to Astro's native `i18n` routing + `@etyma/astro` — the
+real-world dogfooding acceptance test for `@etyma/astro` before its first release. Full
+rationale in ADR-007. Highlights:
 
-## Fixed this session (2026-09-03)
-
-- Integrated Umami analytics (self-hosted at `umami.andersseen.dev`). The tracker script is
-  injected in `BaseHead.astro` via `PUBLIC_UMAMI_URL` + `PUBLIC_UMAMI_WEBSITE_ID` env vars,
-  gated so builds without the vars still succeed. The deploy workflow passes the vars to
-  `pnpm build` with repo-var overrides and safe defaults (the Website ID is public by design
-  — it ships in the HTML of every page). `.env.example` documents the local-dev setup.
+- Developed against packed local tarballs, then switched to the published packages
+  (`@etyma/core` ^0.2.0, `@etyma/astro` ^0.1.1, `@etyma/cli` ^0.1.0 — plain npm ranges, no
+  overrides). `astro.config.mjs` now owns routing (`i18n.locales: ['es', 'en',
+  { path: 'ua', codes: ['uk'] }]`); Etyma's own locale list is `['es', 'en', 'uk']` — `'ua'`
+  never appears as an Etyma locale, only as an Astro route path.
+- Replaced `src/pages/[lang]/...` (manual dynamic segment, hardcoded `getStaticPaths`) with real
+  `src/pages/en/...` / `src/pages/ua/...` folders (Astro's native per-locale-folder routing).
+- Renamed `locales/ua.json` → `uk.json`; rewrote parameterized strings to MessageFormat 2.
+  Two catalog fields were arrays (`home.editorialPoints`, `about.paragraphs`) — Etyma's
+  `MessageSource` doesn't support array leaves, so both became flat numbered keys.
+- Deleted dead `src/components/HeaderLink.astro`. Fixed two latent bugs found while touching
+  this code: `es.json`'s `footer.rights` was still English, and `PostCard`/`BlogBentoGrid`
+  never passed `locale` to `FormattedDate` (dates always rendered in Spanish).
+- Sitemap now gets an `i18n` option — every URL carries `xhtml:link` hreflang alternates
+  (previously had none). Added `tests/e2e/seo-i18n.spec.ts` (html lang, canonical/hreflang/
+  x-default, `hreflang="ua"` regression check, full ES→EN→UA→ES switch incl. query/hash).
+  Rewrote `tests/unit/i18n.test.ts` around the Etyma definition itself. New `pnpm i18n:validate`.
+- **Etyma findings from dogfooding**: two were fixed upstream in `@etyma/astro` 0.1.1 — (1)
+  `etyma.path()` silently double-prefixed an already-prefixed path (it now throws; use
+  `etyma.seo().alternates` for "current page in another locale"), and (2) importing the package
+  outside Astro's Vite pipeline threw because `astro:i18n` was imported eagerly (now lazy, so
+  plain Vitest can import `@/i18n`). Still open: (3) `MessageSource` has no array-leaf support,
+  a fairly common i18n catalog shape.
 
 ## Fixed this session (2026-09-17)
 
@@ -84,27 +78,6 @@
   behind `andersseen.dev`. Internal blog links now use `/blog/` directly; extensionless blog
   routes use a `200` rewrite with canonical headers rather than the Pages redirect. CSP permits
   the configured Umami script and telemetry origin.
-
-## Planning session (2026-07-16)
-
-- Added `docs/ai/HANDOFF_CONTEXT.md` and `docs/roadmap/IMPROVEMENT_PLAN.md` so future sessions
-  can continue from a phased roadmap instead of re-analyzing the project from zero.
-- Verified `pnpm test` passes (6 suites, 33 tests) and `pnpm build` succeeds even when Medium is
-  unreachable in the sandbox.
-
-## Fixed this session (2026-07-16)
-
-- Completed roadmap Phase 1: added ambient Pagefind typings in `src/types/pagefind.d.ts`, typed
-  `SearchInput.astro`'s Pagefind loader/input events, removed hardcoded search fallbacks, and
-  registered/used the `search` icon from `@andersseen/icon` instead of inline SVG.
-- Cleaned safe `astro check` hints in touched/local code (`SkipLink.astro`, `BlogBentoGrid.astro`,
-  `PostCard.astro`, `image-optimization.ts`, theme behavior test). `pnpm astro check` now exits
-  successfully; remaining hints are non-blocking and outside this phase.
-- Fixed an existing bento layout edge case surfaced by `pnpm test`: random selection could choose
-  `SINGLE` with one post left, producing consecutive `SINGLE` layouts despite the test contract.
-- Completed roadmap Phase 2: added the first local MDX post, documented the shared-across-locales
-  content strategy in `docs/specs/2026-07-16-local-content-proof.md`, and expanded E2E coverage for
-  the local post routes plus RSS.
 
 ## Known issues / tech debt (verify before relying on them — fix + remove entries as you go)
 

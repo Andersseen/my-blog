@@ -31,28 +31,60 @@ Medium RSS feed ─────mediumLoader()─────────┘
 
 ## Routing & i18n (the most error-prone area)
 
-Manual i18n, no library (see ADR-003). Default locale `es` has NO prefix; `en`/`ua` do:
+Astro owns routing natively; `@etyma/astro` owns messages (see ADR-007). Default locale `es`
+has NO prefix; `en`/`ua` do. The Ukrainian *URL path* is `ua`, but its real *language code* is
+`uk` — configured once in `astro.config.mjs`'s `i18n` block via the `{ path, codes }` form and
+never reimplemented anywhere else:
+
+```js
+i18n: {
+  defaultLocale: 'es',
+  locales: ['es', 'en', { path: 'ua', codes: ['uk'] }],
+}
+```
 
 ```
 /            /blog            /blog/<slug>       ← es (src/pages/index.astro, src/pages/blog/)
-/en          /en/blog         /en/blog/<slug>    ← en (src/pages/[lang]/...)
-/ua          /ua/blog         /ua/blog/<slug>    ← ua (src/pages/[lang]/...)
+/en          /en/blog         /en/blog/<slug>    ← en (src/pages/en/...)
+/ua          /ua/blog         /ua/blog/<slug>    ← ua (src/pages/ua/..., language code uk)
 ```
 
-**Page trees are still doubled for routing (`src/pages/...` vs `src/pages/[lang]/...`), but the
-bodies are NOT duplicated.** Home, blog-index, and blog-post pages are thin wrappers around
-shared components in `src/components/pages/` (`HomePage.astro`, `BlogIndexPage.astro`,
-`BlogPostPage.astro`). Each `src/pages/...` file only supplies routing (`getStaticPaths` for the
-`[lang]` variants) and renders the shared component — no markup/logic to keep in sync by hand.
-When adding a new page that needs both an `es` and `en`/`ua` route, follow this pattern: put the
-real content in a `src/components/pages/*.astro` component, then add two thin page files.
+**Page trees are still doubled for routing (`src/pages/...`, `src/pages/en/...`,
+`src/pages/ua/...`), but the bodies are NOT duplicated.** Astro's native i18n routing works by
+real folders (not a `[lang]` dynamic segment), so `en`/`ua` each get their own folder mirroring
+`es`'s. Home, blog-index, and blog-post pages are thin wrappers around shared components in
+`src/components/pages/` (`HomePage.astro`, `BlogIndexPage.astro`, `BlogPostPage.astro`) — no
+markup/logic to keep in sync by hand. When adding a new page that needs all three locales, put
+the real content in a `src/components/pages/*.astro` component, then add three thin page files
+(`src/pages/<page>.astro`, `src/pages/en/<page>.astro`, `src/pages/ua/<page>.astro`).
 
-Helpers in `src/i18n/index.ts` (aliased as `@/i18n`):
-- `getI18n(pathname)` → `{ locale, messages }` — the standard way pages get translations
-- `toLocalePath(locale, path)` — builds locale-aware hrefs (handles the no-prefix default)
-- `getLangCode` / `getOgLocale` — `ua` maps to lang `uk` / OG `uk_UA`, not "ua"
+Everything Etyma-related lives in `src/i18n/index.ts` (aliased `@/i18n`):
+- `i18n` — `defineI18n({ locales: ['es', 'en', 'uk'], sourceLocale: 'es', source, loaders })`.
+  `locales` are always real BCP-47 codes; `'ua'` must never appear here, only as an Astro route
+  path.
+- `getPageI18n(Astro)` → `Promise<BlogI18n>` — call once per page/layout that needs
+  translations, via `const etyma = await getPageI18n(Astro);`
+- `etyma.locale` / `etyma.direction` — the real language code (`uk`, never `ua`) and text
+  direction, for `<html lang>` / `<html dir>`
+- `etyma.t('namespace.key', params?)` — typed message lookup; a typo fails to compile
+- `etyma.path(bareLogicalPath, locale?)` — locale-aware href for a **bare** path (e.g. `/blog`,
+  never the current, already-prefixed `Astro.url.pathname` — it throws, see the gotcha below)
+- `etyma.seo()` — `{ lang, direction, canonical, alternates, xDefault }`, consumed by
+  `BaseHead.astro`
+- Types `BlogI18n`, `Translate` (`etyma.t`'s type), `LocalePath` (`etyma.path`'s type),
+  `MessageKey` — used to type component props instead of prop-drilling the whole catalog
 
-Dictionaries: `src/i18n/locales/{es,en,ua}.json` — keys must exist in all three.
+**Gotcha:** `etyma.path()` takes an already-*bare* logical path, not `Astro.url.pathname` (which
+is already locale-prefixed) — passing the raw pathname throws an `EtymaError` (`@etyma/astro`
+>= 0.1.1; 0.1.0 silently double-prefixed instead). To switch the *current* page to another
+locale (e.g. in `LanguageDropdown.astro`), use `etyma.seo().alternates` instead, which already
+computes the bare path correctly.
+
+Catalogs: `src/i18n/locales/{es,en,uk}.json` (language codes — note `uk.json`, not `ua.json`)
+written in MessageFormat 2 (`{$variable}`, `{$year :number useGrouping=never}`). Validate with
+`pnpm etyma validate ./src/i18n/locales --source es` — do not hand-check key parity.
+Open Graph's `es_ES`/`en_US`/`uk_UA` locale format is a distinct, app-specific concern Etyma does
+not own: `getOgLocale()` in `src/i18n/og-locale.ts`.
 
 ## Theming
 
@@ -111,7 +143,9 @@ of relative `../../` imports.
 | `src/utils/medium-loader.ts` | Medium RSS loader (retry + cache) |
 | `src/types/blog.ts` | `UnifiedPost` + `unifyPosts()` |
 | `src/lib/bento-layout.ts` | Post grid layout algorithm |
-| `src/i18n/index.ts` | All i18n helpers |
+| `src/i18n/index.ts` | Etyma definition + bridge (`i18n`, `getPageI18n`, `BlogI18n`, `Translate`, `LocalePath`, `MessageKey`) |
+| `src/i18n/og-locale.ts` | App-specific Open Graph locale mapping (`es_ES`/`en_US`/`uk_UA`) |
+| `src/i18n/locales/{es,en,uk}.json` | Etyma catalogs (MessageFormat 2) |
 | `src/store/theme.ts` | Theme state + persistence |
 | `src/db/db.ts` | Dexie database (`settingsService`) |
 | `src/scripts/setup-andersseen.ts` | Web Components + icon registration |
@@ -121,7 +155,21 @@ of relative `../../` imports.
 
 ## Tests
 
-- **Unit (Vitest, `tests/unit/`)**: i18n helpers, theme resolution/behavior, Dexie services,
-  bento layout, Worker sync logic. Pure-logic modules must stay unit-testable (no DOM coupling).
-- **E2E (Playwright, `tests/e2e/`)**: home, navigation, accessibility (`@axe-core/playwright`).
-  Runs against a production build in CI.
+- **Unit (Vitest, `tests/unit/`)**: the Etyma definition (`src/i18n/index.ts` — locales,
+  sourceLocale, typed keys), `getOgLocale`, theme resolution/behavior, Dexie services, bento
+  layout, Worker sync logic. Pure-logic modules must stay unit-testable (no DOM coupling).
+  `@etyma/astro` can be imported from plain Vitest since 0.1.1 (it loads `astro:i18n` lazily,
+  only when `createAstroI18n` is actually called). Locale *routing* behavior (canonical, hreflang, x-default, `/ua` → `uk`) is
+  Etyma's own responsibility and is verified in E2E against real output instead, not re-tested
+  here against @etyma/astro's internals.
+- **E2E (Playwright, `tests/e2e/`)**: home, navigation, accessibility (`@axe-core/playwright`),
+  and `seo-i18n.spec.ts` (html lang, canonical, hreflang, x-default, language-switch round trip,
+  query/hash preservation). Runs against a production build in CI.
+
+## Sitemap & catalog validation
+
+`@astrojs/sitemap` is configured with `i18n: { defaultLocale: 'es', locales: { es: 'es', en:
+'en', ua: 'uk' } }` in `astro.config.mjs`, so every sitemap URL carries `xhtml:link` hreflang
+alternates keyed by real language code (`uk`, never `ua`). Catalog correctness (missing/extra
+keys, MF2 syntax, placeholder mismatches across locales) is checked by `@etyma/cli`, not by a
+blog-specific script: `pnpm etyma validate ./src/i18n/locales --source es`.

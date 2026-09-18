@@ -1,39 +1,37 @@
 ---
 import PostCard from '../blog/PostCard.astro';
-import type { Dictionary, Locale } from '../../i18n';
-import { toLocalePath } from '../../i18n';
+import type { BlogI18n } from '../../i18n';
 import type { UnifiedPost } from '../../types/blog';
 
 interface Props {
-  locale: Locale;
-  messages: Dictionary;
+  etyma: BlogI18n;
   posts: UnifiedPost[];
 }
 
-const { locale, messages, posts } = Astro.props;
+const { etyma, posts } = Astro.props;
 ---
 
 <section class="home-reveal mx-auto mt-12 max-w-5xl space-y-6" style="--reveal-delay: 280ms;">
   <header class="flex items-end justify-between gap-4">
     <div class="space-y-1">
-      <h2 class="text-2xl font-bold tracking-tight text-foreground">{messages.blog.latestTitle}</h2>
-      <p class="text-sm text-muted-foreground">{messages.blog.latestDescription}</p>
+      <h2 class="text-2xl font-bold tracking-tight text-foreground">{etyma.t('blog.latestTitle')}</h2>
+      <p class="text-sm text-muted-foreground">{etyma.t('blog.latestDescription')}</p>
     </div>
     <and-button
-      href={toLocalePath(locale, '/blog/')}
+      href={etyma.path('/blog/')}
       variant="outline"
       size="sm"
       class="shrink-0"
       custom-class="rounded-full px-5"
     >
-      {messages.nav.blog}
+      {etyma.t('nav.blog')}
     </and-button>
   </header>
 
   <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
     {posts.map((post) => (
       <li class="h-full">
-        <PostCard post={post} locale={locale} />
+        <PostCard post={post} path={etyma.path} locale={etyma.locale} />
       </li>
     ))}
   </ul>

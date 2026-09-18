@@ -1,14 +1,14 @@
 ---
-import type { Dictionary, Locale } from '../../i18n';
+import type { BlogI18n } from '../../i18n';
 import HomeEditorialPanel from './HomeEditorialPanel.astro';
 import HomeHeroActions from './HomeHeroActions.astro';
 
 interface Props {
-  locale: Locale;
-  messages: Dictionary;
+  etyma: BlogI18n;
 }
 
-const { locale, messages } = Astro.props;
+const { etyma } = Astro.props;
+const { t } = etyma;
 ---
 
 <section class="home-hero mx-auto max-w-5xl">
@@ -22,21 +22,21 @@ const { locale, messages } = Astro.props;
     >
       <div class="space-y-5">
         <and-badge variant="secondary" class="inline-block w-fit text-[11px] uppercase tracking-[0.15em]">
-          {messages.home.badge}
+          {t('home.badge')}
         </and-badge>
         <h1 class="text-4xl font-bold tracking-tight leading-[1.1] text-foreground sm:text-5xl">
-          {messages.home.headline}
+          {t('home.headline')}
         </h1>
         <p class="text-base leading-relaxed text-muted-foreground">
-          {messages.home.description}
+          {t('home.description')}
         </p>
-        <HomeHeroActions locale={locale} messages={messages} />
+        <HomeHeroActions etyma={etyma} />
       </div>
     </and-card>
 
     <!-- Editorial panel (top-right) -->
     <div class="h-full home-reveal" style="--reveal-delay: 130ms;">
-      <HomeEditorialPanel messages={messages} />
+      <HomeEditorialPanel t={t} />
     </div>
 
     <!-- Focus / latest teaser card (bottom-right) -->
@@ -46,10 +46,10 @@ const { locale, messages } = Astro.props;
       style="--reveal-delay: 210ms;"
     >
       <and-badge variant="outline" class="w-fit text-[10px] uppercase tracking-[0.2em]">
-        {messages.blog.latestTitle}
+        {t('blog.latestTitle')}
       </and-badge>
       <p class="mt-3 text-sm leading-relaxed text-muted-foreground">
-        {messages.blog.latestDescription}
+        {t('blog.latestDescription')}
       </p>
     </and-card>
 

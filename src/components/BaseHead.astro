@@ -5,14 +5,7 @@ import '../styles/global.css';
 import type { ImageMetadata } from 'astro';
 import FallbackImage from '../assets/social-card-default.svg';
 import { AUTHOR_MEDIUM_URL, AUTHOR_PORTFOLIO_URL } from '../consts';
-import {
-	LOCALES,
-	type Locale,
-	getLangCode,
-	getLocaleFromPath,
-	stripLocaleFromPath,
-	toLocalePath,
-} from '../i18n';
+import type { BlogI18n } from '../i18n';
 import SeoMetaTags from './seo/SeoMetaTags.astro';
 import SeoFavicons from './seo/SeoFavicons.astro';
 import SeoStructuredData from './seo/SeoStructuredData.astro';
@@ -23,10 +16,8 @@ interface Props {
 	image?: ImageMetadata;
 	noindex?: boolean;
 	pageType?: 'website' | 'article';
-	locale?: Locale;
+	etyma: BlogI18n;
 }
-
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 const {
 	title,
@@ -34,20 +25,15 @@ const {
 	image = FallbackImage,
 	noindex = false,
 	pageType = 'website',
-	locale = getLocaleFromPath(Astro.url.pathname),
+	etyma,
 } = Astro.props;
 
-const basePath = stripLocaleFromPath(Astro.url.pathname);
-const pageURL = canonicalURL.toString();
+const seo = etyma.seo();
+const pageURL = seo.canonical;
 const imageURL = new URL(image.src, Astro.site).toString();
 const imageWidth = image.width;
 const imageHeight = image.height;
 const imageType = image.format === 'svg' ? 'image/svg+xml' : `image/${image.format}`;
-
-const alternateLinks = LOCALES.map((lang) => ({
-	hreflang: getLangCode(lang),
-	href: new URL(toLocalePath(lang, basePath), Astro.site),
-}));
 
 // Umami analytics — env vars are PUBLIC_ so Astro exposes them at build time
 const umamiUrl = import.meta.env.PUBLIC_UMAMI_URL;
@@ -80,11 +66,11 @@ const umamiWebsiteId = import.meta.env.PUBLIC_UMAMI_WEBSITE_ID;
 <link rel="me" href={AUTHOR_MEDIUM_URL} />
 
 {
-	alternateLinks.map((item) => (
-		<link rel="alternate" hreflang={item.hreflang} href={item.href} />
+	seo.alternates.map((alternate) => (
+		<link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />
 	))
 }
-<link rel="alternate" hreflang="x-default" href={new URL(toLocalePath('es', basePath), Astro.site)} />
+<link rel="alternate" hreflang="x-default" href={seo.xDefault} />
 
 <link rel="sitemap" href="/sitemap-index.xml" />
 <link
@@ -107,7 +93,7 @@ const umamiWebsiteId = import.meta.env.PUBLIC_UMAMI_WEBSITE_ID;
 	imageWidth={imageWidth}
 	imageHeight={imageHeight}
 	imageType={imageType}
-	locale={locale}
+	locale={etyma.locale}
 	pageType={pageType}
 	noindex={noindex}
 />
@@ -117,6 +103,6 @@ const umamiWebsiteId = import.meta.env.PUBLIC_UMAMI_WEBSITE_ID;
 	description={description}
 	pageURL={pageURL}
 	imageURL={imageURL}
-	locale={locale}
+	locale={etyma.locale}
 	pageType={pageType}
 />

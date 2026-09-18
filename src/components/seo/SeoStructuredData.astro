@@ -7,7 +7,7 @@ import {
   SITE_TITLE,
   SITE_URL,
 } from '../../consts';
-import { type Locale, getLangCode } from '../../i18n';
+import type { Locale } from '@etyma/core';
 
 interface Props {
   title: string;
@@ -20,8 +20,6 @@ interface Props {
 
 const { title, description, pageURL, imageURL, locale, pageType = 'website' } = Astro.props;
 
-const language = getLangCode(locale);
-
 const structuredData = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -31,7 +29,7 @@ const structuredData = {
       url: SITE_URL,
       name: SITE_TITLE,
       description,
-      inLanguage: language,
+      inLanguage: locale,
       publisher: {
         '@id': `${SITE_URL}/#person`,
       },
@@ -80,7 +78,7 @@ const structuredData = {
             publisher: {
               '@id': `${SITE_URL}/#person`,
             },
-            inLanguage: language,
+            inLanguage: locale,
           },
         ]
       : []),

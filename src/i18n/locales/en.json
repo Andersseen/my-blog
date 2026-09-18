@@ -21,7 +21,7 @@
     "label": "Language",
     "es": "ES",
     "en": "EN",
-    "ua": "UA"
+    "uk": "UA"
   },
   "theme": {
     "label": "Theme",
@@ -34,29 +34,25 @@
     "headline": "Technical articles on my own blog, with the same visual DNA as my portfolio.",
     "description": "This space mirrors the Andersseen Dev style to publish about Angular, TypeScript, design systems and frontend architecture without relying only on Medium.",
     "editorialTitle": "Editorial line",
-    "editorialPoints": [
-      "Scalable frontend architecture",
-      "Real experiments with Angular and Web Components",
-      "Tooling, DX and code quality insights",
-      "Content aligned with Andersseen Dev"
-    ]
+    "editorialPoint1": "Scalable frontend architecture",
+    "editorialPoint2": "Real experiments with Angular and Web Components",
+    "editorialPoint3": "Tooling, DX and code quality insights",
+    "editorialPoint4": "Content aligned with Andersseen Dev"
   },
   "about": {
     "title": "About this project",
-    "paragraphs": [
-      "This blog is designed to scale without friction: decoupled layers, strict typing, controlled global state and local IndexedDB persistence for preferences and future sessions.",
-      "The UI is built with modular Astro components, zero JavaScript by default: interactive islands are added only when they truly add value."
-    ]
+    "paragraph1": "This blog is designed to scale without friction: decoupled layers, strict typing, controlled global state and local IndexedDB persistence for preferences and future sessions.",
+    "paragraph2": "The UI is built with modular Astro components, zero JavaScript by default: interactive islands are added only when they truly add value."
   },
   "blog": {
     "latestTitle": "Latest articles",
     "latestDescription": "Technical content and architecture notes.",
     "editorialLabel": "Editorial Journal",
-    "heroImageAlt": "Featured image for"
+    "heroImageAlt": "Featured image for {$title}"
   },
   "blogPost": {
     "updatedOn": "Updated on",
-    "heroImageAlt": "Featured image of"
+    "heroImageAlt": "Featured image of {$title}"
   },
   "error": {
     "notFoundTitle": "Page not found",
@@ -67,7 +63,7 @@
     "retry": "Try again"
   },
   "footer": {
-    "rights": "All rights reserved.",
+    "rights": "© {$year :number useGrouping=never} {$author}. All rights reserved.",
     "portfolio": "Portfolio",
     "medium": "Medium"
   }

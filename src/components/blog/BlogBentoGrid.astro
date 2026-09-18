@@ -1,7 +1,8 @@
 ---
 import type { ImageMetadata } from 'astro';
 import FormattedDate from '@/components/FormattedDate.astro';
-import { type Dictionary, type Locale, toLocalePath } from '@/i18n';
+import type { Locale } from '@etyma/core';
+import type { LocalePath } from '@/i18n';
 import type { UnifiedPost } from '@/types/blog';
 import {
   generatePostGroups,
@@ -15,16 +16,16 @@ import { generateMediumSrcSet, generateSizes } from '@/lib/image-optimization';
 
 interface Props {
   posts: UnifiedPost[];
+  path: LocalePath;
   locale: Locale;
-  messages: Dictionary;
 }
 
-const { posts, locale } = Astro.props;
+const { posts, path, locale } = Astro.props;
 
 const postGroups = generatePostGroups(posts);
 
 const postHref = (post: UnifiedPost) =>
-  post.data.isExternal ? post.data.link : toLocalePath(locale, `/blog/${post.id}/`);
+  post.data.isExternal ? post.data.link : path(`/blog/${post.id}/`);
 
 const isExt = (post: UnifiedPost) => !!post.data.isExternal;
 
@@ -149,7 +150,7 @@ const isGif = (url: string | undefined): boolean => {
                         variant={featured ? 'secondary' : 'outline'}
                         class="text-[10px] uppercase tracking-[0.15em]"
                       >
-                        <FormattedDate date={post.data.pubDate} />
+                        <FormattedDate date={post.data.pubDate} locale={locale} />
                       </and-badge>
                     </div>
 
