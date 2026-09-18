@@ -30,7 +30,7 @@ test.describe('navbar', () => {
   test('navbar has locale-aware routes', async ({ page }) => {
     const localeCases = [
       { path: '/', blogHref: '/blog/' },
-      { path: '/en', blogHref: '/en/blog/' },
+      { path: '/es', blogHref: '/es/blog/' },
       { path: '/ua', blogHref: '/ua/blog/' },
     ];
 

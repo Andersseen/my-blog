@@ -4,7 +4,7 @@ interface Props {
 	locale?: string;
 }
 
-const { date, locale = 'es' } = Astro.props;
+const { date, locale = 'en' } = Astro.props;
 
 // BCP-47 language codes only (e.g. "uk", never the "ua" URL path) — Intl maps
 // the bare language subtag to a sensible region on its own.

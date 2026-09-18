@@ -30,8 +30,8 @@ const switchLanguageTo = async (page: Page, label: 'ES' | 'EN' | 'UA') => {
 
 test.describe('html lang', () => {
   for (const [path, lang] of [
-    ['/', 'es'],
-    ['/en', 'en'],
+    ['/', 'en'],
+    ['/es', 'es'],
     ['/ua', 'uk'], // release-critical: never "ua"
   ] as const) {
     test(`${path} renders <html lang="${lang}">`, async ({ page }) => {
@@ -42,7 +42,7 @@ test.describe('html lang', () => {
 });
 
 test.describe('canonical, hreflang, x-default', () => {
-  for (const path of ['/', '/en', '/ua', '/blog', '/en/blog', '/ua/blog']) {
+  for (const path of ['/', '/es', '/ua', '/blog', '/es/blog', '/ua/blog']) {
     test(`${path} emits correct SEO link tags`, async ({ page }) => {
       await page.goto(path);
 
@@ -62,8 +62,21 @@ test.describe('canonical, hreflang, x-default', () => {
       const xDefault = await page
         .locator('link[rel="alternate"][hreflang="x-default"]')
         .getAttribute('href');
-      // x-default must always resolve to the unprefixed Spanish equivalent.
+      // x-default must always resolve to the unprefixed (English, source-locale) equivalent.
       expect(xDefault).toMatch(/^https:\/\/andersseen\.dev\/(blog\/)?$/);
+    });
+  }
+});
+
+test.describe('Open Graph locale', () => {
+  for (const [path, ogLocale] of [
+    ['/', 'en_US'],
+    ['/es', 'es_ES'],
+    ['/ua', 'uk_UA'],
+  ] as const) {
+    test(`${path} emits og:locale ${ogLocale}`, async ({ page }) => {
+      await page.goto(path);
+      await expect(page.locator('meta[property="og:locale"]')).toHaveAttribute('content', ogLocale);
     });
   }
 });
@@ -77,26 +90,27 @@ test.describe('language dropdown', () => {
     }
   });
 
-  test('switching language preserves the logical page: ES -> EN -> UA -> ES', async ({ page }) => {
+  test('switching language preserves the logical page: EN -> ES -> UA -> EN', async ({ page }) => {
     await page.goto('/blog/building-this-blog-as-a-product');
 
-    await switchLanguageTo(page, 'EN');
-    await expect(page).toHaveURL(/\/en\/blog\/building-this-blog-as-a-product\/?$/);
+    await switchLanguageTo(page, 'ES');
+    await expect(page).toHaveURL(/\/es\/blog\/building-this-blog-as-a-product\/?$/);
 
     await switchLanguageTo(page, 'UA');
     await expect(page).toHaveURL(/\/ua\/blog\/building-this-blog-as-a-product\/?$/);
 
-    await switchLanguageTo(page, 'ES');
-    await expect(page).toHaveURL(/\/blog\/building-this-blog-as-a-product\/?$/);
+    await switchLanguageTo(page, 'EN');
+    await expect(page).toHaveURL(/^[^?#]*\/blog\/building-this-blog-as-a-product\/?$/);
+    expect(new URL(page.url()).pathname).not.toMatch(/^\/(es|ua|en)\//);
   });
 
   test('preserves query string and hash across a language switch', async ({ page }) => {
     await page.goto('/blog/?tag=angular#latest');
 
-    await switchLanguageTo(page, 'EN');
+    await switchLanguageTo(page, 'ES');
 
     const url = new URL(page.url());
-    expect(url.pathname).toBe('/en/blog/');
+    expect(url.pathname).toBe('/es/blog/');
     expect(url.search).toBe('?tag=angular');
     expect(url.hash).toBe('#latest');
   });

@@ -19,7 +19,6 @@
     "test:e2e:ui": "playwright test --ui",
     "search:build": "pagefind --site dist",
     "search:serve": "pagefind --site dist --serve",
-    "i18n:validate": "etyma validate ./src/i18n/locales --source es",
     "lighthouse": "lighthouse https://andersseen.dev --output=html --output-path=./lighthouse-report.html",
     "lighthouse:local": "lighthouse http://127.0.0.1:4321 --output=html --output-path=./lighthouse-report.html",
     "worker:deploy": "wrangler deploy",
@@ -46,7 +45,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.8",
     "@axe-core/playwright": "^4.10.0",
-    "@etyma/cli": "^0.1.0",
+    "@etyma/tooling": "^0.1.0",
     "@playwright/test": "^1.58.2",
     "@typescript-eslint/eslint-plugin": "^8.57.2",
     "@typescript-eslint/parser": "^8.57.2",

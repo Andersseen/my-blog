@@ -53,22 +53,39 @@ the whole `etyma` object or a raw catalog, unless the component's entire purpose
 
 ## i18n rules (most common source of bugs)
 
-1. Every user-visible string is a key in ALL of `src/i18n/locales/es.json`, `en.json`, `uk.json`
-   (language codes — the Ukrainian file is named after the language, `uk`, not the URL path,
-   `ua`). If you can't translate to Ukrainian, copy the English value and flag it in STATE.md —
-   never omit the key. Run `pnpm i18n:validate` before considering i18n work done.
-2. Messages use MessageFormat 2: `{$variable}` for interpolation (e.g.
+1. **Glossa owns production translations.** Every user-visible string is a key in the Glossa
+   project `my-blog` (`en` source, plus `es` and `uk`), created/edited through the Glossa MCP
+   (`set_translation`, `rename_translation`, `delete_translation`) and verified with
+   `analyze_translations` (100% coverage, no missing/extra keys). If you can't translate to
+   Ukrainian, put the English value and flag it in STATE.md — never omit the key. Never create
+   `src/i18n/locales/*.json`, translation sync/pull/push scripts, or a Glossa client; never
+   commit `GLOSSA_TOKEN`.
+2. **Code only references keys.** Read them with `etyma.t('namespace.key')`; never hardcode UI
+   text. `MessageKey` comes from the generated contract `src/i18n/etyma.generated.ts`. After a
+   source key is added/renamed/deleted in Glossa, run `pnpm dev` or `pnpm build` once so
+   `etymaRemoteContract()` refreshes it, and commit the diff. Never hand-edit or reformat that
+   file (it is in `.prettierignore`).
+3. Messages use MessageFormat 2: `{$variable}` for interpolation (e.g.
    `"Featured image for {$title}"`, read with `t('key', { title })`), `{$year :number
-   useGrouping=never}` for a plain integer (no thousands separator).
-3. Internal links: `etyma.path('/blog')` on a **bare** logical path — never template
+   useGrouping=never}` for a plain integer (no thousands separator). Do not rewrite message
+   syntax when moving content around.
+4. Internal links: `etyma.path('/blog')` on a **bare** logical path — never template
    `/${locale}/blog` by hand, and never pass the current, already-prefixed
    `Astro.url.pathname` into `.path()` (it throws). To link to the current page in
    another locale, use `etyma.seo().alternates` instead (see ARCHITECTURE.md).
-4. Page-level changes must be mirrored in all three page trees (`src/pages/...` for es,
-   `src/pages/en/...`, `src/pages/ua/...`) or extracted to a shared component.
-5. `ua` is a URL path only. The real language code is always `uk` — `etyma.locale`,
-   `<html lang>`, and sitemap/hreflang all read `uk` directly, never `ua`. Open Graph's
-   `uk_UA` format is a separate, app-specific concern in `src/i18n/og-locale.ts`.
+5. Page-level changes must be mirrored in all three page trees (`src/pages/...` for `en`,
+   `src/pages/es/...`, `src/pages/ua/...`) or extracted to a shared component.
+6. `ua` is a URL path only. The real language code is always `uk` — `etyma.locale`,
+   `<html lang>`, the Glossa catalog name (`uk.json`) and sitemap/hreflang all read `uk`
+   directly, never `ua`. Open Graph's `uk_UA` format is a separate, app-specific concern in
+   `src/i18n/og-locale.ts`.
+7. `en` is the source *and* the unprefixed default locale: Etyma `sourceLocale`, Astro
+   `defaultLocale` and the Glossa source locale must change together or not at all.
+8. Static site: a translation edit goes live only after the next build + deploy. Never add
+   runtime/browser fetching of translations, SSR, or a polling/sync layer to work around that.
+9. Unit tests must not use the network or the production catalogs: stub `fetch` and use a tiny
+   synthetic fixture (see `tests/unit/i18n.test.ts`). Do not copy production translations into
+   fixtures — that recreates a second source of truth.
 
 ## Theming rules
 
@@ -84,7 +101,7 @@ the whole `etyma` object or a raw catalog, unless the component's entire purpose
 - All interactive elements keyboard-reachable; visible focus styles; `Escape` closes overlays.
 - Images need `alt` (empty `alt=""` for decorative).
 - QA matrix before merging interaction changes: breakpoints 320/375/390/768/1024 ×
-  locales es/en/ua × themes light/dark.
+  locales en/es/ua × themes light/dark.
 
 ## SEO
 

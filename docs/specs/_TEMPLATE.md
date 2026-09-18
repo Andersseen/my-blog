@@ -21,7 +21,7 @@ Link to docs/ai/STATE.md items or ADRs if relevant.>
 ## User-visible behavior
 
 <Describe exactly what a visitor sees/does after this ships. Include the affected URLs
-(remember: `/...` for es, `/en/...`, `/ua/...`). Screenshots/sketches optional.>
+(remember: `/...` for en, `/es/...`, `/ua/...`). Screenshots/sketches optional.>
 
 ## Technical plan
 

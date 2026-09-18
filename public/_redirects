@@ -1,3 +1,6 @@
+/en /  301
+/en/ /  301
+/en/* /:splat 301
 /blog /blog/ 200
-/en/blog /en/blog/ 200
+/es/blog /es/blog/ 200
 /ua/blog /ua/blog/ 200

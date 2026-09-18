@@ -1,19 +1,29 @@
-import { defineI18n } from '@etyma/core';
+import { createHttpMessageLoader, defineRemoteI18n } from '@etyma/core';
 import { createAstroI18n, type AstroI18n, type AstroI18nContext } from '@etyma/astro';
-import es from './locales/es.json';
+import { GLOSSA_I18N_BASE } from './delivery';
+import contract from './etyma.generated';
 
 /**
- * Etyma owns messages; Astro owns routing (astro.config.mjs `i18n` block).
+ * Glossa owns translation content, Etyma loads/types/formats it, Astro owns routing
+ * (astro.config.mjs `i18n` block). This is a static build: every catalog is fetched from
+ * Glossa Public Delivery while Astro prerenders, and the result is baked into the HTML.
+ *
  * `locales` are real BCP-47 language codes — the Ukrainian *URL path* is `ua`,
  * but its language code is `uk`, and only `uk` may ever appear here.
+ *
+ * `sourceLocale` must equal Astro's `i18n.defaultLocale` (the unprefixed route), and is
+ * also the source locale of the Glossa project.
  */
-export const i18n = defineI18n({
-  locales: ['es', 'en', 'uk'],
-  sourceLocale: 'es',
-  source: es,
+const loadFromGlossa = createHttpMessageLoader(locale => `${GLOSSA_I18N_BASE}/${locale}.json`);
+
+export const i18n = defineRemoteI18n({
+  locales: ['en', 'es', 'uk'],
+  sourceLocale: 'en',
+  contract,
   loaders: {
-    en: () => import('./locales/en.json'),
-    uk: () => import('./locales/uk.json'),
+    en: loadFromGlossa,
+    es: loadFromGlossa,
+    uk: loadFromGlossa,
   },
 });
 

@@ -31,9 +31,18 @@ describe('static SEO assets', () => {
     const headers = readFileSync('public/_headers', 'utf8');
 
     expect(redirects).toContain('/blog /blog/ 200');
-    expect(redirects).toContain('/en/blog /en/blog/ 200');
+    expect(redirects).toContain('/es/blog /es/blog/ 200');
     expect(redirects).toContain('/ua/blog /ua/blog/ 200');
     expect(headers).toContain('Link: </blog/>; rel="canonical"');
+    expect(headers).toContain('Link: </es/blog/>; rel="canonical"');
+  });
+
+  it('permanently redirects the retired /en/* prefix to the unprefixed English routes', () => {
+    const redirects = readFileSync('public/_redirects', 'utf8');
+
+    expect(redirects).toContain('/en /  301');
+    expect(redirects).toContain('/en/* /:splat 301');
+    expect(redirects).not.toContain('/en/blog /en/blog/ 200');
   });
 
   it('uses versioned Andersseen icons in favicon metadata and manifest', () => {
