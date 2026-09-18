@@ -1,5 +1,5 @@
 ---
-import type { BlogI18n, MessageKey } from '../../i18n/astro';
+import type { BlogI18n, MessageKey } from '../../i18n';
 
 interface Props {
   etyma: BlogI18n;
@@ -18,11 +18,9 @@ const LANGUAGE_LABEL_KEY: Record<string, MessageKey> = {
 };
 
 // `etyma.path()` takes an already-bare logical path (e.g. "/blog"), not the
-// current, already-locale-prefixed `Astro.url.pathname` — passing the raw
-// pathname here double-prefixes ("/en/ua/blog/"). `seo().alternates` is built
-// from the same bare path internally, so it's reused here instead of
-// re-deriving it (Etyma doesn't expose that step on its own — see the Etyma
-// dogfooding findings).
+// current, already-locale-prefixed `Astro.url.pathname` (it throws on that).
+// `seo().alternates` is built from the same bare path internally, so it's
+// reused here to link "this page in another locale" instead of re-deriving it.
 //
 // This is also a static build: there is no request to read a query string or
 // fragment from at prerender time, only the route's own path. The current

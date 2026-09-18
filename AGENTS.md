@@ -22,8 +22,8 @@ Medium RSS, deployed to Cloudflare Pages.
 - **Package manager**: `pnpm` ONLY (v10, Node >= 22.12). Never use npm or yarn.
 - **Deploy**: Cloudflare Pages via GitHub Actions on push to `main`. A Cloudflare Worker (`src/workers/medium-sync/`) triggers redeploys when Medium publishes a new post.
 - **i18n**: `es` is default (no URL prefix), `en` and `ua` are prefixed (`/en/...`, `/ua/...`).
-  Astro owns routing (`astro.config.mjs` `i18n` block); `@etyma/astro` (packed local tarballs
-  in `vendor/etyma/`, pre-1.0) owns messages. The Ukrainian URL path is `ua`, its real language
+  Astro owns routing (`astro.config.mjs` `i18n` block); `@etyma/astro` (from npm, pre-1.0 —
+  expect minor-version API changes) owns messages. The Ukrainian URL path is `ua`, its real language
   code is `uk` — never confuse the two. See ADR-007.
 - **No Angular.** The `@analogjs/astro-angular` integration was removed (2026-07-06, zero components ever shipped). If islands are needed later, write a spec first — see docs/specs/.
 
@@ -47,7 +47,7 @@ pnpm i18n:validate    # etyma validate — catalog key parity + MF2 syntax acros
    path) and read it with `etyma.t('namespace.key')`. Never hardcode UI text in components.
    Run `pnpm etyma validate ./src/i18n/locales --source es` to check catalogs stay in sync.
 3. **Every internal link** must use `etyma.path(path)` — never concatenate locale prefixes by
-   hand. Get `etyma` via `getPageI18n(Astro)` from `@/i18n/astro` in a page/layout, or as a prop
+   hand. Get `etyma` via `getPageI18n(Astro)` from `@/i18n` in a page/layout, or as a prop
    in a component that receives it from its parent.
 4. **Colors only via CSS custom properties** (HSL triplets) defined in `src/styles/global.css`.
    Any new token must be defined in BOTH `:root` (light) and `[data-theme='dark']`.

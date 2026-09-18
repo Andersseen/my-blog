@@ -24,9 +24,6 @@ pnpm-debug.log*
 # macOS-specific files
 .DS_Store
 
-# packed local Etyma tarballs (dogfooding pre-release @etyma/astro; see docs/ai/STATE.md)
-vendor/etyma/*.tgz
-
 # jetbrains setting folder
 .idea/
 .env

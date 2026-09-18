@@ -11,9 +11,9 @@
 - Static build and deploy to Cloudflare Pages via GitHub Actions (push to `main`).
 - Trilingual routing (`/` es, `/en`, `/ua`) with correct hreflang (`es`/`en`/`uk`), sitemap
   (with per-URL `xhtml:link` alternates), RSS. Routing is Astro-native (`i18n` block in
-  `astro.config.mjs`); messages are `@etyma/astro` (packed local tarballs, pre-1.0 — see
-  ADR-007). `/ua` correctly resolves to language code `uk` throughout: `<html lang>`, hreflang,
-  canonical, sitemap, og:locale.
+  `astro.config.mjs`); messages are `@etyma/astro` (from npm, pre-1.0 — see ADR-007). `/ua` correctly
+  resolves to language code `uk` throughout: `<html lang>`, hreflang, canonical, sitemap,
+  og:locale.
 - Medium posts fetched at build time with retry + 1h filesystem cache.
 - Local MDX content path is exercised by `src/content/blog/building-this-blog-as-a-product.mdx`,
   rendered in all three locale route trees.
@@ -33,11 +33,12 @@
 ## Fixed this session (2026-09-18)
 
 Migrated the custom i18n system to Astro's native `i18n` routing + `@etyma/astro` — the
-real-world dogfooding acceptance test for `@etyma/astro` 0.1.0 before its first release. Full
+real-world dogfooding acceptance test for `@etyma/astro` before its first release. Full
 rationale in ADR-007. Highlights:
 
-- Packed **local tarballs** (`vendor/etyma/*.tgz`, gitignored), not npm — `@etyma/astro`/
-  `@etyma/cli` are pre-release. `astro.config.mjs` now owns routing (`i18n.locales: ['es', 'en',
+- Developed against packed local tarballs, then switched to the published packages
+  (`@etyma/core` ^0.2.0, `@etyma/astro` ^0.1.1, `@etyma/cli` ^0.1.0 — plain npm ranges, no
+  overrides). `astro.config.mjs` now owns routing (`i18n.locales: ['es', 'en',
   { path: 'ua', codes: ['uk'] }]`); Etyma's own locale list is `['es', 'en', 'uk']` — `'ua'`
   never appears as an Etyma locale, only as an Astro route path.
 - Replaced `src/pages/[lang]/...` (manual dynamic segment, hardcoded `getStaticPaths`) with real
@@ -52,13 +53,12 @@ rationale in ADR-007. Highlights:
   (previously had none). Added `tests/e2e/seo-i18n.spec.ts` (html lang, canonical/hreflang/
   x-default, `hreflang="ua"` regression check, full ES→EN→UA→ES switch incl. query/hash).
   Rewrote `tests/unit/i18n.test.ts` around the Etyma definition itself. New `pnpm i18n:validate`.
-- **Etyma findings reported upstream, not fixed here**: (1) `etyma.path()` silently
-  double-prefixes if given an already-prefixed path instead of throwing — use
-  `etyma.seo().alternates` for "current page in another locale" instead. (2) `@etyma/astro`'s
-  entry point statically imports the `astro:i18n` virtual module, so merely importing the
-  package breaks outside Astro's Vite pipeline (worked around here by splitting
-  `src/i18n/index.ts`, pure, from `src/i18n/astro.ts`, Astro-bound). (3) `MessageSource` has no
-  array-leaf support, a fairly common i18n catalog shape.
+- **Etyma findings from dogfooding**: two were fixed upstream in `@etyma/astro` 0.1.1 — (1)
+  `etyma.path()` silently double-prefixed an already-prefixed path (it now throws; use
+  `etyma.seo().alternates` for "current page in another locale"), and (2) importing the package
+  outside Astro's Vite pipeline threw because `astro:i18n` was imported eagerly (now lazy, so
+  plain Vitest can import `@/i18n`). Still open: (3) `MessageSource` has no array-leaf support,
+  a fairly common i18n catalog shape.
 
 ## Fixed this session (2026-09-17)
 

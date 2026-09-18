@@ -58,35 +58,27 @@ markup/logic to keep in sync by hand. When adding a new page that needs all thre
 the real content in a `src/components/pages/*.astro` component, then add three thin page files
 (`src/pages/<page>.astro`, `src/pages/en/<page>.astro`, `src/pages/ua/<page>.astro`).
 
-Etyma definition in `src/i18n/index.ts` (pure, `@etyma/core` only — safe to import from Vitest):
+Everything Etyma-related lives in `src/i18n/index.ts` (aliased `@/i18n`):
 - `i18n` — `defineI18n({ locales: ['es', 'en', 'uk'], sourceLocale: 'es', source, loaders })`.
   `locales` are always real BCP-47 codes; `'ua'` must never appear here, only as an Astro route
   path.
-
-Astro-bound bridge in `src/i18n/astro.ts` (imports `@etyma/astro`, only importable from `.astro`
-files — see "Why two files" below):
 - `getPageI18n(Astro)` → `Promise<BlogI18n>` — call once per page/layout that needs
   translations, via `const etyma = await getPageI18n(Astro);`
 - `etyma.locale` / `etyma.direction` — the real language code (`uk`, never `ua`) and text
   direction, for `<html lang>` / `<html dir>`
 - `etyma.t('namespace.key', params?)` — typed message lookup; a typo fails to compile
 - `etyma.path(bareLogicalPath, locale?)` — locale-aware href for a **bare** path (e.g. `/blog`,
-  never the current, already-prefixed `Astro.url.pathname` — see the gotcha below)
+  never the current, already-prefixed `Astro.url.pathname` — it throws, see the gotcha below)
 - `etyma.seo()` — `{ lang, direction, canonical, alternates, xDefault }`, consumed by
   `BaseHead.astro`
 - Types `BlogI18n`, `Translate` (`etyma.t`'s type), `LocalePath` (`etyma.path`'s type),
   `MessageKey` — used to type component props instead of prop-drilling the whole catalog
 
-**Why two files:** `@etyma/astro`'s entry point statically imports Astro's `astro:i18n` virtual
-module, which only resolves inside Astro's own Vite pipeline. Importing anything from
-`@etyma/astro` in plain Vitest throws. `src/i18n/index.ts` (the catalog/definition) has zero
-`@etyma/astro` dependency and is safe to unit-test directly; `src/i18n/astro.ts` (the
-`createAstroI18n` bridge) is only ever imported from `.astro` files.
-
 **Gotcha:** `etyma.path()` takes an already-*bare* logical path, not `Astro.url.pathname` (which
-is already locale-prefixed) — passing the raw pathname double-prefixes the result. To switch the
-*current* page to another locale (e.g. in `LanguageDropdown.astro`), use
-`etyma.seo().alternates` instead, which already computes the bare path correctly.
+is already locale-prefixed) — passing the raw pathname throws an `EtymaError` (`@etyma/astro`
+>= 0.1.1; 0.1.0 silently double-prefixed instead). To switch the *current* page to another
+locale (e.g. in `LanguageDropdown.astro`), use `etyma.seo().alternates` instead, which already
+computes the bare path correctly.
 
 Catalogs: `src/i18n/locales/{es,en,uk}.json` (language codes — note `uk.json`, not `ua.json`)
 written in MessageFormat 2 (`{$variable}`, `{$year :number useGrouping=never}`). Validate with
@@ -151,11 +143,9 @@ of relative `../../` imports.
 | `src/utils/medium-loader.ts` | Medium RSS loader (retry + cache) |
 | `src/types/blog.ts` | `UnifiedPost` + `unifyPosts()` |
 | `src/lib/bento-layout.ts` | Post grid layout algorithm |
-| `src/i18n/index.ts` | Pure Etyma definition (`i18n`, `MessageKey`) — no `@etyma/astro` import |
-| `src/i18n/astro.ts` | Astro-bound bridge (`getPageI18n`, `BlogI18n`, `Translate`, `LocalePath`) |
+| `src/i18n/index.ts` | Etyma definition + bridge (`i18n`, `getPageI18n`, `BlogI18n`, `Translate`, `LocalePath`, `MessageKey`) |
 | `src/i18n/og-locale.ts` | App-specific Open Graph locale mapping (`es_ES`/`en_US`/`uk_UA`) |
 | `src/i18n/locales/{es,en,uk}.json` | Etyma catalogs (MessageFormat 2) |
-| `vendor/etyma/*.tgz` | Packed local `@etyma/*` tarballs (gitignored, pre-release, see ADR-007) |
 | `src/store/theme.ts` | Theme state + persistence |
 | `src/db/db.ts` | Dexie database (`settingsService`) |
 | `src/scripts/setup-andersseen.ts` | Web Components + icon registration |
@@ -167,9 +157,9 @@ of relative `../../` imports.
 
 - **Unit (Vitest, `tests/unit/`)**: the Etyma definition (`src/i18n/index.ts` — locales,
   sourceLocale, typed keys), `getOgLocale`, theme resolution/behavior, Dexie services, bento
-  layout, Worker sync logic. Pure-logic modules must stay unit-testable (no DOM coupling) — this
-  is exactly why the Etyma definition and its Astro bridge are two separate files (see "Routing
-  & i18n" above). Locale *routing* behavior (canonical, hreflang, x-default, `/ua` → `uk`) is
+  layout, Worker sync logic. Pure-logic modules must stay unit-testable (no DOM coupling).
+  `@etyma/astro` can be imported from plain Vitest since 0.1.1 (it loads `astro:i18n` lazily,
+  only when `createAstroI18n` is actually called). Locale *routing* behavior (canonical, hreflang, x-default, `/ua` → `uk`) is
   Etyma's own responsibility and is verified in E2E against real output instead, not re-tested
   here against @etyma/astro's internals.
 - **E2E (Playwright, `tests/e2e/`)**: home, navigation, accessibility (`@axe-core/playwright`),

@@ -27,7 +27,7 @@ for NEW code and do not mass-reformat old code in unrelated commits.
 // 1. imports (use @/ aliases)
 // 2. Props interface + destructure with defaults
 // 3. data prep (getPageI18n, collections, etc.)
-import { getPageI18n } from '@/i18n/astro';
+import { getPageI18n } from '@/i18n';
 
 interface Props {
   title: string;
@@ -41,7 +41,7 @@ const etyma = await getPageI18n(Astro);
 ```
 
 A component that doesn't create its own `etyma` (most presentational components) takes only
-what it needs as a prop — `t: Translate` and/or `path: LocalePath` from `@/i18n/astro` — never
+what it needs as a prop — `t: Translate` and/or `path: LocalePath` from `@/i18n` — never
 the whole `etyma` object or a raw catalog, unless the component's entire purpose is i18n itself
 (e.g. `LanguageDropdown.astro`).
 
@@ -62,7 +62,7 @@ the whole `etyma` object or a raw catalog, unless the component's entire purpose
    useGrouping=never}` for a plain integer (no thousands separator).
 3. Internal links: `etyma.path('/blog')` on a **bare** logical path — never template
    `/${locale}/blog` by hand, and never pass the current, already-prefixed
-   `Astro.url.pathname` into `.path()` (it double-prefixes). To link to the current page in
+   `Astro.url.pathname` into `.path()` (it throws). To link to the current page in
    another locale, use `etyma.seo().alternates` instead (see ARCHITECTURE.md).
 4. Page-level changes must be mirrored in all three page trees (`src/pages/...` for es,
    `src/pages/en/...`, `src/pages/ua/...`) or extracted to a shared component.

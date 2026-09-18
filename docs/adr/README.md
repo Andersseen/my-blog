@@ -48,10 +48,11 @@ Este directorio contiene registros de decisiones arquitectónicas importantes to
 
 **Estado:** Aceptada (2026-09-18)
 
-**Contexto:** `@etyma/astro` (paquete propio, pre-release) llegó a un punto en
-el que podía dogfoodearse en un proyecto real. My Blog es el primer consumidor
-real de los paquetes empaquetados (`.tgz`) de `@etyma/core`/`@etyma/astro`,
-antes de su primer release público.
+**Contexto:** `@etyma/astro` (paquete propio, entonces pre-release) llegó a un punto en
+el que podía dogfoodearse en un proyecto real. My Blog fue el primer consumidor
+real: se desarrolló contra tarballs empaquetados (`.tgz`) de `@etyma/core`/`@etyma/astro`
+antes de su primer release público, y hoy consume las versiones publicadas en npm
+(`@etyma/astro` ^0.1.1).
 
 **Decisión:** Astro pasa a ser dueño del routing i18n (`astro.config.mjs`
 `i18n` block, con la locale `uk` mapeada al path `ua` vía `{ path, codes }`).
@@ -74,11 +75,11 @@ nativo de Astro funciona por carpeta, no por segmento dinámico.
 - ⚠️ Los valores de array en un catálogo (listas de bullets) no son un tipo
   de mensaje válido en Etyma — se reescribieron como claves planas
   numeradas (`home.editorialPoint1..4`). Ver `docs/ai/STATE.md`.
-- ⚠️ `@etyma/astro` importa `astro:i18n` de forma estática en su punto de
-  entrada, así que solo puede importarse desde código que corre dentro del
-  pipeline de Vite de Astro — la definición pura de Etyma vive en
-  `src/i18n/index.ts` (sin este problema) y el puente con Astro en
-  `src/i18n/astro.ts`, importado solo desde archivos `.astro`.
+- ✅ El dogfooding encontró dos bugs reales en `@etyma/astro` 0.1.0, ya
+  corregidos upstream en 0.1.1: `path()` duplicaba el prefijo de locale si se le
+  pasaba un path ya prefijado (ahora lanza error), e importar el paquete fuera
+  del pipeline de Vite de Astro fallaba por un import estático de `astro:i18n`
+  (ahora es perezoso, así que `src/i18n/index.ts` se puede importar desde Vitest).
 - ⚠️ Open Graph (`og:locale`, formato `es_ES`) es un concepto distinto de un
   código de idioma BCP-47 y Etyma no lo cubre a propósito — se mantiene un
   mapeo pequeño y propio en `src/i18n/og-locale.ts`.

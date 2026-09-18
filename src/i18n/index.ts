@@ -1,16 +1,11 @@
 import { defineI18n } from '@etyma/core';
+import { createAstroI18n, type AstroI18n, type AstroI18nContext } from '@etyma/astro';
 import es from './locales/es.json';
 
 /**
  * Etyma owns messages; Astro owns routing (astro.config.mjs `i18n` block).
  * `locales` are real BCP-47 language codes — the Ukrainian *URL path* is `ua`,
  * but its language code is `uk`, and only `uk` may ever appear here.
- *
- * This module stays free of any `@etyma/astro` import on purpose: that
- * package's entry point statically imports the `astro:i18n` virtual module,
- * which only exists inside Astro's own Vite pipeline — importing it from
- * plain Vitest throws. The Astro-bound helpers live in `./astro.ts` instead,
- * imported only from `.astro` files.
  */
 export const i18n = defineI18n({
   locales: ['es', 'en', 'uk'],
@@ -23,3 +18,9 @@ export const i18n = defineI18n({
 });
 
 export type MessageKey = (typeof i18n)['keys'][number];
+export type BlogI18n = AstroI18n<MessageKey>;
+export type Translate = BlogI18n['t'];
+export type LocalePath = BlogI18n['path'];
+
+/** Creates the request-scoped Etyma instance for the current Astro render. */
+export const getPageI18n = (astro: AstroI18nContext) => createAstroI18n(astro, i18n);

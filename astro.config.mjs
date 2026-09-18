@@ -37,7 +37,7 @@ export default defineConfig({
         '@/lib': path.resolve(__dirname, './src/lib'),
         '@/types': path.resolve(__dirname, './src/types'),
         '@/utils': path.resolve(__dirname, './src/utils'),
-        '@/i18n': path.resolve(__dirname, './src/i18n'),
+        '@/i18n': path.resolve(__dirname, './src/i18n/index.ts'),
         '@/consts': path.resolve(__dirname, './src/consts.ts'),
         '@/styles': path.resolve(__dirname, './src/styles'),
       },

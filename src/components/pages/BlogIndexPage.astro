@@ -4,7 +4,7 @@ import BlogBentoGrid from '@/components/blog/BlogBentoGrid.astro';
 import SearchInput from '@/components/search/SearchInput.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
 import { SITE_TITLE } from '@/consts';
-import { getPageI18n } from '@/i18n/astro';
+import { getPageI18n } from '@/i18n';
 import { unifyPosts, type BlogPost, type MediumPost } from '@/types/blog';
 
 const etyma = await getPageI18n(Astro);

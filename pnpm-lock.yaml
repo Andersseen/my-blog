@@ -4,9 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  '@etyma/core': file:./vendor/etyma/etyma-core-0.2.0.tgz
-
 importers:
 
   .:
@@ -27,11 +24,11 @@ importers:
         specifier: ^3.7.1
         version: 3.7.1
       '@etyma/astro':
-        specifier: file:./vendor/etyma/etyma-astro-0.0.0.tgz
-        version: file:vendor/etyma/etyma-astro-0.0.0.tgz(astro@6.0.4(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(sass@1.97.3)(terser@5.48.0)(typescript@5.9.3)(yaml@2.8.3))
+        specifier: ^0.1.1
+        version: 0.1.1(astro@6.0.4(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(sass@1.97.3)(terser@5.48.0)(typescript@5.9.3)(yaml@2.8.3))
       '@etyma/core':
-        specifier: file:vendor/etyma/etyma-core-0.2.0.tgz
-        version: file:vendor/etyma/etyma-core-0.2.0.tgz
+        specifier: ^0.2.0
+        version: 0.2.0
       '@tailwindcss/vite':
         specifier: ^4.2.1
         version: 4.2.1(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.31.1)(sass@1.97.3)(terser@5.48.0)(yaml@2.8.3))
@@ -64,8 +61,8 @@ importers:
         specifier: ^4.10.0
         version: 4.11.3(playwright-core@1.58.2)
       '@etyma/cli':
-        specifier: file:./vendor/etyma/etyma-cli-0.0.0.tgz
-        version: file:vendor/etyma/etyma-cli-0.0.0.tgz
+        specifier: ^0.1.0
+        version: 0.1.0
       '@playwright/test':
         specifier: ^1.58.2
         version: 1.58.2
@@ -690,22 +687,19 @@ packages:
     resolution: {integrity: sha512-iH1B076HoAshH1mLpHMgwdGeTs0CYwL0SPMkGuSebZrwBp16v415e9NZXg2jtrqPVQjf6IANe2Vtlr5KswtcZQ==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
 
-  '@etyma/astro@file:vendor/etyma/etyma-astro-0.0.0.tgz':
-    resolution: {integrity: sha512-3qA4xn7xhu+aLJ5L1WUPaqLJGgin2xa36g0jrVZybNKLdwWYmigKT3p7GOd0hjV88Hp3ciDysWM8WyIWNQKWRw==, tarball: file:vendor/etyma/etyma-astro-0.0.0.tgz}
-    version: 0.0.0
+  '@etyma/astro@0.1.1':
+    resolution: {integrity: sha512-XIhnd2mG4Zk3amIrump1nQ+wmTN0VQhyKo7rUPAbxu+JZBTHqPzkaPOJJB8Jg5IXmonPrOZFa8WUtyNO4CAKww==}
     engines: {node: '>=22.22.0'}
     peerDependencies:
       astro: ^6.0.0
 
-  '@etyma/cli@file:vendor/etyma/etyma-cli-0.0.0.tgz':
-    resolution: {integrity: sha512-KF3tbOJH5Ovz7E+6MeBwsB1bKMcgXtIQ5ipfm+Xo5W23/dvvsbJcRJVb2CfBUguPbZckgPsC0QkL22wp6hQ92Q==, tarball: file:vendor/etyma/etyma-cli-0.0.0.tgz}
-    version: 0.0.0
+  '@etyma/cli@0.1.0':
+    resolution: {integrity: sha512-A1ArgAthH6ZlZfCdJYdDW3kL9yVuadzARTZrefdEzcXa+Zs5pXOQx9NXhWP/aF8oph2GNzHDqLlN90285khHcg==}
     engines: {node: '>=22.22.0'}
     hasBin: true
 
-  '@etyma/core@file:vendor/etyma/etyma-core-0.2.0.tgz':
-    resolution: {integrity: sha512-VicpXE1gA4gdF+ysWfAQBoUi5JXx8vIX+ui8Efcx0e4sru9bBVogrvYaLlCZQQ6gaMnjUFJ8PEhTJmHJLBQGIw==, tarball: file:vendor/etyma/etyma-core-0.2.0.tgz}
-    version: 0.2.0
+  '@etyma/core@0.2.0':
+    resolution: {integrity: sha512-NvEY0ku4TbVuZZJseWp3bqOQIugalL+Y39vRNkjUt+r8Xhhgt40zSLKd57dsm/G4lODmLzs5f2xCBwf7ECJNjg==}
     engines: {node: '>=22.22.0'}
 
   '@etyma/tooling@0.1.0':
@@ -5402,22 +5396,22 @@ snapshots:
       '@eslint/core': 1.1.1
       levn: 0.4.1
 
-  '@etyma/astro@file:vendor/etyma/etyma-astro-0.0.0.tgz(astro@6.0.4(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(sass@1.97.3)(terser@5.48.0)(typescript@5.9.3)(yaml@2.8.3))':
+  '@etyma/astro@0.1.1(astro@6.0.4(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(sass@1.97.3)(terser@5.48.0)(typescript@5.9.3)(yaml@2.8.3))':
     dependencies:
-      '@etyma/core': file:vendor/etyma/etyma-core-0.2.0.tgz
+      '@etyma/core': 0.2.0
       astro: 6.0.4(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(sass@1.97.3)(terser@5.48.0)(typescript@5.9.3)(yaml@2.8.3)
 
-  '@etyma/cli@file:vendor/etyma/etyma-cli-0.0.0.tgz':
+  '@etyma/cli@0.1.0':
     dependencies:
       '@etyma/tooling': 0.1.0
 
-  '@etyma/core@file:vendor/etyma/etyma-core-0.2.0.tgz':
+  '@etyma/core@0.2.0':
     dependencies:
       messageformat: 4.0.0
 
   '@etyma/tooling@0.1.0':
     dependencies:
-      '@etyma/core': file:vendor/etyma/etyma-core-0.2.0.tgz
+      '@etyma/core': 0.2.0
       messageformat: 4.0.0
 
   '@exodus/bytes@1.15.0': {}
