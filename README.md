@@ -97,13 +97,17 @@ Configured in `public/_headers`:
 
 ## Internationalization
 
-Supported locales: `es` (default), `en`, `ua`.
+Supported locales: `en` (default, unprefixed), `es` (`/es`), `ua` (`/ua`, language code `uk`).
+
+Routing is Astro's native i18n; translation content lives in [Glossa](https://glossa.andersseen.dev)
+(project `my-blog`) and is read at build time through Etyma — there are no local translation files.
+See `docs/ai/ARCHITECTURE.md` for the full flow and how to add or change strings.
 
 To add a new locale:
-1. Add to `src/i18n/index.ts` (`LOCALES`, `dictionaries`, `LOCALE_TO_LANG`)
-2. Create `src/i18n/locales/{locale}.json`
-3. Add static paths in `[lang]/` pages
-4. Add OG locale mapping in `getOgLocale()`
+1. Add the locale to the Glossa project and import/translate its catalog
+2. Add it to `astro.config.mjs` (`i18n` and the sitemap `i18n` option) and to `src/i18n/index.ts`
+3. Add a `src/pages/<path>/` tree of thin page wrappers
+4. Add the OG locale mapping in `getOgLocale()`
 
 ## Content
 

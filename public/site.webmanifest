@@ -1,8 +1,8 @@
 {
   "name": "Andrii Pap Blog",
   "short_name": "Andersseen",
-  "description": "Articulos sobre frontend, arquitectura web y design systems por Andrii Pap (@Andersseen).",
-  "lang": "es",
+  "description": "Articles on front-end development, web architecture, and design systems by Andrii Pap (@Andersseen).",
+  "lang": "en",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

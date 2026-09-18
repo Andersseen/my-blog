@@ -84,6 +84,42 @@ nativo de Astro funciona por carpeta, no por segmento dinámico.
   código de idioma BCP-47 y Etyma no lo cubre a propósito — se mantiene un
   mapeo pequeño y propio en `src/i18n/og-locale.ts`.
 
+### Adenda a ADR-007 (2026-09-18): Glossa como fuente de traducciones y `en` como locale por defecto
+
+**Contexto:** los catálogos JSON locales seguían siendo una fuente de verdad de contenido
+dentro del repo. Glossa (`https://glossa.andersseen.dev`, proyecto `my-blog`) pasa a ser el
+dueño del contenido de producción, y Etyma ya ofrece `defineRemoteI18n`,
+`createHttpMessageLoader` y `etymaRemoteContract` (`@etyma/tooling`).
+
+**Decisión:** Astro sigue siendo dueño del routing; **Glossa** es dueño del contenido de
+traducciones; **Etyma** es dueño de carga/tipado/formato; my-blog solo contiene integración y
+uso de claves. El sitio sigue siendo 100 % estático: los catálogos se leen de Glossa Public
+Delivery **durante el build** y se incrustan en el HTML (sin fetch en el navegador, sin SSR, sin
+capa de sync). El contrato de claves (`src/i18n/etyma.generated.ts`, solo claves, commiteado) se
+genera desde el catálogo fuente remoto. Se eliminaron `src/i18n/locales/*.json`, `pnpm
+i18n:validate` y `@etyma/cli`. Los agentes editan traducciones vía el MCP de Glossa
+(`.mcp.json`, token en `GLOSSA_TOKEN`, nunca commiteado).
+
+Además, el locale por defecto pasa de `es` a `en`: el proyecto Glossa tiene `en` como source
+locale (no editable tras la creación) y `@etyma/astro` exige que el `sourceLocale` de Etyma sea
+la ruta sin prefijo (`defaultLocale` de Astro) y lo usa para `x-default`. Por tanto `/` es
+inglés, el español vive en `/es/...` y el ucraniano sigue en `/ua/...` (código `uk`).
+
+**Consecuencias:**
+- ✅ No existe una segunda fuente de verdad de producción para las traducciones.
+- ✅ `MessageKey` sigue tipado de punta a punta, ahora desde el contrato generado.
+- ⚠️ Una edición en Glossa NO cambia el HTML ya desplegado: aparece tras el siguiente build +
+  deploy de Cloudflare Pages (push a `main`, dispatch del Worker de Medium o fallback semanal).
+- ⚠️ El build de producción depende de Glossa: si no está disponible, **falla** (a propósito;
+  no hay copia local obsoleta que oculte el problema). Solo el contrato de claves cae al último
+  archivo commiteado.
+- ⚠️ Cambio de URLs: las URLs en español (`/`, `/blog/...`) ahora sirven inglés; `/en/*` redirige
+  con 301 a `/*` y el español pasa a `/es/*`. Riesgo SEO de reindexación.
+- ⚠️ Se pierde la validación local de sintaxis MF2 / placeholders (`etyma validate` solo lee un
+  directorio local). Registrado como seguimiento upstream (Etyma/Glossa) en `docs/ai/STATE.md`.
+- La bullet "`etyma validate` (CLI) reemplaza…" de ADR-007 queda superada por esta adenda, y el
+  árbol `src/pages/en/...` ahora es `src/pages/es/...`.
+
 ## ADR-004: Persistencia de tema en IndexedDB + localStorage
 
 **Estado:** Aceptada

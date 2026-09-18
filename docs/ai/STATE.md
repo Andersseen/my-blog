@@ -1,6 +1,6 @@
 # STATE — Current status of the project
 
-> **Snapshot: 2026-09-18.**
+> **Snapshot: 2026-09-18 (Glossa cutover).**
 > This file is the session-to-session memory of the project. If you complete meaningful work
 > (fix a known issue, add debt, change status), UPDATE THIS FILE in the same PR — that is how
 > the next agent (or the next session) knows where things stand. Keep it honest and short;
@@ -9,11 +9,15 @@
 ## What works today (verified)
 
 - Static build and deploy to Cloudflare Pages via GitHub Actions (push to `main`).
-- Trilingual routing (`/` es, `/en`, `/ua`) with correct hreflang (`es`/`en`/`uk`), sitemap
+- Trilingual routing (`/` en, `/es`, `/ua`) with correct hreflang (`en`/`es`/`uk`), sitemap
   (with per-URL `xhtml:link` alternates), RSS. Routing is Astro-native (`i18n` block in
   `astro.config.mjs`); messages are `@etyma/astro` (from npm, pre-1.0 — see ADR-007). `/ua` correctly
   resolves to language code `uk` throughout: `<html lang>`, hreflang, canonical, sitemap,
   og:locale.
+- **Translations live in Glossa** (project `my-blog`, source `en`, locales `en`/`es`/`uk`), are
+  read from Public Delivery at build time via `defineRemoteI18n`, and are baked into static HTML.
+  No local catalogs, no sync scripts, no browser fetch. Glossa MCP is configured in `.mcp.json`
+  (token from the `GLOSSA_TOKEN` env var, never committed). Edits go live on the next deploy.
 - Medium posts fetched at build time with retry + 1h filesystem cache.
 - Local MDX content path is exercised by `src/content/blog/building-this-blog-as-a-product.mdx`,
   rendered in all three locale route trees.
@@ -21,44 +25,60 @@
 - Theme system (light/dark) with anti-FOUC (localStorage) + Dexie persistence.
 - Bento grid on blog listing, Pagefind search on built site.
 - Home and blog-index page bodies live once in `src/components/pages/` and are reused by all
-  three page trees (`es`, `en`, `ua`) — no more copy-pasted markup between them.
+  three page trees (`en`, `es`, `ua`) — no more copy-pasted markup between them.
 - 404/500 pages correctly emit `noindex,nofollow` (was silently dropped before — see below).
-- Unit tests (7 suites, 36 tests) and E2E (27 tests incl. axe accessibility and the
-  `seo-i18n.spec.ts` locale-routing regression suite) both pass locally and run in the deploy
-  pipeline.
+- `astro check` (0 errors), unit tests (7 suites, 43 tests, no network) and E2E (30 tests incl.
+  axe accessibility and the `seo-i18n.spec.ts` locale/SEO regression suite) pass in dev and CI
+  (preview) modes and run in the deploy pipeline.
 - Giscus comments are wired in `BlogPost.astro` (real feature, not a leftover) but use
   placeholder `data-repo-id` / `data-category-id` — same pattern as the wrangler KV IDs, needs
   real values set out-of-band, don't invent them.
 
 ## Fixed this session (2026-09-18)
 
-Migrated the custom i18n system to Astro's native `i18n` routing + `@etyma/astro` — the
-real-world dogfooding acceptance test for `@etyma/astro` before its first release. Full
-rationale in ADR-007. Highlights:
+**1. Astro-native i18n + `@etyma/astro`** (ADR-007): replaced the hand-rolled `[lang]` system;
+Etyma locales are `['en', 'es', 'uk']`, `'ua'` is only an Astro route path; catalogs became
+MessageFormat 2 (array leaves flattened to numbered keys); sitemap gained per-URL hreflang;
+added `seo-i18n.spec.ts`. Dogfooding fixed two `@etyma/astro` bugs upstream (0.1.1); still open
+upstream: `MessageSource` has no array-leaf support.
 
-- Developed against packed local tarballs, then switched to the published packages
-  (`@etyma/core` ^0.2.0, `@etyma/astro` ^0.1.1, `@etyma/cli` ^0.1.0 — plain npm ranges, no
-  overrides). `astro.config.mjs` now owns routing (`i18n.locales: ['es', 'en',
-  { path: 'ua', codes: ['uk'] }]`); Etyma's own locale list is `['es', 'en', 'uk']` — `'ua'`
-  never appears as an Etyma locale, only as an Astro route path.
-- Replaced `src/pages/[lang]/...` (manual dynamic segment, hardcoded `getStaticPaths`) with real
-  `src/pages/en/...` / `src/pages/ua/...` folders (Astro's native per-locale-folder routing).
-- Renamed `locales/ua.json` → `uk.json`; rewrote parameterized strings to MessageFormat 2.
-  Two catalog fields were arrays (`home.editorialPoints`, `about.paragraphs`) — Etyma's
-  `MessageSource` doesn't support array leaves, so both became flat numbered keys.
-- Deleted dead `src/components/HeaderLink.astro`. Fixed two latent bugs found while touching
-  this code: `es.json`'s `footer.rights` was still English, and `PostCard`/`BlogBentoGrid`
-  never passed `locale` to `FormattedDate` (dates always rendered in Spanish).
-- Sitemap now gets an `i18n` option — every URL carries `xhtml:link` hreflang alternates
-  (previously had none). Added `tests/e2e/seo-i18n.spec.ts` (html lang, canonical/hreflang/
-  x-default, `hreflang="ua"` regression check, full ES→EN→UA→ES switch incl. query/hash).
-  Rewrote `tests/unit/i18n.test.ts` around the Etyma definition itself. New `pnpm i18n:validate`.
-- **Etyma findings from dogfooding**: two were fixed upstream in `@etyma/astro` 0.1.1 — (1)
-  `etyma.path()` silently double-prefixed an already-prefixed path (it now throws; use
-  `etyma.seo().alternates` for "current page in another locale"), and (2) importing the package
-  outside Astro's Vite pipeline threw because `astro:i18n` was imported eagerly (now lazy, so
-  plain Vitest can import `@/i18n`). Still open: (3) `MessageSource` has no array-leaf support,
-  a fairly common i18n catalog shape.
+**2. Glossa cutover** (ADR-007 addendum): production translations moved to Glossa Public
+Delivery. Local `es/en/uk.json`, `pnpm i18n:validate` and `@etyma/cli` were removed;
+`@etyma/tooling` (dev) generates the committed key contract `src/i18n/etyma.generated.ts`.
+Before deletion the three remote catalogs were compared with the local ones structurally
+(48 keys each): identical, values and MF2 strings included.
+
+**3. Default locale flipped `es` → `en` (URL-affecting!).** The Glossa project was created with
+source locale `en` and offers no way to change it (no UI control, no MCP tool), and `@etyma/astro`
+requires the Etyma source locale to be the unprefixed route — so `en` became the default:
+`/` is English, Spanish moved to `/es/...`, Ukrainian is still `/ua/...`. `public/_redirects`
+301s the old `/en/*` to `/*`. **Old Spanish URLs (`/`, `/blog/...`) now serve English and cannot be
+redirected** (same path) — expect a re-index period; watch Search Console for the `es` alternates.
+hreflang/canonical/x-default/sitemap/`og:locale` were verified on the production build for
+`/`, `/es`, `/ua` (+ blog index).
+
+## Dogfood findings (Glossa cutover)
+
+- **my-blog**: production build now hard-depends on Glossa Public Delivery being reachable
+  (verified: a simulated outage fails the build with an `EtymaError` and keeps the committed
+  contract — by design, no stale copy). `@etyma/tooling` declares `engines.node >=22.22.0` while
+  this repo says `>=22.12.0` — bump `engines`/CI if it ever bites.
+- **Etyma → `@etyma/astro`**: (a) catalogs are fetched per rendered page (render-scoped
+  registry): 11 pages → 20 Glossa requests (~4 s build), linear in page count — wants a
+  build-scoped catalog cache; (b) `etymaRemoteContract` refreshes 3× per build (one per Vite
+  pass) — harmless but redundant; (c) **quality gap:** `etyma validate` only takes a local
+  directory, so MF2 syntax and placeholder-contract checks across *remote* catalogs no longer
+  run anywhere — needs a supported remote validation path (CLI/`@etyma/tooling` flag or CI step
+  reading Public Delivery), deliberately NOT hacked into this repo with a download script;
+  (d) the source-locale/`defaultLocale` coupling is enforced with a clear error, but it is what
+  forced the URL flip above — worth documenting prominently upstream.
+- **Glossa**: (a) project source locale is not editable after creation and the MCP has no
+  project/settings tools — creating a project with the wrong source locale is unrecoverable
+  without recreating it; (b) Analysis covers completeness (missing/extra keys, coverage) but not
+  MF2 syntax/placeholder checks — see Etyma (c); (c) generic follow-up: outbound webhooks /
+  deploy hooks (`catalog.updated`, `translation.created/updated/renamed/deleted`) → GitHub
+  `repository_dispatch` or a Cloudflare Pages Deploy Hook, so static consumers can republish on
+  edit. Display name is "My-blog" (cosmetic).
 
 ## Fixed this session (2026-09-17)
 
@@ -118,6 +138,9 @@ rationale in ADR-007. Highlights:
 
 ## Backlog (candidate next steps, not commitments)
 
+- Upstream follow-ups listed under "Dogfood findings" (Etyma catalog cache + remote validation,
+  Glossa deploy webhooks / editable source locale).
+- Monitor Search Console after the `es` → `en` default flip; consider redirect/hreflang tuning.
 - Fix the 3 web-component a11y bugs upstream in `@andersseen/web-components`, bump version here.
 - Decide the GIF-hero performance tradeoff (accept slow LCP / drop GIF heroes / build a Sharp
   transcoding step) before attempting to re-enable Lighthouse CI.

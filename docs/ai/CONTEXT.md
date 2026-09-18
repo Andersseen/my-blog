@@ -24,7 +24,8 @@ systems, written in Spanish, English, and Ukrainian.
   see STATE.md; the Lighthouse CI job is currently disabled until issues are fixed).
 - **Accessible**: WCAG 2.1 AA. Verified with axe-core in E2E tests, keyboard navigation,
   skip links, `prefers-reduced-motion`.
-- **Trilingual**: `es` (default), `en`, `ua` — full parity of UI strings across the three.
+- **Trilingual**: `en` (default), `es`, `ua` — full parity of UI strings across the three, with
+  translation content owned by Glossa and rendered into static HTML at build time.
 - **Self-updating**: publishing on Medium automatically redeploys the site within ~30 minutes
   (Cloudflare Worker cron), with a weekly GitHub Actions fallback.
 - **SEO-complete**: Open Graph, Twitter Cards, JSON-LD, hreflang alternates, sitemap, RSS,

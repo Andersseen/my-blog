@@ -10,4 +10,4 @@ const OG_LOCALES: Record<string, string> = {
   uk: 'uk_UA',
 };
 
-export const getOgLocale = (locale: Locale): string => OG_LOCALES[locale] ?? 'es_ES';
+export const getOgLocale = (locale: Locale): string => OG_LOCALES[locale] ?? 'en_US';

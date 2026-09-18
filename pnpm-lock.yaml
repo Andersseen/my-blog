@@ -60,7 +60,7 @@ importers:
       '@axe-core/playwright':
         specifier: ^4.10.0
         version: 4.11.3(playwright-core@1.58.2)
-      '@etyma/cli':
+      '@etyma/tooling':
         specifier: ^0.1.0
         version: 0.1.0
       '@playwright/test':
@@ -692,11 +692,6 @@ packages:
     engines: {node: '>=22.22.0'}
     peerDependencies:
       astro: ^6.0.0
-
-  '@etyma/cli@0.1.0':
-    resolution: {integrity: sha512-A1ArgAthH6ZlZfCdJYdDW3kL9yVuadzARTZrefdEzcXa+Zs5pXOQx9NXhWP/aF8oph2GNzHDqLlN90285khHcg==}
-    engines: {node: '>=22.22.0'}
-    hasBin: true
 
   '@etyma/core@0.2.0':
     resolution: {integrity: sha512-NvEY0ku4TbVuZZJseWp3bqOQIugalL+Y39vRNkjUt+r8Xhhgt40zSLKd57dsm/G4lODmLzs5f2xCBwf7ECJNjg==}
@@ -5400,10 +5395,6 @@ snapshots:
     dependencies:
       '@etyma/core': 0.2.0
       astro: 6.0.4(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(sass@1.97.3)(terser@5.48.0)(typescript@5.9.3)(yaml@2.8.3)
-
-  '@etyma/cli@0.1.0':
-    dependencies:
-      '@etyma/tooling': 0.1.0
 
   '@etyma/core@0.2.0':
     dependencies:
