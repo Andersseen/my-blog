@@ -1,22 +1,43 @@
 ---
-import { LOCALES, type Dictionary, type Locale, toLocalePath } from '../../i18n';
+import type { BlogI18n, MessageKey } from '../../i18n/astro';
 
 interface Props {
-  locale: Locale;
-  messages: Dictionary;
-  currentPath: string;
+  etyma: BlogI18n;
   class?: string;
   slot?: string;
 }
 
-const { locale, messages, currentPath, class: className, slot: slotName } = Astro.props;
+const { etyma, class: className, slot: slotName } = Astro.props;
 
-const languageItems = LOCALES.filter((lang) => lang !== locale).map((lang) => ({
-  text: messages.language[lang],
-  value: toLocalePath(lang, currentPath),
-}));
+// Locale codes are only known at runtime, but this map keeps every value a
+// real, typo-checked catalog key — `t()` itself stays fully typed.
+const LANGUAGE_LABEL_KEY: Record<string, MessageKey> = {
+  es: 'language.es',
+  en: 'language.en',
+  uk: 'language.uk',
+};
 
-const activeLabel = messages.language[locale];
+// `etyma.path()` takes an already-bare logical path (e.g. "/blog"), not the
+// current, already-locale-prefixed `Astro.url.pathname` — passing the raw
+// pathname here double-prefixes ("/en/ua/blog/"). `seo().alternates` is built
+// from the same bare path internally, so it's reused here instead of
+// re-deriving it (Etyma doesn't expose that step on its own — see the Etyma
+// dogfooding findings).
+//
+// This is also a static build: there is no request to read a query string or
+// fragment from at prerender time, only the route's own path. The current
+// visitor's live `?query#hash` is appended client-side, in this component's
+// own <script>, at the moment they actually switch language.
+const alternates = etyma.seo().alternates;
+
+const languageItems = alternates
+  .filter((alternate) => alternate.hreflang !== etyma.locale)
+  .map((alternate) => ({
+    text: etyma.t(LANGUAGE_LABEL_KEY[alternate.hreflang]),
+    value: new URL(alternate.href).pathname,
+  }));
+
+const activeLabel = etyma.t(LANGUAGE_LABEL_KEY[etyma.locale]);
 ---
 
 <style>
@@ -40,10 +61,10 @@ const activeLabel = messages.language[locale];
 <and-dropdown
   slot={slotName}
   class:list={['language-dropdown w-auto min-w-[84px] sm:min-w-[88px]', className]}
-  label={`${messages.language.label}: ${activeLabel}`}
+  label={`${etyma.t('language.label')}: ${activeLabel}`}
   data-language-dropdown
   data-language-items={JSON.stringify(languageItems)}
-  aria-label={messages.language.label}
+  aria-label={etyma.t('language.label')}
 >
   <and-button
     slot="trigger"
@@ -124,7 +145,14 @@ const activeLabel = messages.language[locale];
           return;
         }
 
-        window.location.assign(selection);
+        // `selection` is the statically prerendered target path only — a static
+        // build has no request to read a query string or fragment from, so the
+        // *current* visitor's `?query#hash` (which only exists client-side) is
+        // appended here, at the moment they actually switch language.
+        const [targetPath] = selection.split(/[?#]/);
+        const destination = `${targetPath}${window.location.search}${window.location.hash}`;
+
+        window.location.assign(destination);
       });
     });
   };

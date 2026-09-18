@@ -13,6 +13,7 @@
       "@/types/*": ["./src/types/*"],
       "@/utils/*": ["./src/utils/*"],
       "@/i18n": ["./src/i18n/index.ts"],
+      "@/i18n/*": ["./src/i18n/*"],
       "@/consts": ["./src/consts.ts"],
       "@/styles/*": ["./src/styles/*"]
     }

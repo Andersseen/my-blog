@@ -13,7 +13,19 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // https://astro.build/config
 export default defineConfig({
   site: 'https://andersseen.dev',
-  integrations: [mdx(), sitemap()],
+  i18n: {
+    defaultLocale: 'es',
+    locales: ['es', 'en', { path: 'ua', codes: ['uk'] }],
+  },
+  integrations: [
+    mdx(),
+    sitemap({
+      i18n: {
+        defaultLocale: 'es',
+        locales: { es: 'es', en: 'en', ua: 'uk' },
+      },
+    }),
+  ],
 
   vite: {
     plugins: [tailwindcss()],
@@ -25,7 +37,7 @@ export default defineConfig({
         '@/lib': path.resolve(__dirname, './src/lib'),
         '@/types': path.resolve(__dirname, './src/types'),
         '@/utils': path.resolve(__dirname, './src/utils'),
-        '@/i18n': path.resolve(__dirname, './src/i18n/index.ts'),
+        '@/i18n': path.resolve(__dirname, './src/i18n'),
         '@/consts': path.resolve(__dirname, './src/consts.ts'),
         '@/styles': path.resolve(__dirname, './src/styles'),
       },

@@ -1,15 +1,15 @@
 ---
-import type { Dictionary } from '../../i18n';
+import type { Translate } from '../../i18n/astro';
 
 interface Props {
-  messages: Dictionary;
+  t: Translate;
 }
 
-const { messages } = Astro.props;
+const { t } = Astro.props;
 ---
 
 <div class="relative" data-pagefind-search>
-  <label for="search-input" class="sr-only">{messages.nav.search}</label>
+  <label for="search-input" class="sr-only">{t('nav.search')}</label>
   <div class="relative">
     <and-icon
       name="search"
@@ -19,7 +19,7 @@ const { messages } = Astro.props;
     <input
       id="search-input"
       type="search"
-      placeholder={messages.nav.searchPlaceholder}
+      placeholder={t('nav.searchPlaceholder')}
       class="w-full rounded-full border border-primary-300 bg-surface-strong py-2 pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
       data-pagefind-ui
     />

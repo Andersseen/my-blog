@@ -4,10 +4,10 @@ import BlogBentoGrid from '@/components/blog/BlogBentoGrid.astro';
 import SearchInput from '@/components/search/SearchInput.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
 import { SITE_TITLE } from '@/consts';
-import { getI18n } from '@/i18n';
+import { getPageI18n } from '@/i18n/astro';
 import { unifyPosts, type BlogPost, type MediumPost } from '@/types/blog';
 
-const { locale, messages } = getI18n(Astro.url.pathname);
+const etyma = await getPageI18n(Astro);
 
 let blogPosts: BlogPost[] = [];
 try {
@@ -29,22 +29,21 @@ const posts = unifyPosts(blogPosts, mediumPosts).sort(
 ---
 
 <MainLayout
-  title={`${SITE_TITLE} | ${messages.meta.blogTitle}`}
-  description={messages.meta.blogDescription}
-  locale={locale}
-  messages={messages}
+  title={`${SITE_TITLE} | ${etyma.t('meta.blogTitle')}`}
+  description={etyma.t('meta.blogDescription')}
+  etyma={etyma}
 >
   <section class="space-y-10">
     <header class="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
       <div class="max-w-xl space-y-4">
         <span class="block text-[10px] font-semibold uppercase tracking-[0.2em] text-secondary">
-          {messages.blog.editorialLabel}
+          {etyma.t('blog.editorialLabel')}
         </span>
         <h1 class="text-5xl font-bold tracking-tighter leading-none text-foreground md:text-6xl">
-          {messages.blog.latestTitle}
+          {etyma.t('blog.latestTitle')}
         </h1>
         <p class="max-w-md text-lg leading-relaxed text-muted-foreground">
-          {messages.blog.latestDescription}
+          {etyma.t('blog.latestDescription')}
         </p>
       </div>
       <div class="flex items-center gap-3">
@@ -55,8 +54,8 @@ const posts = unifyPosts(blogPosts, mediumPosts).sort(
       </div>
     </header>
 
-    <SearchInput messages={messages} />
+    <SearchInput t={etyma.t} />
 
-    <BlogBentoGrid posts={posts} locale={locale} messages={messages} />
+    <BlogBentoGrid posts={posts} path={etyma.path} locale={etyma.locale} />
   </section>
 </MainLayout>

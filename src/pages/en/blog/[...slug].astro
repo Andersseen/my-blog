@@ -4,14 +4,10 @@ import BlogPostPage from '@/components/pages/BlogPostPage.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
-  const locales = ['en', 'ua'] as const;
-
-  return locales.flatMap(lang =>
-    posts.map(post => ({
-      params: { lang, slug: post.id },
-      props: { post },
-    })),
-  );
+  return posts.map(post => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
 }
 
 const { post } = Astro.props;

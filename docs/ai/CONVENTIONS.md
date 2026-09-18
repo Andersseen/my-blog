@@ -26,17 +26,24 @@ for NEW code and do not mass-reformat old code in unrelated commits.
 ---
 // 1. imports (use @/ aliases)
 // 2. Props interface + destructure with defaults
-// 3. data prep (getI18n, collections, etc.)
+// 3. data prep (getPageI18n, collections, etc.)
+import { getPageI18n } from '@/i18n/astro';
+
 interface Props {
   title: string;
   compact?: boolean;
 }
 const { title, compact = false } = Astro.props;
-const { locale, messages } = getI18n(Astro.url.pathname);
+const etyma = await getPageI18n(Astro);
 ---
 
 <section>...</section>
 ```
+
+A component that doesn't create its own `etyma` (most presentational components) takes only
+what it needs as a prop — `t: Translate` and/or `path: LocalePath` from `@/i18n/astro` — never
+the whole `etyma` object or a raw catalog, unless the component's entire purpose is i18n itself
+(e.g. `LanguageDropdown.astro`).
 
 - No client JS unless required. If required, a plain `<script>` tag in the component, kept small.
 - Use `@andersseen/web-components` elements for interactive UI (navbar, drawer, dropdown,
@@ -46,14 +53,22 @@ const { locale, messages } = getI18n(Astro.url.pathname);
 
 ## i18n rules (most common source of bugs)
 
-1. Every user-visible string is a key in ALL of `src/i18n/locales/es.json`, `en.json`, `ua.json`.
-   If you can't translate to Ukrainian, copy the English value and flag it in STATE.md — never
-   omit the key.
-2. Internal links: `toLocalePath(locale, '/blog')` — never template `/${locale}/blog` (breaks
-   for default locale `es`, which has no prefix).
-3. Page-level changes must be mirrored in BOTH page trees (`src/pages/...` for es and
-   `src/pages/[lang]/...` for en/ua) or extracted to a shared component.
-4. `ua` locale → HTML lang `uk`, OG locale `uk_UA` (via `getLangCode` / `getOgLocale`).
+1. Every user-visible string is a key in ALL of `src/i18n/locales/es.json`, `en.json`, `uk.json`
+   (language codes — the Ukrainian file is named after the language, `uk`, not the URL path,
+   `ua`). If you can't translate to Ukrainian, copy the English value and flag it in STATE.md —
+   never omit the key. Run `pnpm i18n:validate` before considering i18n work done.
+2. Messages use MessageFormat 2: `{$variable}` for interpolation (e.g.
+   `"Featured image for {$title}"`, read with `t('key', { title })`), `{$year :number
+   useGrouping=never}` for a plain integer (no thousands separator).
+3. Internal links: `etyma.path('/blog')` on a **bare** logical path — never template
+   `/${locale}/blog` by hand, and never pass the current, already-prefixed
+   `Astro.url.pathname` into `.path()` (it double-prefixes). To link to the current page in
+   another locale, use `etyma.seo().alternates` instead (see ARCHITECTURE.md).
+4. Page-level changes must be mirrored in all three page trees (`src/pages/...` for es,
+   `src/pages/en/...`, `src/pages/ua/...`) or extracted to a shared component.
+5. `ua` is a URL path only. The real language code is always `uk` — `etyma.locale`,
+   `<html lang>`, and sitemap/hreflang all read `uk` directly, never `ua`. Open Graph's
+   `uk_UA` format is a separate, app-specific concern in `src/i18n/og-locale.ts`.
 
 ## Theming rules
 

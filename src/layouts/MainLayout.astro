@@ -4,33 +4,25 @@ import Footer from '@/components/Footer.astro';
 import Header from '@/components/Header.astro';
 import SkipLink from '@/components/SkipLink.astro';
 import type { ImageMetadata } from 'astro';
-import { type Dictionary, type Locale, getI18n, getLangCode } from '@/i18n';
+import type { BlogI18n } from '@/i18n/astro';
 
 interface Props {
   title: string;
   description: string;
   image?: ImageMetadata;
-  lang?: string;
   pageType?: 'website' | 'article';
-  locale?: Locale;
-  messages?: Dictionary;
+  etyma: BlogI18n;
   noindex?: boolean;
 }
-
-const detectedI18n = getI18n(Astro.url.pathname);
 
 const {
   title,
   description,
   image,
   pageType = 'website',
-  locale = detectedI18n.locale,
-  messages = detectedI18n.messages,
-  lang,
+  etyma,
   noindex = false,
 } = Astro.props;
-
-const htmlLang = lang ?? getLangCode(locale);
 ---
 
 <style>
@@ -50,13 +42,13 @@ const htmlLang = lang ?? getLangCode(locale);
 </style>
 
 <!doctype html>
-<html lang={htmlLang} data-theme="light">
+<html lang={etyma.locale} dir={etyma.direction} data-theme="light">
   <head>
     <script is:inline>
       (function () {
         try {
           var t = localStorage.getItem('theme-cache');
-          var scheme = t === 'dark' || t === 'light' ? t : 
+          var scheme = t === 'dark' || t === 'light' ? t :
             (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
           document.documentElement.setAttribute('data-theme', scheme);
           document.documentElement.style.colorScheme = scheme;
@@ -64,11 +56,11 @@ const htmlLang = lang ?? getLangCode(locale);
         } catch (e) {}
       })();
     </script>
-    <BaseHead title={title} description={description} image={image} pageType={pageType} locale={locale} noindex={noindex} />
+    <BaseHead title={title} description={description} image={image} pageType={pageType} etyma={etyma} noindex={noindex} />
 
   </head>
   <body class="min-h-screen bg-background text-foreground antialiased">
-    <SkipLink messages={messages} />
+    <SkipLink t={etyma.t} />
     <div class="relative min-h-screen">
       <div
         aria-hidden="true"
@@ -76,11 +68,11 @@ const htmlLang = lang ?? getLangCode(locale);
       ></div>
 
       <div class="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-4 sm:px-6 md:px-8 lg:px-8">
-        <Header locale={locale} messages={messages} />
+        <Header etyma={etyma} />
         <main id="main-content" class="flex-1 pb-8 pt-2" tabindex="-1">
           <slot />
         </main>
-        <Footer messages={messages} />
+        <Footer t={etyma.t} />
       </div>
     </div>
 

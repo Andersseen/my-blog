@@ -1,85 +1,25 @@
-import en from "./locales/en.json";
-import es from "./locales/es.json";
-import ua from "./locales/ua.json";
+import { defineI18n } from '@etyma/core';
+import es from './locales/es.json';
 
-export const LOCALES = ["es", "en", "ua"] as const;
-export type Locale = (typeof LOCALES)[number];
-export const DEFAULT_LOCALE: Locale = "es";
+/**
+ * Etyma owns messages; Astro owns routing (astro.config.mjs `i18n` block).
+ * `locales` are real BCP-47 language codes — the Ukrainian *URL path* is `ua`,
+ * but its language code is `uk`, and only `uk` may ever appear here.
+ *
+ * This module stays free of any `@etyma/astro` import on purpose: that
+ * package's entry point statically imports the `astro:i18n` virtual module,
+ * which only exists inside Astro's own Vite pipeline — importing it from
+ * plain Vitest throws. The Astro-bound helpers live in `./astro.ts` instead,
+ * imported only from `.astro` files.
+ */
+export const i18n = defineI18n({
+  locales: ['es', 'en', 'uk'],
+  sourceLocale: 'es',
+  source: es,
+  loaders: {
+    en: () => import('./locales/en.json'),
+    uk: () => import('./locales/uk.json'),
+  },
+});
 
-const dictionaries = { es, en, ua } as const;
-
-export type Dictionary = (typeof dictionaries)[Locale];
-
-const LOCALE_TO_LANG = {
-  es: "es",
-  en: "en",
-  ua: "uk",
-} as const;
-
-export const isLocale = (value: string): value is Locale => {
-  return LOCALES.includes(value as Locale);
-};
-
-export const getDictionary = (locale: Locale): Dictionary => {
-  return dictionaries[locale];
-};
-
-export const getLocaleFromPath = (pathname: string): Locale => {
-  const [firstSegment = ""] = pathname.split("/").filter(Boolean);
-  return isLocale(firstSegment) ? firstSegment : DEFAULT_LOCALE;
-};
-
-export const stripLocaleFromPath = (pathname: string): string => {
-  const segments = pathname.split("/").filter(Boolean);
-  if (segments.length === 0) {
-    return "/";
-  }
-
-  const hasLocalePrefix = isLocale(segments[0]);
-  const nextSegments = hasLocalePrefix ? segments.slice(1) : segments;
-
-  if (nextSegments.length === 0) {
-    return "/";
-  }
-
-  return `/${nextSegments.join("/")}`;
-};
-
-export const toLocalePath = (locale: Locale, path: string): string => {
-  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  const preserveTrailingSlash = normalizedPath !== "/" && normalizedPath.endsWith("/");
-  const trimmedPath = normalizedPath === "/" ? "/" : normalizedPath.replace(/\/+$/, "");
-
-  const localizedPath =
-    locale === DEFAULT_LOCALE
-      ? trimmedPath
-      : trimmedPath === "/"
-        ? `/${locale}`
-        : `/${locale}${trimmedPath}`;
-
-  return preserveTrailingSlash ? `${localizedPath}/` : localizedPath;
-};
-
-export const getLangCode = (locale: Locale): string => {
-  return LOCALE_TO_LANG[locale];
-};
-
-export const getI18n = (pathname: string) => {
-  const locale = getLocaleFromPath(pathname);
-  return {
-    locale,
-    messages: getDictionary(locale),
-  };
-};
-
-export const getOgLocale = (locale: Locale): string => {
-  if (locale === "en") {
-    return "en_US";
-  }
-
-  if (locale === "ua") {
-    return "uk_UA";
-  }
-
-  return "es_ES";
-};
+export type MessageKey = (typeof i18n)['keys'][number];

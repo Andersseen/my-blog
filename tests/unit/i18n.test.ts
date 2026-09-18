@@ -1,80 +1,39 @@
 import { describe, expect, it } from 'vitest';
-import {
-  getLocaleFromPath,
-  stripLocaleFromPath,
-  toLocalePath,
-  getLangCode,
-  getOgLocale,
-  isLocale,
-} from '../../src/i18n';
+import { i18n } from '../../src/i18n';
+import { getOgLocale } from '../../src/i18n/og-locale';
 
-describe('getLocaleFromPath', () => {
-  it('extracts locale from path', () => {
-    expect(getLocaleFromPath('/en/blog')).toBe('en');
-    expect(getLocaleFromPath('/ua/post')).toBe('ua');
+// Locale-routing behavior (Astro's native `i18n` config, `/ua` -> `uk`,
+// localized paths, canonical/hreflang/x-default, language dropdown) is
+// exercised against the real production build in tests/e2e — @etyma/astro
+// already unit-tests that logic itself, so it is not duplicated here.
+
+describe('Etyma i18n definition', () => {
+  it('uses real BCP-47 language codes, never the "ua" URL path', () => {
+    expect(i18n.locales).toEqual(['es', 'en', 'uk']);
+    expect(i18n.locales).not.toContain('ua');
   });
 
-  it('defaults to es when no locale prefix', () => {
-    expect(getLocaleFromPath('/blog')).toBe('es');
-    expect(getLocaleFromPath('/')).toBe('es');
-  });
-});
-
-describe('stripLocaleFromPath', () => {
-  it('removes locale prefix from path', () => {
-    expect(stripLocaleFromPath('/en/blog')).toBe('/blog');
-    expect(stripLocaleFromPath('/ua/about')).toBe('/about');
+  it('defaults to Spanish as the source locale', () => {
+    expect(i18n.sourceLocale).toBe('es');
   });
 
-  it('returns root for root path', () => {
-    expect(stripLocaleFromPath('/')).toBe('/');
-    expect(stripLocaleFromPath('/es')).toBe('/');
-  });
-});
-
-describe('toLocalePath', () => {
-  it('returns path without locale for default', () => {
-    expect(toLocalePath('es', '/blog')).toBe('/blog');
-    expect(toLocalePath('es', '/')).toBe('/');
-  });
-
-  it('prefixes non-default locales', () => {
-    expect(toLocalePath('en', '/blog')).toBe('/en/blog');
-    expect(toLocalePath('ua', '/')).toBe('/ua');
-  });
-
-  it('preserves a deliberate trailing slash', () => {
-    expect(toLocalePath('es', '/blog/')).toBe('/blog/');
-    expect(toLocalePath('en', '/blog/')).toBe('/en/blog/');
-    expect(toLocalePath('ua', 'blog/')).toBe('/ua/blog/');
-  });
-});
-
-describe('getLangCode', () => {
-  it('maps locales to HTML lang codes', () => {
-    expect(getLangCode('es')).toBe('es');
-    expect(getLangCode('en')).toBe('en');
-    expect(getLangCode('ua')).toBe('uk');
+  it('exposes every catalog message as a typed, dotted key', () => {
+    expect(i18n.keys.length).toBeGreaterThan(0);
+    expect(i18n.keys).toContain('nav.home');
+    expect(i18n.keys).toContain('footer.rights');
+    expect(i18n.keys).toContain('blog.heroImageAlt');
+    expect(i18n.keys).toContain('language.uk');
   });
 });
 
 describe('getOgLocale', () => {
-  it('returns correct OG locale', () => {
-    expect(getOgLocale('en')).toBe('en_US');
-    expect(getOgLocale('ua')).toBe('uk_UA');
+  it('maps real locale codes to Open Graph underscore locales', () => {
     expect(getOgLocale('es')).toBe('es_ES');
-  });
-});
-
-describe('isLocale', () => {
-  it('returns true for valid locales', () => {
-    expect(isLocale('es')).toBe(true);
-    expect(isLocale('en')).toBe(true);
-    expect(isLocale('ua')).toBe(true);
+    expect(getOgLocale('en')).toBe('en_US');
+    expect(getOgLocale('uk')).toBe('uk_UA');
   });
 
-  it('returns false for invalid locales', () => {
-    expect(isLocale('fr')).toBe(false);
-    expect(isLocale('de')).toBe(false);
+  it('falls back to Spanish for an unknown locale', () => {
+    expect(getOgLocale('fr')).toBe('es_ES');
   });
 });

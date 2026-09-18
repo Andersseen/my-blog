@@ -1,28 +1,27 @@
 ---
 import { AUTHOR_USERNAME, SITE_TITLE } from '../consts';
-import { type Dictionary, type Locale, stripLocaleFromPath, toLocalePath } from '../i18n';
+import type { BlogI18n } from '../i18n/astro';
 import LanguageDropdown from './i18n/LanguageDropdown.astro';
 import ThemeToggle from './theme/ThemeToggle.astro';
 
 interface Props {
-  locale: Locale;
-  messages: Dictionary;
+  etyma: BlogI18n;
 }
 
-const { locale, messages } = Astro.props;
+const { etyma } = Astro.props;
 
-const currentPath = stripLocaleFromPath(Astro.url.pathname);
-const homePath = toLocalePath(locale, '/');
-const blogPath = toLocalePath(locale, '/blog/');
+const pathname = Astro.url.pathname;
+const homePath = etyma.path('/');
+const blogPath = etyma.path('/blog/');
 
 const isActive = (path: string) => {
-  if (path === '/') return !currentPath.startsWith('/blog');
-  return currentPath.startsWith(path);
+  if (path === homePath) return !pathname.startsWith(blogPath);
+  return pathname.startsWith(path);
 };
 
 const navLinks = [
-  { label: messages.nav.home, href: toLocalePath(locale, '/'), active: isActive('/') },
-  { label: messages.nav.blog, href: blogPath, active: isActive('/blog') },
+  { label: etyma.t('nav.home'), href: homePath, active: isActive(homePath) },
+  { label: etyma.t('nav.blog'), href: blogPath, active: isActive(blogPath) },
 ];
 
 const navItems = navLinks.map(link => ({
@@ -53,19 +52,19 @@ const activeItemId = navLinks.find(link => link.active)?.href;
 
   <!-- Desktop Controls -->
   <div slot="end" class="flex shrink-0 items-center gap-2">
-    <LanguageDropdown locale={locale} messages={messages} currentPath={currentPath} class="min-w-[74px]" />
-    <ThemeToggle messages={messages} />
+    <LanguageDropdown etyma={etyma} class="min-w-[74px]" />
+    <ThemeToggle t={etyma.t} />
   </div>
 
   <!-- Mobile Title -->
   <span slot="mobile-title" class="text-[0.78rem] font-bold tracking-[0.12em] uppercase text-[hsl(var(--muted-foreground))]">
-    {messages.nav.menu}
+    {etyma.t('nav.menu')}
   </span>
 
   <!-- Mobile Controls -->
   <div slot="mobile-actions" class="grid gap-3 border-t border-[hsl(var(--primary-300)/0.28)] pt-4">
-    <LanguageDropdown locale={locale} messages={messages} currentPath={currentPath} />
-    <ThemeToggle messages={messages} />
+    <LanguageDropdown etyma={etyma} />
+    <ThemeToggle t={etyma.t} />
   </div>
 </and-navbar>
 
