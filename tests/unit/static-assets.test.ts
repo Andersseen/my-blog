@@ -11,6 +11,19 @@ describe('static SEO assets', () => {
     expect(workflow).not.toContain('wrangler pages deploy ./dist --branch');
   });
 
+  it('ships a self-destructing sw.js that heals browsers still running the retired service worker', () => {
+    const sw = readFileSync('public/sw.js', 'utf8');
+    const headers = readFileSync('public/_headers', 'utf8');
+    const code = sw.replace(/^\s*\/\/.*$/gm, '');
+
+    // Without a fetch handler it can never intercept (or break) a navigation.
+    expect(code).not.toMatch(/addEventListener\(\s*['"]fetch['"]/);
+    expect(code).toContain('caches.delete');
+    expect(code).toContain('registration.unregister()');
+    expect(code).toContain('skipWaiting()');
+    expect(headers).toMatch(/\/sw\.js\s+Cache-Control: no-cache/);
+  });
+
   it('marks the RSS feed as crawlable but not indexable on Cloudflare Pages', () => {
     const headers = readFileSync('public/_headers', 'utf8');
 

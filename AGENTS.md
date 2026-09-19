@@ -70,7 +70,10 @@ pnpm search:build     # Pagefind index (run after build)
 6. **Commits**: Conventional Commits enforced by commitlint. Allowed types and scopes are in
    `commitlint.config.js` — check it before committing (e.g. `feat(blog): ...`, `fix(i18n): ...`).
 7. **Do not add dependencies** without checking bundle impact and noting it. This site's core value is speed.
-8. **Do not reintroduce a service worker** (`sw.js` was deliberately removed in commit `fbc27c7`).
+8. **Do not reintroduce a service worker** (removed in commit `fbc27c7`). The one exception is
+   `public/sw.js`: a self-destructing kill-switch (no `fetch` handler) that unregisters the old
+   worker still installed in visitors' browsers, which otherwise breaks every redirecting URL with
+   `ERR_FAILED`. Never delete it or give it caching logic; a unit test guards this.
 
 ## Definition of Done
 

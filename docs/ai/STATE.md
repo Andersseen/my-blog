@@ -34,6 +34,20 @@
   placeholder `data-repo-id` / `data-category-id` — same pattern as the wrangler KV IDs, needs
   real values set out-of-band, don't invent them.
 
+## Fixed this session (2026-09-19)
+
+**"This site can't be reached" (`ERR_FAILED`) on any URL that redirects (`/en`, `/ua`, `/es`, …).**
+Not a routing bug: the service worker removed in `fbc27c7` stayed installed in every browser that
+had visited before, because deleting `sw.js` does not unregister it. Its `fetch` handler returns
+`fetch(request, {redirect:'follow'})` to navigations, and Chrome rejects a redirected response for a
+navigation (console: "a redirected response was used for a request whose redirect mode is not
+'follow'"). The `_redirects` rewrites for `/blog` (`5cedf0a`) only dodged one symptom. Fix:
+`public/sw.js` is now a self-destructing kill-switch (unregisters, wipes caches, reloads tabs);
+reproduced and verified with Playwright against a redirecting server. Browsers heal on their next
+`sw.js` update check (≤ 24 h, or immediately via DevTools → Application → Service Workers → Update /
+Unregister). **Keep `public/sw.js`** — removing it re-strands anyone who has not healed yet; it is
+safe to drop only after months. Guarded by `tests/unit/static-assets.test.ts`.
+
 ## Fixed this session (2026-09-18)
 
 **1. Astro-native i18n + `@etyma/astro`** (ADR-007): replaced the hand-rolled `[lang]` system;

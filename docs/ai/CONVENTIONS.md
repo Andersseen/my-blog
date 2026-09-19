@@ -131,7 +131,8 @@ the whole `etyma` object or a raw catalog, unless the component's entire purpose
 - Editing `dist/`, `.astro/`, `playwright-report/`, `test-results/`, `pnpm-lock.yaml` (by hand).
 - npm/yarn commands (pnpm only).
 - New runtime dependencies without stating the size/benefit tradeoff.
-- Service workers (removed deliberately — `fbc27c7`).
+- Service workers (removed deliberately — `fbc27c7`). `public/sw.js` is only the self-destructing
+  kill-switch for browsers that still run the old one — keep it, never add a `fetch` handler.
 - SSR/adapters — the site must remain fully static.
 - Committing secrets. Worker secrets go via `wrangler secret put`; local env in `.env`
   (see `.env.example`).
