@@ -44,11 +44,12 @@ single-file bug fixes, dependency bumps.
 
 ## Index
 
-| Spec                                                              | Status      |
-| :---------------------------------------------------------------- | :---------- |
-| [Pages Production Deploy](2026-09-17-pages-production-deploy.md)  | Done        |
-| [Closed Bento Layout](2026-09-17-closed-bento-layout.md)          | Done        |
-| [SEO Icons And Routes](2026-09-17-seo-icons-routes.md)            | Done        |
-| [Local Content Pipeline Proof](2026-07-16-local-content-proof.md) | Done        |
+| Spec                                                                         | Status |
+| :--------------------------------------------------------------------------- | :----- |
+| [Pages Production Deploy](2026-09-17-pages-production-deploy.md)             | Done   |
+| [Closed Bento Layout](2026-09-17-closed-bento-layout.md)                     | Done   |
+| [SEO Icons And Routes](2026-09-17-seo-icons-routes.md)                       | Done   |
+| [Local Content Pipeline Proof](2026-07-16-local-content-proof.md)            | Done   |
+| [Restore Spanish Source Locale](2026-09-23-restore-spanish-source-locale.md) | Done   |
 
 Keep this index updated — it's the quickest way to see what's in flight.

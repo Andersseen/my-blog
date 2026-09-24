@@ -61,8 +61,8 @@ importers:
         specifier: ^4.10.0
         version: 4.11.3(playwright-core@1.58.2)
       '@etyma/tooling':
-        specifier: ^0.1.0
-        version: 0.1.0
+        specifier: ^0.2.0
+        version: 0.2.0
       '@playwright/test':
         specifier: ^1.58.2
         version: 1.58.2
@@ -697,8 +697,8 @@ packages:
     resolution: {integrity: sha512-NvEY0ku4TbVuZZJseWp3bqOQIugalL+Y39vRNkjUt+r8Xhhgt40zSLKd57dsm/G4lODmLzs5f2xCBwf7ECJNjg==}
     engines: {node: '>=22.22.0'}
 
-  '@etyma/tooling@0.1.0':
-    resolution: {integrity: sha512-DXexMiIhnd3Gmxc61P1WhsvyCzr4xb886JwO7aSbIrYfzyzU5hhUGO/b0NN9jPkvs9SThR8MTfcgpHMxJGp/5A==}
+  '@etyma/tooling@0.2.0':
+    resolution: {integrity: sha512-iJL/VWnew31jgaojvcAZd7GdFliMVGiyWkBn6ixx06UBNVAExedsYy6Yn/SiCij7XzO1zRX5WvkHDn02fuKt9A==}
     engines: {node: '>=22.22.0'}
 
   '@exodus/bytes@1.15.0':
@@ -5400,7 +5400,7 @@ snapshots:
     dependencies:
       messageformat: 4.0.0
 
-  '@etyma/tooling@0.1.0':
+  '@etyma/tooling@0.2.0':
     dependencies:
       '@etyma/core': 0.2.0
       messageformat: 4.0.0

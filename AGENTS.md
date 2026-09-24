@@ -6,14 +6,14 @@ Medium RSS, deployed to Cloudflare Pages.
 
 ## Read this first (in order)
 
-| File | When to read |
-| :--- | :--- |
-| [docs/ai/CONTEXT.md](docs/ai/CONTEXT.md) | Always — why this project exists, goals, non-goals |
-| [docs/ai/ARCHITECTURE.md](docs/ai/ARCHITECTURE.md) | Before touching any code — how the pieces fit |
-| [docs/ai/CONVENTIONS.md](docs/ai/CONVENTIONS.md) | Before writing any code — style, patterns, hard rules |
-| [docs/ai/STATE.md](docs/ai/STATE.md) | Always — current status, known issues, backlog |
-| [docs/specs/README.md](docs/specs/README.md) | Before starting a non-trivial feature — spec-driven workflow |
-| [docs/adr/README.md](docs/adr/README.md) | When questioning an architectural choice — the decision is probably recorded |
+| File                                               | When to read                                                                 |
+| :------------------------------------------------- | :--------------------------------------------------------------------------- |
+| [docs/ai/CONTEXT.md](docs/ai/CONTEXT.md)           | Always — why this project exists, goals, non-goals                           |
+| [docs/ai/ARCHITECTURE.md](docs/ai/ARCHITECTURE.md) | Before touching any code — how the pieces fit                                |
+| [docs/ai/CONVENTIONS.md](docs/ai/CONVENTIONS.md)   | Before writing any code — style, patterns, hard rules                        |
+| [docs/ai/STATE.md](docs/ai/STATE.md)               | Always — current status, known issues, backlog                               |
+| [docs/specs/README.md](docs/specs/README.md)       | Before starting a non-trivial feature — spec-driven workflow                 |
+| [docs/adr/README.md](docs/adr/README.md)           | When questioning an architectural choice — the decision is probably recorded |
 
 ## Quick facts
 
@@ -22,13 +22,13 @@ Medium RSS, deployed to Cloudflare Pages.
 - **Design system**: `@andersseen/web-components` + `@andersseen/icon` (external packages, do not fork locally)
 - **Package manager**: `pnpm` ONLY (v10, Node >= 22.12). Never use npm or yarn.
 - **Deploy**: Cloudflare Pages via GitHub Actions on push to `main`. A Cloudflare Worker (`src/workers/medium-sync/`) triggers redeploys when Medium publishes a new post.
-- **i18n**: `en` is default (no URL prefix), `es` and `ua` are prefixed (`/es/...`, `/ua/...`).
+- **i18n**: `es` is default (no URL prefix), `en` and `ua` are prefixed (`/en/...`, `/ua/...`).
   Three owners, never mix them: **Astro** owns routing (`astro.config.mjs` `i18n` block),
-  **Glossa** owns production translation *content*, **Etyma** (`@etyma/core` + `@etyma/astro`, from
+  **Glossa** owns production translation _content_, **Etyma** (`@etyma/core` + `@etyma/astro`, from
   npm, pre-1.0 — expect minor-version API changes) owns loading, typing and formatting.
   The Ukrainian URL path is `ua`, its real language code is `uk` — never confuse the two.
   Etyma's `sourceLocale`, Astro's `defaultLocale` and the Glossa project's source locale must all
-  be `en` (`@etyma/astro` throws if the source locale is served from a prefixed URL). See ADR-007.
+  be `es` (`@etyma/astro` throws if the source locale is served from a prefixed URL). See ADR-007.
 - **No Angular.** The `@analogjs/astro-angular` integration was removed (2026-07-06, zero components ever shipped). If islands are needed later, write a spec first — see docs/specs/.
 
 ## Commands
@@ -47,20 +47,25 @@ pnpm search:build     # Pagefind index (run after build)
 1. **Never edit** `dist/`, `playwright-report/`, `test-results/`, `.astro/`, `pnpm-lock.yaml`, or
    `src/i18n/etyma.generated.ts` by hand.
 2. **Production translations are owned by Glossa** (https://glossa.andersseen.dev, project
-   `my-blog`, source locale `en`, locales `en`/`es`/`uk`). Never hardcode UI text in components; read
+   `my-blog`, source locale `es`, locales `es`/`en`/`uk`). Never hardcode UI text in components; read
    it with `etyma.t('namespace.key')`. For every new user-visible string:
    1. use the Glossa MCP (`.mcp.json`; needs `GLOSSA_TOKEN` exported in your shell);
-   2. create the source `en` value with `set_translation`, then the `es` and `uk` values;
+   2. create the source `es` value with `set_translation`, then the `en` and `uk` values;
    3. run `analyze_translations` — coverage must be 100% with no missing/extra keys;
    4. reference the key from code with `etyma.t(...)`;
-   5. run `pnpm dev` or `pnpm build` once when the *source key set* changed (added/renamed/
+   5. run `pnpm dev` or `pnpm build` once when the _source key set_ changed (added/renamed/
       deleted): `etymaRemoteContract()` refreshes `src/i18n/etyma.generated.ts`. Commit that diff;
       never hand-edit it.
+   6. `pnpm build` also validates every Glossa catalog (`etymaRemoteValidation()`): a missing or
+      extra key, broken MessageFormat 2 or a dropped placeholder fails the build. Fix it in
+      Glossa, never by skipping the plugin. `locales`, `sourceLocale` and the Glossa URL live
+      only in `src/i18n/project.ts`.
 
    **Do not** recreate `src/i18n/locales/*.json`, add translation pull/push/sync scripts, or
-   build a Glossa client. **Never commit `GLOSSA_TOKEN`** (only the variable *name* may appear in
+   build a Glossa client. **Never commit `GLOSSA_TOKEN`** (only the variable _name_ may appear in
    the repo). The static site and the build need no token — Public Delivery is unauthenticated.
    Translation edits reach production only after the next build + deploy (see ARCHITECTURE.md).
+
 3. **Every internal link** must use `etyma.path(path)` — never concatenate locale prefixes by
    hand. Get `etyma` via `getPageI18n(Astro)` from `@/i18n` in a page/layout, or as a prop
    in a component that receives it from its parent.
@@ -82,8 +87,8 @@ pnpm search:build     # Pagefind index (run after build)
 - [ ] `pnpm test:e2e` passes if you touched pages, layouts, navigation, or theme
 - [ ] New UI strings exist in Glossa for `en`, `es` and `uk` (`analyze_translations` = 100%)
 - [ ] Works in both `light` and `dark` themes (toggle via header button)
-- [ ] Works on the default locale (`/`) AND prefixed locales (`/es`, `/ua`) — page trees are
-      duplicated per Astro-native locale folder (`src/pages/`, `src/pages/es/`, `src/pages/ua/`),
+- [ ] Works on the default locale (`/`) AND prefixed locales (`/en`, `/ua`) — page trees are
+      duplicated per Astro-native locale folder (`src/pages/`, `src/pages/en/`, `src/pages/ua/`),
       see ARCHITECTURE.md
 - [ ] Keyboard navigation works, focus is visible (this site targets WCAG 2.1 AA)
 - [ ] `docs/ai/STATE.md` updated if you changed status, fixed a known issue, or added debt

@@ -39,7 +39,7 @@ test.describe('Blog', () => {
   test('local post renders in all locales', async ({ page }) => {
     const routes = [
       `/blog/${localPostSlug}`,
-      `/es/blog/${localPostSlug}`,
+      `/en/blog/${localPostSlug}`,
       `/ua/blog/${localPostSlug}`,
     ];
 

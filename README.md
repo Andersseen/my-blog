@@ -30,17 +30,17 @@ my-blog/
 
 Run all commands from repository root.
 
-| Command                | Action                                      |
-| :--------------------- | :------------------------------------------ |
-| `pnpm install`         | Install dependencies                        |
-| `pnpm dev`             | Start local dev server                      |
-| `pnpm build`           | Build production output                     |
-| `pnpm preview`         | Preview production build                    |
-| `pnpm test`            | Run Vitest suite with coverage              |
-| `pnpm test:e2e`        | Run Playwright E2E suite                    |
-| `pnpm test:e2e:ui`     | Run Playwright with UI                      |
-| `pnpm search:build`    | Build Pagefind search index                 |
-| `pnpm lighthouse:local` | Run Lighthouse against local build          |
+| Command                 | Action                             |
+| :---------------------- | :--------------------------------- |
+| `pnpm install`          | Install dependencies               |
+| `pnpm dev`              | Start local dev server             |
+| `pnpm build`            | Build production output            |
+| `pnpm preview`          | Preview production build           |
+| `pnpm test`             | Run Vitest suite with coverage     |
+| `pnpm test:e2e`         | Run Playwright E2E suite           |
+| `pnpm test:e2e:ui`      | Run Playwright with UI             |
+| `pnpm search:build`     | Build Pagefind search index        |
+| `pnpm lighthouse:local` | Run Lighthouse against local build |
 
 ## Deployment
 
@@ -65,18 +65,20 @@ The blog automatically stays in sync with your Medium publications through a **t
 
 For the auto-sync Worker to function, configure these in your GitHub repository settings:
 
-| Secret | Description |
-|--------|-------------|
-| `CLOUDFLARE_API_TOKEN` | API token with `Cloudflare Workers:Edit` and `Account:Read` permissions |
-| `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare account ID |
+| Secret                         | Description                                                                                        |
+| ------------------------------ | -------------------------------------------------------------------------------------------------- |
+| `CLOUDFLARE_API_TOKEN`         | API token with `Cloudflare Workers:Edit` and `Account:Read` permissions                            |
+| `CLOUDFLARE_ACCOUNT_ID`        | Your Cloudflare account ID                                                                         |
 | `GITHUB_TOKEN` (Worker secret) | Personal Access Token with `repo` and `actions` scopes. Set via `wrangler secret put GITHUB_TOKEN` |
 
 And in `wrangler.toml`, replace:
+
 - `YOUR_KV_NAMESPACE_ID` with your production KV namespace ID
 - `YOUR_PREVIEW_KV_NAMESPACE_ID` with your preview KV namespace ID
 - `GITHUB_REPO` if your username/repo differs
 
 To create the KV namespace:
+
 ```bash
 wrangler kv:namespace create "MEDIUM_SYNC_KV"
 ```
@@ -84,6 +86,7 @@ wrangler kv:namespace create "MEDIUM_SYNC_KV"
 ### Security Headers
 
 Configured in `public/_headers`:
+
 - `X-Frame-Options: DENY`
 - `X-Content-Type-Options: nosniff`
 - `Referrer-Policy: strict-origin-when-cross-origin`
@@ -97,13 +100,14 @@ Configured in `public/_headers`:
 
 ## Internationalization
 
-Supported locales: `en` (default, unprefixed), `es` (`/es`), `ua` (`/ua`, language code `uk`).
+Supported locales: `es` (default, unprefixed), `en` (`/en`), `ua` (`/ua`, language code `uk`).
 
 Routing is Astro's native i18n; translation content lives in [Glossa](https://glossa.andersseen.dev)
 (project `my-blog`) and is read at build time through Etyma — there are no local translation files.
 See `docs/ai/ARCHITECTURE.md` for the full flow and how to add or change strings.
 
 To add a new locale:
+
 1. Add the locale to the Glossa project and import/translate its catalog
 2. Add it to `astro.config.mjs` (`i18n` and the sitemap `i18n` option) and to `src/i18n/index.ts`
 3. Add a `src/pages/<path>/` tree of thin page wrappers
@@ -128,6 +132,7 @@ Required checks before merging interaction changes:
 - Themes: `light`, `dark`
 
 Core interaction checks:
+
 1. Header open/close/collapse behavior.
 2. Locale route correctness.
 3. Theme switch behavior without visual flash regressions.
