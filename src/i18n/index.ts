@@ -17,12 +17,12 @@ import contract from './etyma.generated';
 const loadFromGlossa = createHttpMessageLoader(locale => `${GLOSSA_I18N_BASE}/${locale}.json`);
 
 export const i18n = defineRemoteI18n({
-  locales: ['en', 'es', 'uk'],
-  sourceLocale: 'en',
+  locales: ['es', 'en', 'uk'],
+  sourceLocale: 'es',
   contract,
   loaders: {
-    en: loadFromGlossa,
     es: loadFromGlossa,
+    en: loadFromGlossa,
     uk: loadFromGlossa,
   },
 });

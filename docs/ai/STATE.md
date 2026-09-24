@@ -1,6 +1,6 @@
 # STATE — Current status of the project
 
-> **Snapshot: 2026-09-18 (Glossa cutover).**
+> **Snapshot: 2026-09-23 (Spanish canonical locale restored).**
 > This file is the session-to-session memory of the project. If you complete meaningful work
 > (fix a known issue, add debt, change status), UPDATE THIS FILE in the same PR — that is how
 > the next agent (or the next session) knows where things stand. Keep it honest and short;
@@ -9,12 +9,12 @@
 ## What works today (verified)
 
 - Static build and deploy to Cloudflare Pages via GitHub Actions (push to `main`).
-- Trilingual routing (`/` en, `/es`, `/ua`) with correct hreflang (`en`/`es`/`uk`), sitemap
+- Trilingual routing (`/` es, `/en`, `/ua`) with correct hreflang (`es`/`en`/`uk`), sitemap
   (with per-URL `xhtml:link` alternates), RSS. Routing is Astro-native (`i18n` block in
   `astro.config.mjs`); messages are `@etyma/astro` (from npm, pre-1.0 — see ADR-007). `/ua` correctly
   resolves to language code `uk` throughout: `<html lang>`, hreflang, canonical, sitemap,
   og:locale.
-- **Translations live in Glossa** (project `my-blog`, source `en`, locales `en`/`es`/`uk`), are
+- **Translations live in Glossa** (project `my-blog`, source `es`, locales `es`/`en`/`uk`), are
   read from Public Delivery at build time via `defineRemoteI18n`, and are baked into static HTML.
   No local catalogs, no sync scripts, no browser fetch. Glossa MCP is configured in `.mcp.json`
   (token from the `GLOSSA_TOKEN` env var, never committed). Edits go live on the next deploy.
@@ -25,14 +25,23 @@
 - Theme system (light/dark) with anti-FOUC (localStorage) + Dexie persistence.
 - Bento grid on blog listing, Pagefind search on built site.
 - Home and blog-index page bodies live once in `src/components/pages/` and are reused by all
-  three page trees (`en`, `es`, `ua`) — no more copy-pasted markup between them.
+  three page trees (`es`, `en`, `ua`) — no more copy-pasted markup between them.
 - 404/500 pages correctly emit `noindex,nofollow` (was silently dropped before — see below).
-- `astro check` (0 errors), unit tests (7 suites, 43 tests, no network) and E2E (30 tests incl.
-  axe accessibility and the `seo-i18n.spec.ts` locale/SEO regression suite) pass in dev and CI
-  (preview) modes and run in the deploy pipeline.
+- `astro check`, unit tests (offline fixtures), and E2E (including axe accessibility and the
+  `seo-i18n.spec.ts` locale/SEO regression suite) are required in the deploy pipeline.
 - Giscus comments are wired in `BlogPost.astro` (real feature, not a leftover) but use
   placeholder `data-repo-id` / `data-category-id` — same pattern as the wrangler KV IDs, needs
   real values set out-of-band, don't invent them.
+
+## Fixed this session (2026-09-23)
+
+**Spanish is canonical again.** Glossa Project Settings now permits safe source-locale
+correction, so the project source, Etyma `sourceLocale`, Astro `defaultLocale`, sitemap, and
+typed-contract source are all `es`. Routes are `/` (Spanish), `/en` (English), and `/ua`
+(Ukrainian, language code `uk`). The remote `es.json` and `en.json` catalogs were checked before
+the routing change: 48 addressable keys each, with no drift. `/es` and `/es/*` now permanently
+redirect to their unprefixed Spanish equivalent; `/en` is canonical again. Production content
+remains exclusively in Glossa; no local catalogs, sync layer, browser fetch, or SSR was added.
 
 ## Fixed this session (2026-09-19)
 
@@ -62,14 +71,10 @@ Delivery. Local `es/en/uk.json`, `pnpm i18n:validate` and `@etyma/cli` were remo
 Before deletion the three remote catalogs were compared with the local ones structurally
 (48 keys each): identical, values and MF2 strings included.
 
-**3. Default locale flipped `es` → `en` (URL-affecting!).** The Glossa project was created with
-source locale `en` and offers no way to change it (no UI control, no MCP tool), and `@etyma/astro`
-requires the Etyma source locale to be the unprefixed route — so `en` became the default:
-`/` is English, Spanish moved to `/es/...`, Ukrainian is still `/ua/...`. `public/_redirects`
-301s the old `/en/*` to `/*`. **Old Spanish URLs (`/`, `/blog/...`) now serve English and cannot be
-redirected** (same path) — expect a re-index period; watch Search Console for the `es` alternates.
-hreflang/canonical/x-default/sitemap/`og:locale` were verified on the production build for
-`/`, `/es`, `/ua` (+ blog index).
+**3. Temporary default locale flipped `es` → `en` (resolved 2026-09-23).** The initial Glossa
+project could not yet edit its source locale, so English temporarily became the default and Spanish
+lived at `/es/...`. Glossa Project Settings now supports safe source-locale correction; Spanish is
+again canonical and unprefixed, while `/es/*` is compatibility-only traffic redirected to `/`.
 
 ## Dogfood findings (Glossa cutover)
 
@@ -81,18 +86,17 @@ hreflang/canonical/x-default/sitemap/`og:locale` were verified on the production
   registry): 11 pages → 20 Glossa requests (~4 s build), linear in page count — wants a
   build-scoped catalog cache; (b) `etymaRemoteContract` refreshes 3× per build (one per Vite
   pass) — harmless but redundant; (c) **quality gap:** `etyma validate` only takes a local
-  directory, so MF2 syntax and placeholder-contract checks across *remote* catalogs no longer
+  directory, so MF2 syntax and placeholder-contract checks across _remote_ catalogs no longer
   run anywhere — needs a supported remote validation path (CLI/`@etyma/tooling` flag or CI step
   reading Public Delivery), deliberately NOT hacked into this repo with a download script;
   (d) the source-locale/`defaultLocale` coupling is enforced with a clear error, but it is what
   forced the URL flip above — worth documenting prominently upstream.
-- **Glossa**: (a) project source locale is not editable after creation and the MCP has no
-  project/settings tools — creating a project with the wrong source locale is unrecoverable
-  without recreating it; (b) Analysis covers completeness (missing/extra keys, coverage) but not
-  MF2 syntax/placeholder checks — see Etyma (c); (c) generic follow-up: outbound webhooks /
-  deploy hooks (`catalog.updated`, `translation.created/updated/renamed/deleted`) → GitHub
+- **Glossa**: Analysis covers completeness (missing/extra keys, coverage) but not MF2
+  syntax/placeholder checks — see Etyma (c). Project Settings now resolves the prior editable
+  source-locale limitation. The remaining generic follow-up is outbound webhooks / deploy hooks
+  (`catalog.updated`, `translation.created/updated/renamed/deleted`) → GitHub
   `repository_dispatch` or a Cloudflare Pages Deploy Hook, so static consumers can republish on
-  edit. Display name is "My-blog" (cosmetic).
+  edit.
 
 ## Fixed this session (2026-09-17)
 
@@ -153,8 +157,9 @@ hreflang/canonical/x-default/sitemap/`og:locale` were verified on the production
 ## Backlog (candidate next steps, not commitments)
 
 - Upstream follow-ups listed under "Dogfood findings" (Etyma catalog cache + remote validation,
-  Glossa deploy webhooks / editable source locale).
-- Monitor Search Console after the `es` → `en` default flip; consider redirect/hreflang tuning.
+  Glossa deploy webhooks).
+- Monitor Search Console after restoring Spanish as the canonical locale; consider redirect/
+  hreflang tuning.
 - Fix the 3 web-component a11y bugs upstream in `@andersseen/web-components`, bump version here.
 - Decide the GIF-hero performance tradeoff (accept slow LCP / drop GIF heroes / build a Sharp
   transcoding step) before attempting to re-enable Lighthouse CI.

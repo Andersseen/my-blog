@@ -11,6 +11,7 @@ Este directorio contiene registros de decisiones arquitectónicas importantes to
 **Decisión:** Elegimos Astro por su enfoque de "zero-JS by default", Content Layer con schemas Zod, y soporte nativo para MDX.
 
 **Consecuencias:**
+
 - ✅ Carga inicial extremadamente rápida
 - ✅ Fácil integración de componentes de otros frameworks (Angular islands)
 - ⚠️ Curva de aprendizaje para el Content Layer
@@ -24,6 +25,7 @@ Este directorio contiene registros de decisiones arquitectónicas importantes to
 **Decisión:** Creamos `@andersseen/web-components` como librería de Web Components standalone, usada tanto en el portfolio como en el blog.
 
 **Consecuencias:**
+
 - ✅ Componentes usables en cualquier framework
 - ✅ Consistencia visual cross-project
 - ⚠️ Mayor complejidad en registro de iconos y theming
@@ -37,6 +39,7 @@ Este directorio contiene registros de decisiones arquitectónicas importantes to
 **Decisión:** Implementamos i18n manual con JSONs, routing estático, y helpers de path.
 
 **Consecuencias:**
+
 - ✅ Control total sobre URLs y slugs
 - ✅ Sin dependencias externas pesadas
 - ⚠️ Más boilerplate para añadir idiomas
@@ -63,6 +66,7 @@ carpetas reales `src/pages/en/...` y `src/pages/ua/...`, ya que el routing
 nativo de Astro funciona por carpeta, no por segmento dinámico.
 
 **Consecuencias:**
+
 - ✅ El locale real (`uk`) y el segmento de URL (`ua`) son conceptos distintos
   y explícitos en la config — el bug histórico `hreflang="ua"` deja de ser
   posible por diseño, no por convención.
@@ -106,6 +110,7 @@ la ruta sin prefijo (`defaultLocale` de Astro) y lo usa para `x-default`. Por ta
 inglés, el español vive en `/es/...` y el ucraniano sigue en `/ua/...` (código `uk`).
 
 **Consecuencias:**
+
 - ✅ No existe una segunda fuente de verdad de producción para las traducciones.
 - ✅ `MessageKey` sigue tipado de punta a punta, ahora desde el contrato generado.
 - ⚠️ Una edición en Glossa NO cambia el HTML ya desplegado: aparece tras el siguiente build +
@@ -120,6 +125,24 @@ inglés, el español vive en `/es/...` y el ucraniano sigue en `/ua/...` (códig
 - La bullet "`etyma validate` (CLI) reemplaza…" de ADR-007 queda superada por esta adenda, y el
   árbol `src/pages/en/...` ahora es `src/pages/es/...`.
 
+### Adenda a ADR-007 (2026-09-23): corrección del locale fuente y vuelta a español canónico
+
+**Contexto:** Glossa añadió Project Settings para cambiar de forma segura el locale fuente. El
+proyecto `my-blog` pudo corregir `en` → `es` sin recrear catálogos; la comprobación de Public
+Delivery confirmó que `es.json` y `en.json` conservan el mismo contrato de 48 claves.
+
+**Decisión:** `es` vuelve a ser el locale fuente de Glossa, el `sourceLocale` de Etyma y el
+`defaultLocale` de Astro. Por tanto `/` y `/blog/...` son españoles, `/en/...` es inglés y
+`/ua/...` conserva el código de idioma real `uk`. El contrato tipado se genera desde
+`es.json`; `/es/*` queda solo como compatibilidad con redirecciones 301 a las rutas sin prefijo.
+
+**Consecuencias:**
+
+- ✅ Se preserva la fuente remota única: Glossa; no se restauran catálogos locales ni sincronía.
+- ✅ `x-default`, canonical, sitemap y la alternativa española vuelven a las rutas sin prefijo.
+- ✅ La adenda temporal de 2026-09-18 queda como historia; su workaround inglés ya no describe
+  el estado actual.
+
 ## ADR-004: Persistencia de tema en IndexedDB + localStorage
 
 **Estado:** Aceptada
@@ -129,6 +152,7 @@ inglés, el español vive en `/es/...` y el ucraniano sigue en `/ua/...` (códig
 **Decisión:** localStorage para lectura síncrona anti-FOUC, IndexedDB (Dexie) para persistencia robusta y futura escalabilidad.
 
 **Consecuencias:**
+
 - ✅ Sin flash de tema incorrecto
 - ✅ Base de datos estructurada para futuras preferencias
 - ⚠️ Lógica más compleja que solo localStorage
@@ -142,6 +166,7 @@ inglés, el español vive en `/es/...` y el ucraniano sigue en `/ua/...` (códig
 **Decisión:** Content Layer con dos colecciones (`blog` para local, `medium` para RSS), unificadas en un tipo `UnifiedPost`.
 
 **Consecuencias:**
+
 - ✅ Fuente única de verdad para la UI
 - ✅ Posts locales con tipado estricto via Zod
 - ⚠️ Dependency en disponibilidad del RSS de Medium en build time
@@ -155,6 +180,7 @@ inglés, el español vive en `/es/...` y el ucraniano sigue en `/ua/...` (códig
 **Decisión:** Vitest para unit tests (rápido, Vite-native), Playwright para E2E (navegadores reales, accesibilidad).
 
 **Consecuencias:**
+
 - ✅ Tests unitarios rápidos para i18n, theming, layouts
 - ✅ E2E robusto con accesibilidad via @axe-core/playwright
 - ⚠️ Configuración de CI más compleja

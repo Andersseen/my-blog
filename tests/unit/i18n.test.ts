@@ -15,12 +15,15 @@ import { getOgLocale } from '../../src/i18n/og-locale';
 const GLOSSA = 'https://glossa.andersseen.dev/i18n/my-blog';
 
 const FIXTURES: Record<string, Record<string, unknown>> = {
-  en: {
-    nav: { home: 'Home', blog: 'Blog' },
-    post: { title: 'Post: {$title}', since: 'Since {$year :number useGrouping=never}' },
+  es: {
+    nav: { home: 'Inicio', blog: 'Blog' },
+    post: {
+      title: 'Publicación: {$title}',
+      since: 'Desde {$year :number useGrouping=never}',
+    },
   },
   // Deliberately partial: `nav.blog` and `post.*` must fall back to the source locale.
-  es: { nav: { home: 'Inicio' } },
+  en: { nav: { home: 'Home' } },
   uk: { nav: { home: 'Головна' } },
 };
 
@@ -43,12 +46,12 @@ afterEach(() => {
 
 describe('Etyma i18n definition', () => {
   it('uses real BCP-47 language codes, never the "ua" URL path', () => {
-    expect(i18n.locales).toEqual(['en', 'es', 'uk']);
+    expect(i18n.locales).toEqual(['es', 'en', 'uk']);
     expect(i18n.locales).not.toContain('ua');
   });
 
-  it('uses English as the source locale, matching the Glossa project and Astro default', () => {
-    expect(i18n.sourceLocale).toBe('en');
+  it('uses Spanish as the source locale, matching the Glossa project and Astro default', () => {
+    expect(i18n.sourceLocale).toBe('es');
   });
 
   it('exposes the generated key contract as typed, dotted keys', () => {
@@ -99,42 +102,42 @@ describe('remote loading from Glossa Public Delivery', () => {
     );
     const registry = createCatalogRegistry(i18n);
 
-    await expect(registry.load('en')).rejects.toThrow();
+    await expect(registry.load('es')).rejects.toThrow();
   });
 
   it('translates from the loaded locale and falls back to the source locale', async () => {
     stubGlossa();
     const registry = createCatalogRegistry(i18n);
-    const [en, es] = await Promise.all([registry.load('en'), registry.load('es')]);
+    const [es, en] = await Promise.all([registry.load('es'), registry.load('en')]);
     const translate = createTranslator({
-      locale: 'es',
-      catalog: es,
+      locale: 'en',
+      catalog: en,
       sourceLocale: i18n.sourceLocale,
-      sourceCatalog: en,
+      sourceCatalog: es,
       formatter: createMessageFormatter(),
     });
 
-    expect(translate.translate('nav.home')).toBe('Inicio');
-    expect(translate.translate('nav.blog')).toBe('Blog'); // absent in es -> source (en)
+    expect(translate.translate('nav.home')).toBe('Home');
+    expect(translate.translate('nav.blog')).toBe('Blog'); // absent in en -> source (es)
   });
 
   it('renders MessageFormat 2 placeholders and number formatting', async () => {
     stubGlossa();
     const registry = createCatalogRegistry(i18n);
-    const en = await registry.load('en');
+    const es = await registry.load('es');
     const translate = createTranslator({
-      locale: 'en',
-      catalog: en,
+      locale: 'es',
+      catalog: es,
       sourceLocale: i18n.sourceLocale,
-      sourceCatalog: en,
+      sourceCatalog: es,
       formatter: createMessageFormatter(),
     });
 
     expect(translate.translate('post.title', { title: 'Hello' }).replace(/[⁨⁩]/g, '')).toBe(
-      'Post: Hello',
+      'Publicación: Hello',
     );
     expect(translate.translate('post.since', { year: 2026 }).replace(/[⁨⁩]/g, '')).toBe(
-      'Since 2026',
+      'Desde 2026',
     );
   });
 });
@@ -146,7 +149,7 @@ describe('getOgLocale', () => {
     expect(getOgLocale('uk')).toBe('uk_UA');
   });
 
-  it('falls back to the source locale (English) for an unknown locale', () => {
-    expect(getOgLocale('fr')).toBe('en_US');
+  it('falls back to the source locale (Spanish) for an unknown locale', () => {
+    expect(getOgLocale('fr')).toBe('es_ES');
   });
 });

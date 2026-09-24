@@ -17,15 +17,15 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   site: 'https://andersseen.dev',
   i18n: {
-    defaultLocale: 'en',
-    locales: ['en', 'es', { path: 'ua', codes: ['uk'] }],
+    defaultLocale: 'es',
+    locales: ['es', 'en', { path: 'ua', codes: ['uk'] }],
   },
   integrations: [
     mdx(),
     sitemap({
       i18n: {
-        defaultLocale: 'en',
-        locales: { en: 'en', es: 'es', ua: 'uk' },
+        defaultLocale: 'es',
+        locales: { es: 'es', en: 'en', ua: 'uk' },
       },
     }),
   ],
@@ -36,7 +36,7 @@ export default defineConfig({
       // Keys-only TypeScript contract derived from Glossa's source catalog; committed so
       // typing survives a Glossa outage. Refreshed on every `astro dev` / `astro build`.
       etymaRemoteContract({
-        source: `${GLOSSA_I18N_BASE}/en.json`,
+        source: `${GLOSSA_I18N_BASE}/es.json`,
         output: path.resolve(__dirname, './src/i18n/etyma.generated.ts'),
       }),
     ],

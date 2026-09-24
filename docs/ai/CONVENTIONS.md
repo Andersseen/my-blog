@@ -54,10 +54,10 @@ the whole `etyma` object or a raw catalog, unless the component's entire purpose
 ## i18n rules (most common source of bugs)
 
 1. **Glossa owns production translations.** Every user-visible string is a key in the Glossa
-   project `my-blog` (`en` source, plus `es` and `uk`), created/edited through the Glossa MCP
+   project `my-blog` (`es` source, plus `en` and `uk`), created/edited through the Glossa MCP
    (`set_translation`, `rename_translation`, `delete_translation`) and verified with
    `analyze_translations` (100% coverage, no missing/extra keys). If you can't translate to
-   Ukrainian, put the English value and flag it in STATE.md — never omit the key. Never create
+   Ukrainian, put the Spanish value and flag it in STATE.md — never omit the key. Never create
    `src/i18n/locales/*.json`, translation sync/pull/push scripts, or a Glossa client; never
    commit `GLOSSA_TOKEN`.
 2. **Code only references keys.** Read them with `etyma.t('namespace.key')`; never hardcode UI
@@ -67,19 +67,19 @@ the whole `etyma` object or a raw catalog, unless the component's entire purpose
    file (it is in `.prettierignore`).
 3. Messages use MessageFormat 2: `{$variable}` for interpolation (e.g.
    `"Featured image for {$title}"`, read with `t('key', { title })`), `{$year :number
-   useGrouping=never}` for a plain integer (no thousands separator). Do not rewrite message
+useGrouping=never}` for a plain integer (no thousands separator). Do not rewrite message
    syntax when moving content around.
 4. Internal links: `etyma.path('/blog')` on a **bare** logical path — never template
    `/${locale}/blog` by hand, and never pass the current, already-prefixed
    `Astro.url.pathname` into `.path()` (it throws). To link to the current page in
    another locale, use `etyma.seo().alternates` instead (see ARCHITECTURE.md).
-5. Page-level changes must be mirrored in all three page trees (`src/pages/...` for `en`,
-   `src/pages/es/...`, `src/pages/ua/...`) or extracted to a shared component.
+5. Page-level changes must be mirrored in all three page trees (`src/pages/...` for `es`,
+   `src/pages/en/...`, `src/pages/ua/...`) or extracted to a shared component.
 6. `ua` is a URL path only. The real language code is always `uk` — `etyma.locale`,
    `<html lang>`, the Glossa catalog name (`uk.json`) and sitemap/hreflang all read `uk`
    directly, never `ua`. Open Graph's `uk_UA` format is a separate, app-specific concern in
    `src/i18n/og-locale.ts`.
-7. `en` is the source *and* the unprefixed default locale: Etyma `sourceLocale`, Astro
+7. `es` is the source _and_ the unprefixed default locale: Etyma `sourceLocale`, Astro
    `defaultLocale` and the Glossa source locale must change together or not at all.
 8. Static site: a translation edit goes live only after the next build + deploy. Never add
    runtime/browser fetching of translations, SSR, or a polling/sync layer to work around that.

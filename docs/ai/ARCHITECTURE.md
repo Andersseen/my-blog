@@ -33,54 +33,55 @@ Medium RSS feed ─────mediumLoader()─────────┘
 
 Three owners, one job each (see ADR-007):
 
-| Owner | Owns |
-| :--- | :--- |
-| **Astro** | Locale routing (`astro.config.mjs` `i18n` block) and static generation |
-| **Glossa** | Production translation *content* (`https://glossa.andersseen.dev`, project `my-blog`) |
-| **Etyma** | Loading, typing and formatting that content (`@etyma/core` `defineRemoteI18n`, `@etyma/astro`) |
+| Owner      | Owns                                                                                           |
+| :--------- | :--------------------------------------------------------------------------------------------- |
+| **Astro**  | Locale routing (`astro.config.mjs` `i18n` block) and static generation                         |
+| **Glossa** | Production translation _content_ (`https://glossa.andersseen.dev`, project `my-blog`)          |
+| **Etyma**  | Loading, typing and formatting that content (`@etyma/core` `defineRemoteI18n`, `@etyma/astro`) |
 
 `my-blog` itself only holds integration config and the keys it uses. There is **no local
 translation source of truth** — no `src/i18n/locales/*.json`.
 
-Default locale `en` has NO prefix; `es`/`ua` do. The Ukrainian *URL path* is `ua`, but its real
-*language code* is `uk` — configured once in `astro.config.mjs`'s `i18n` block via the
+Default locale `es` has NO prefix; `en`/`ua` do. The Ukrainian _URL path_ is `ua`, but its real
+_language code_ is `uk` — configured once in `astro.config.mjs`'s `i18n` block via the
 `{ path, codes }` form and never reimplemented anywhere else:
 
 ```js
 i18n: {
-  defaultLocale: 'en',
-  locales: ['en', 'es', { path: 'ua', codes: ['uk'] }],
+  defaultLocale: 'es',
+  locales: ['es', 'en', { path: 'ua', codes: ['uk'] }],
 }
 ```
 
 ```
-/            /blog            /blog/<slug>       ← en (src/pages/index.astro, src/pages/blog/)
-/es          /es/blog         /es/blog/<slug>    ← es (src/pages/es/...)
+/            /blog            /blog/<slug>       ← es (src/pages/index.astro, src/pages/blog/)
+/en          /en/blog         /en/blog/<slug>    ← en (src/pages/en/...)
 /ua          /ua/blog         /ua/blog/<slug>    ← ua (src/pages/ua/..., language code uk)
 ```
 
 **Source-locale coupling (do not break):** Etyma's `sourceLocale`, Astro's `i18n.defaultLocale`
-and the Glossa project's source locale are all `en`. `@etyma/astro` requires the source locale to
+and the Glossa project's source locale are all `es`. `@etyma/astro` requires the source locale to
 be the unprefixed route (it throws at render time otherwise) and uses it for `x-default`.
 Changing the default language means changing all three together and is an SEO-affecting
-migration (see STATE.md for the 2026-09-18 flip from `es` and its redirects).
+migration (see STATE.md for the resolved temporary English-default workaround and its redirects).
 
-**Page trees are still doubled for routing (`src/pages/...`, `src/pages/es/...`,
+**Page trees are still doubled for routing (`src/pages/...`, `src/pages/en/...`,
 `src/pages/ua/...`), but the bodies are NOT duplicated.** Astro's native i18n routing works by
-real folders (not a `[lang]` dynamic segment), so `es`/`ua` each get their own folder mirroring
+real folders (not a `[lang]` dynamic segment), so `en`/`ua` each get their own folder mirroring
 the default's. Home, blog-index, and blog-post pages are thin wrappers around shared components in
 `src/components/pages/` (`HomePage.astro`, `BlogIndexPage.astro`, `BlogPostPage.astro`) — no
 markup/logic to keep in sync by hand. When adding a new page that needs all three locales, put
 the real content in a `src/components/pages/*.astro` component, then add three thin page files
-(`src/pages/<page>.astro`, `src/pages/es/<page>.astro`, `src/pages/ua/<page>.astro`).
+(`src/pages/<page>.astro`, `src/pages/en/<page>.astro`, `src/pages/ua/<page>.astro`).
 
 Everything Etyma-related lives in `src/i18n/` (aliased `@/i18n` → `index.ts`):
+
 - `delivery.ts` — `GLOSSA_I18N_BASE`, the Public Delivery base URL. Shared by `astro.config.mjs`
   and `index.ts`; the only place the URL is written.
 - `etyma.generated.ts` — **generated, committed, keys only** (no translation values). The typed
-  key contract, produced from Glossa's `en.json` by `etymaRemoteContract()`. Never hand-edit.
-- `index.ts` — `i18n = defineRemoteI18n({ locales: ['en', 'es', 'uk'], sourceLocale: 'en',
-  contract, loaders })`, with one `createHttpMessageLoader` per locale (all three, source
+  key contract, produced from Glossa's `es.json` by `etymaRemoteContract()`. Never hand-edit.
+- `index.ts` — `i18n = defineRemoteI18n({ locales: ['es', 'en', 'uk'], sourceLocale: 'es',
+contract, loaders })`, with one `createHttpMessageLoader` per locale (all three, source
   included, are remote). `locales` are always real BCP-47 codes; `'ua'` must never appear here,
   only as an Astro route path. It also exports:
   - `getPageI18n(Astro)` → `Promise<BlogI18n>` — call once per page/layout that needs
@@ -95,11 +96,12 @@ Everything Etyma-related lives in `src/i18n/` (aliased `@/i18n` → `index.ts`):
   - Types `BlogI18n`, `Translate` (`etyma.t`'s type), `LocalePath` (`etyma.path`'s type),
     `MessageKey` — used to type component props instead of prop-drilling the whole catalog
 
-**Gotcha:** `etyma.path()` takes an already-*bare* logical path, not `Astro.url.pathname` (which
+**Gotcha:** `etyma.path()` takes an already-_bare_ logical path, not `Astro.url.pathname` (which
 is already locale-prefixed) — passing the raw pathname throws an `EtymaError` (`@etyma/astro`
->= 0.1.1; 0.1.0 silently double-prefixed instead). To switch the *current* page to another
-locale (e.g. in `LanguageDropdown.astro`), use `etyma.seo().alternates` instead, which already
-computes the bare path correctly.
+
+> = 0.1.1; 0.1.0 silently double-prefixed instead). To switch the _current_ page to another
+> locale (e.g. in `LanguageDropdown.astro`), use `etyma.seo().alternates` instead, which already
+> computes the bare path correctly.
 
 Messages are MessageFormat 2 (`{$variable}`, `{$year :number useGrouping=never}`), authored in
 Glossa. Open Graph's `es_ES`/`en_US`/`uk_UA` locale format is a distinct, app-specific concern
@@ -127,12 +129,12 @@ The browser never talks to Glossa; the deployed HTML already contains the transl
 The key contract takes a second, separate path from the same source:
 
 ```
-Glossa en.json ──etymaRemoteContract() (Vite buildStart)──▶ src/i18n/etyma.generated.ts ──▶ MessageKey
+Glossa es.json ──etymaRemoteContract() (Vite buildStart)──▶ src/i18n/etyma.generated.ts ──▶ MessageKey
 ```
 
 If Glossa is unreachable when refreshing the contract, the plugin keeps the last committed file
 (with a warning) so typing, editor autocomplete, `astro check` and fresh checkouts keep working.
-If Glossa is unreachable when *rendering*, the build **fails** with an `EtymaError` — the site
+If Glossa is unreachable when _rendering_, the build **fails** with an `EtymaError` — the site
 cannot be correctly rendered without translation content, and it must never publish untranslated
 or key-only HTML. There is deliberately no stale local copy to hide that failure.
 
@@ -164,8 +166,8 @@ capability, intentionally not built in this repo), and never a runtime fetch or 
 ### Build-time request volume
 
 `@etyma/astro` creates a render-scoped catalog registry, so each rendered page fetches its own
-locale's catalog plus the `en` source catalog. Measured on the 2026-09-18 cutover: 11 pages →
-20 requests to Glossa (14 `en`, 3 `es`, 3 `uk`, the `en` count including 3 contract refreshes),
+locale's catalog plus the `es` source catalog. Measured on the 2026-09-18 cutover: 11 pages →
+20 requests to Glossa (14 `es`, 3 `en`, 3 `uk`, the `es` count including 3 contract refreshes),
 ~4 s total build. Fine at this size; it grows linearly with page count. No my-blog cache layer
 was added — a build-scoped catalog cache is an `@etyma/astro` follow-up (see STATE.md).
 
@@ -221,24 +223,24 @@ of relative `../../` imports.
 
 ## Key files map
 
-| Path | Role |
-| :--- | :--- |
-| `src/consts.ts` | Site-wide constants (title, author, URLs) |
-| `src/content.config.ts` | Content collections + Zod schemas |
-| `src/utils/medium-loader.ts` | Medium RSS loader (retry + cache) |
-| `src/types/blog.ts` | `UnifiedPost` + `unifyPosts()` |
-| `src/lib/bento-layout.ts` | Post grid layout algorithm |
-| `src/i18n/index.ts` | Remote Etyma definition + bridge (`i18n`, `getPageI18n`, `BlogI18n`, `Translate`, `LocalePath`, `MessageKey`) |
-| `src/i18n/delivery.ts` | `GLOSSA_I18N_BASE` — Glossa Public Delivery URL |
-| `src/i18n/etyma.generated.ts` | Generated, committed key-only contract (Etyma-owned, never hand-edit) |
-| `src/i18n/og-locale.ts` | App-specific Open Graph locale mapping (`es_ES`/`en_US`/`uk_UA`) |
-| `.mcp.json` | Glossa MCP server entry (token via `${GLOSSA_TOKEN}`, never committed) |
-| `src/store/theme.ts` | Theme state + persistence |
-| `src/db/db.ts` | Dexie database (`settingsService`) |
-| `src/scripts/setup-andersseen.ts` | Web Components + icon registration |
-| `src/styles/global.css` | Design tokens (light + dark) |
-| `wrangler.toml` | Medium-sync Worker config |
-| `src/components/pages/*.astro` | Shared page bodies (Home, BlogIndex, BlogPost) |
+| Path                              | Role                                                                                                          |
+| :-------------------------------- | :------------------------------------------------------------------------------------------------------------ |
+| `src/consts.ts`                   | Site-wide constants (title, author, URLs)                                                                     |
+| `src/content.config.ts`           | Content collections + Zod schemas                                                                             |
+| `src/utils/medium-loader.ts`      | Medium RSS loader (retry + cache)                                                                             |
+| `src/types/blog.ts`               | `UnifiedPost` + `unifyPosts()`                                                                                |
+| `src/lib/bento-layout.ts`         | Post grid layout algorithm                                                                                    |
+| `src/i18n/index.ts`               | Remote Etyma definition + bridge (`i18n`, `getPageI18n`, `BlogI18n`, `Translate`, `LocalePath`, `MessageKey`) |
+| `src/i18n/delivery.ts`            | `GLOSSA_I18N_BASE` — Glossa Public Delivery URL                                                               |
+| `src/i18n/etyma.generated.ts`     | Generated, committed key-only contract (Etyma-owned, never hand-edit)                                         |
+| `src/i18n/og-locale.ts`           | App-specific Open Graph locale mapping (`es_ES`/`en_US`/`uk_UA`)                                              |
+| `.mcp.json`                       | Glossa MCP server entry (token via `${GLOSSA_TOKEN}`, never committed)                                        |
+| `src/store/theme.ts`              | Theme state + persistence                                                                                     |
+| `src/db/db.ts`                    | Dexie database (`settingsService`)                                                                            |
+| `src/scripts/setup-andersseen.ts` | Web Components + icon registration                                                                            |
+| `src/styles/global.css`           | Design tokens (light + dark)                                                                                  |
+| `wrangler.toml`                   | Medium-sync Worker config                                                                                     |
+| `src/components/pages/*.astro`    | Shared page bodies (Home, BlogIndex, BlogPost)                                                                |
 
 ## Tests
 
@@ -249,7 +251,7 @@ of relative `../../` imports.
   resolution/behavior, Dexie services, bento layout, Worker sync logic. Unit tests must never
   hit the network or Glossa, and must not carry a copy of the production translations.
   `@etyma/astro` can be imported from plain Vitest since 0.1.1 (it loads `astro:i18n` lazily,
-  only when `createAstroI18n` is actually called). Locale *routing* behavior (canonical, hreflang,
+  only when `createAstroI18n` is actually called). Locale _routing_ behavior (canonical, hreflang,
   x-default, `/ua` → `uk`) is Etyma's own responsibility and is verified in E2E against real
   output instead, not re-tested here against @etyma/astro's internals.
 - **E2E (Playwright, `tests/e2e/`)**: home, navigation, accessibility (`@axe-core/playwright`),
@@ -259,12 +261,12 @@ of relative `../../` imports.
 
 ## Sitemap, redirects & catalog validation
 
-`@astrojs/sitemap` is configured with `i18n: { defaultLocale: 'en', locales: { en: 'en', es:
-'es', ua: 'uk' } }` in `astro.config.mjs`, so every sitemap URL carries `xhtml:link` hreflang
+`@astrojs/sitemap` is configured with `i18n: { defaultLocale: 'es', locales: { es: 'es', en:
+'en', ua: 'uk' } }` in `astro.config.mjs`, so every sitemap URL carries `xhtml:link` hreflang
 alternates keyed by real language code (`uk`, never `ua`). `public/_redirects` 301-redirects the
-retired `/en/*` prefix to the unprefixed English routes.
+retired `/es/*` prefix to the unprefixed Spanish routes.
 
-Catalog *completeness* (missing/extra keys, coverage) is checked with Glossa's
+Catalog _completeness_ (missing/extra keys, coverage) is checked with Glossa's
 `analyze_translations`. There is currently **no** repo-side check of MessageFormat 2 syntax or
 placeholder contracts across remote catalogs (`etyma validate` only reads a local directory,
 which no longer exists) — recorded as an upstream Etyma/Glossa follow-up in STATE.md, deliberately

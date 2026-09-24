@@ -29,8 +29,8 @@
 /blog
   Link: </blog/>; rel="canonical"
 
-/es/blog
-  Link: </es/blog/>; rel="canonical"
+/en/blog
+  Link: </en/blog/>; rel="canonical"
 
 /ua/blog
   Link: </ua/blog/>; rel="canonical"
