@@ -7,7 +7,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import tailwindcss from '@tailwindcss/vite';
-import { etymaRemoteContract } from '@etyma/tooling/vite';
+import { etymaRemoteContract, etymaRemoteValidation } from '@etyma/tooling/vite';
 
 import { catalogUrl, I18N_PROJECT } from './src/i18n/project.ts';
 
@@ -40,6 +40,13 @@ export default defineConfig({
       etymaRemoteContract({
         source: catalogUrl(I18N_PROJECT.sourceLocale),
         output: path.resolve(__dirname, './src/i18n/etyma.generated.ts'),
+      }),
+      // Every Glossa catalog through @etyma/tooling's validateCatalogs(): a missing/extra key,
+      // broken MessageFormat 2 or a dropped placeholder fails `astro build` (warns in dev).
+      etymaRemoteValidation({
+        remote: I18N_PROJECT.remote,
+        locales: I18N_PROJECT.locales,
+        sourceLocale: I18N_PROJECT.sourceLocale,
       }),
     ],
     resolve: {

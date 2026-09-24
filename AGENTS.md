@@ -56,6 +56,10 @@ pnpm search:build     # Pagefind index (run after build)
    5. run `pnpm dev` or `pnpm build` once when the _source key set_ changed (added/renamed/
       deleted): `etymaRemoteContract()` refreshes `src/i18n/etyma.generated.ts`. Commit that diff;
       never hand-edit it.
+   6. `pnpm build` also validates every Glossa catalog (`etymaRemoteValidation()`): a missing or
+      extra key, broken MessageFormat 2 or a dropped placeholder fails the build. Fix it in
+      Glossa, never by skipping the plugin. `locales`, `sourceLocale` and the Glossa URL live
+      only in `src/i18n/project.ts`.
 
    **Do not** recreate `src/i18n/locales/*.json`, add translation pull/push/sync scripts, or
    build a Glossa client. **Never commit `GLOSSA_TOKEN`** (only the variable _name_ may appear in

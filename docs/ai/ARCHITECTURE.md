@@ -135,6 +135,18 @@ The key contract takes a second, separate path from the same source:
 Glossa es.json ──etymaRemoteContract() (Vite buildStart)──▶ src/i18n/etyma.generated.ts ──▶ MessageKey
 ```
 
+Every build also validates the catalogs themselves, from the same `I18N_PROJECT`:
+
+```
+Glossa {es,en,uk}.json ──etymaRemoteValidation() (Vite buildStart)──▶ validateCatalogs() ──▶ build passes / fails
+```
+
+A missing or extra key, invalid MessageFormat 2, a dropped or invented `{$placeholder}`, or a
+catalog that cannot be fetched fails `pnpm build` with one error listing locale, key and
+diagnostic code. In `pnpm dev` the same report is a warning and the server keeps running.
+Nothing is written to disk and nothing is polled; a Glossa edit is re-validated on the next
+build or dev-server start.
+
 If Glossa is unreachable when refreshing the contract, the plugin keeps the last committed file
 (with a warning) so typing, editor autocomplete, `astro check` and fresh checkouts keep working.
 If Glossa is unreachable when _rendering_, the build **fails** with an `EtymaError` — the site

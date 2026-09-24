@@ -1,4 +1,4 @@
-# Spec: One i18n project constant for Etyma runtime and build tooling
+# Spec: One i18n project constant, and build-time validation of Glossa catalogs
 
 - **Status:** Done
 - **Date:** 2026-09-24
@@ -21,15 +21,16 @@ config file (`@etyma/tooling` README, "Recommended setup for a remote-catalog pr
   `src/i18n/project.ts`, and read by `defineRemoteI18n` and `etymaRemoteContract()`.
 - The contract's source URL is derived from the source locale, so it cannot drift from the
   runtime's source locale.
+- `pnpm build` fails when any Glossa catalog is invalid (missing/extra key, broken
+  MessageFormat 2, dropped or invented placeholder) or cannot be fetched, via
+  `@etyma/tooling` 0.2.0's `etymaRemoteValidation()` reading the same constant.
 
 ## Non-goals
 
-- Adding `etymaRemoteValidation()`: it ships in `@etyma/tooling` 0.2.0, not yet published.
-  Tracked in `docs/ai/STATE.md`; adopting it is a one-plugin follow-up.
 - Changing Astro routing: the `i18n` block keeps its own shape (route `ua`, language `uk`) and
   its literal `defaultLocale: 'es'`. Astro's `defaultLocale` is a _route_, so deriving it from a
   language code is only correct while the two coincide.
-- Changing translation content, locales, URLs, or any dependency version.
+- Changing translation content, locales or URLs.
 
 ## User-visible behavior
 
@@ -38,14 +39,15 @@ unchanged. The same three Glossa catalogs are fetched from the same URLs at buil
 
 ## Technical plan
 
-| File                             | Change                                                                               |
-| :------------------------------- | :----------------------------------------------------------------------------------- |
-| `src/i18n/project.ts`            | New: `I18N_PROJECT` (`locales`, `sourceLocale`, `remote` template) and `catalogUrl`. |
-| `src/i18n/delivery.ts`           | Removed; superseded by `project.ts`.                                                 |
-| `src/i18n/index.ts`              | `defineRemoteI18n` reads `I18N_PROJECT`; one `createHttpMessageLoader(catalogUrl)`.  |
-| `astro.config.mjs`               | Contract `source: catalogUrl(I18N_PROJECT.sourceLocale)`.                            |
-| `tests/unit/i18n.test.ts`        | Assert the runtime definition and the catalog URLs come from `I18N_PROJECT`.         |
-| `docs/ai/ARCHITECTURE.md`, STATE | Describe `project.ts`; record the `etymaRemoteValidation` follow-up.                 |
+| File                             | Change                                                                                 |
+| :------------------------------- | :------------------------------------------------------------------------------------- |
+| `src/i18n/project.ts`            | New: `I18N_PROJECT` (`locales`, `sourceLocale`, `remote` template) and `catalogUrl`.   |
+| `src/i18n/delivery.ts`           | Removed; superseded by `project.ts`.                                                   |
+| `src/i18n/index.ts`              | `defineRemoteI18n` reads `I18N_PROJECT`; one `createHttpMessageLoader(catalogUrl)`.    |
+| `astro.config.mjs`               | Contract `source: catalogUrl(I18N_PROJECT.sourceLocale)`; add `etymaRemoteValidation`. |
+| `package.json`                   | `@etyma/tooling` `^0.1.0` → `^0.2.0` (dev dependency, not shipped to the browser).     |
+| `tests/unit/i18n.test.ts`        | Assert the runtime definition and the catalog URLs come from `I18N_PROJECT`.           |
+| `docs/ai/ARCHITECTURE.md`, STATE | Describe `project.ts` and build-time catalog validation.                               |
 
 ## i18n impact
 
@@ -59,7 +61,8 @@ No interactive or markup changes.
 
 ## Performance impact
 
-None. No new dependency, no client-side JavaScript; build-time requests are unchanged.
+None for visitors: no new dependency, no client-side JavaScript. The build makes three extra
+Glossa requests (one per locale, once per build) for validation.
 
 ## Test plan
 
@@ -72,10 +75,13 @@ None. No new dependency, no client-side JavaScript; build-time requests are unch
 - [x] `locales`, `sourceLocale` and the Glossa URL appear only in `src/i18n/project.ts` among
       Etyma consumers (`index.ts`, `astro.config.mjs`).
 - [x] `pnpm test` and `pnpm build` pass; `src/i18n/etyma.generated.ts` is unchanged.
+- [x] `pnpm build` logs `[etyma] remote catalogs valid: en, es, uk`, and fails on a broken
+      catalog (verified against a wrong template: HTTP 404 for every locale, exit 1).
 - [x] `docs/ai/STATE.md` updated.
 
 ## Result
 
-Shipped as planned. `etymaRemoteValidation()` was verified against the real Glossa catalogs
-with a local `@etyma/tooling` 0.2.0 tarball (all three catalogs pass, build succeeds) but is not
-committed, because that version is not on npm yet — see STATE.md.
+Shipped as planned, in two steps on one branch: the project constant first, then
+`etymaRemoteValidation()` once `@etyma/tooling` 0.2.0 was published. All three production Glossa
+catalogs validate green. With both plugins, the `es` source catalog is fetched once by each
+plugin per build; accepted upstream as a known, deliberate duplicate request.
