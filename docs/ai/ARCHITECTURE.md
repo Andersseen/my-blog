@@ -76,12 +76,15 @@ the real content in a `src/components/pages/*.astro` component, then add three t
 
 Everything Etyma-related lives in `src/i18n/` (aliased `@/i18n` → `index.ts`):
 
-- `delivery.ts` — `GLOSSA_I18N_BASE`, the Public Delivery base URL. Shared by `astro.config.mjs`
-  and `index.ts`; the only place the URL is written.
+- `project.ts` — `I18N_PROJECT` (`locales`, `sourceLocale`, the Public Delivery `{locale}` URL
+  template) and `catalogUrl(locale)`. Read by `index.ts` (runtime) and `astro.config.mjs`
+  (contract source = `catalogUrl(I18N_PROJECT.sourceLocale)`); the only place these are written.
+  Import-free on purpose, because the Astro config loads it. Astro's `i18n` block is routing, not
+  catalogs, and stays separate (`ua` route vs. `uk` language).
 - `etyma.generated.ts` — **generated, committed, keys only** (no translation values). The typed
   key contract, produced from Glossa's `es.json` by `etymaRemoteContract()`. Never hand-edit.
 - `index.ts` — `i18n = defineRemoteI18n({ locales: ['es', 'en', 'uk'], sourceLocale: 'es',
-contract, loaders })`, with one `createHttpMessageLoader` per locale (all three, source
+contract, loaders })` built from `I18N_PROJECT`, with one shared `createHttpMessageLoader(catalogUrl)` for every locale (all three, source
   included, are remote). `locales` are always real BCP-47 codes; `'ua'` must never appear here,
   only as an Astro route path. It also exports:
   - `getPageI18n(Astro)` → `Promise<BlogI18n>` — call once per page/layout that needs
@@ -231,7 +234,7 @@ of relative `../../` imports.
 | `src/types/blog.ts`               | `UnifiedPost` + `unifyPosts()`                                                                                |
 | `src/lib/bento-layout.ts`         | Post grid layout algorithm                                                                                    |
 | `src/i18n/index.ts`               | Remote Etyma definition + bridge (`i18n`, `getPageI18n`, `BlogI18n`, `Translate`, `LocalePath`, `MessageKey`) |
-| `src/i18n/delivery.ts`            | `GLOSSA_I18N_BASE` — Glossa Public Delivery URL                                                               |
+| `src/i18n/project.ts`             | `I18N_PROJECT` + `catalogUrl` — locales, source locale, Glossa `{locale}` URL template                        |
 | `src/i18n/etyma.generated.ts`     | Generated, committed key-only contract (Etyma-owned, never hand-edit)                                         |
 | `src/i18n/og-locale.ts`           | App-specific Open Graph locale mapping (`es_ES`/`en_US`/`uk_UA`)                                              |
 | `.mcp.json`                       | Glossa MCP server entry (token via `${GLOSSA_TOKEN}`, never committed)                                        |

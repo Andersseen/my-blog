@@ -1,6 +1,6 @@
 # STATE — Current status of the project
 
-> **Snapshot: 2026-09-23 (Spanish canonical locale restored).**
+> **Snapshot: 2026-09-24 (one i18n project constant for Etyma runtime + build tooling).**
 > This file is the session-to-session memory of the project. If you complete meaningful work
 > (fix a known issue, add debt, change status), UPDATE THIS FILE in the same PR — that is how
 > the next agent (or the next session) knows where things stand. Keep it honest and short;
@@ -32,6 +32,15 @@
 - Giscus comments are wired in `BlogPost.astro` (real feature, not a leftover) but use
   placeholder `data-repo-id` / `data-category-id` — same pattern as the wrangler KV IDs, needs
   real values set out-of-band, don't invent them.
+
+## Fixed this session (2026-09-24)
+
+**One i18n project constant.** `locales`, `sourceLocale` and the Glossa `{locale}` URL template
+now live only in `src/i18n/project.ts` (`I18N_PROJECT`, `catalogUrl`), replacing
+`src/i18n/delivery.ts`. `defineRemoteI18n` and `etymaRemoteContract()` both read it, so the
+contract can no longer be generated from a different catalog than the runtime source. Astro's
+`i18n` block stays separate (routes, not catalogs). No rendered output changed. Spec:
+`docs/specs/2026-09-24-i18n-project-constant.md`.
 
 ## Fixed this session (2026-09-23)
 
@@ -85,10 +94,12 @@ again canonical and unprefixed, while `/es/*` is compatibility-only traffic redi
 - **Etyma → `@etyma/astro`**: (a) catalogs are fetched per rendered page (render-scoped
   registry): 11 pages → 20 Glossa requests (~4 s build), linear in page count — wants a
   build-scoped catalog cache; (b) `etymaRemoteContract` refreshes 3× per build (one per Vite
-  pass) — harmless but redundant; (c) **quality gap:** `etyma validate` only takes a local
-  directory, so MF2 syntax and placeholder-contract checks across _remote_ catalogs no longer
-  run anywhere — needs a supported remote validation path (CLI/`@etyma/tooling` flag or CI step
-  reading Public Delivery), deliberately NOT hacked into this repo with a download script;
+  pass) — harmless but redundant; (c) **quality gap, fixed upstream, awaiting release:** MF2 syntax and
+  placeholder-contract checks across _remote_ catalogs run nowhere yet. Etyma `main` adds
+  `etyma validate --remote` (`@etyma/cli` 0.2.0) and `etymaRemoteValidation()`
+  (`@etyma/tooling` 0.2.0), both pending release; a local 0.2.0 tarball already validates all
+  three Glossa catalogs green. Still deliberately NOT hacked into this repo with a download
+  script;
   (d) the source-locale/`defaultLocale` coupling is enforced with a clear error, but it is what
   forced the URL flip above — worth documenting prominently upstream.
 - **Glossa**: Analysis covers completeness (missing/extra keys, coverage) but not MF2
@@ -156,8 +167,12 @@ again canonical and unprefixed, while `/es/*` is compatibility-only traffic redi
 
 ## Backlog (candidate next steps, not commitments)
 
-- Upstream follow-ups listed under "Dogfood findings" (Etyma catalog cache + remote validation,
-  Glossa deploy webhooks).
+- When `@etyma/tooling` 0.2.0 is on npm: bump the dev dependency and add
+  `etymaRemoteValidation({ remote: I18N_PROJECT.remote, locales: I18N_PROJECT.locales,
+sourceLocale: I18N_PROJECT.sourceLocale })` next to `etymaRemoteContract()` in
+  `astro.config.mjs`, so `pnpm build` fails on an invalid Glossa catalog.
+- Upstream follow-ups listed under "Dogfood findings" (Etyma catalog cache, Glossa deploy
+  webhooks).
 - Monitor Search Console after restoring Spanish as the canonical locale; consider redirect/
   hreflang tuning.
 - Fix the 3 web-component a11y bugs upstream in `@andersseen/web-components`, bump version here.

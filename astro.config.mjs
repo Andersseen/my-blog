@@ -9,13 +9,15 @@ import { fileURLToPath } from 'url';
 import tailwindcss from '@tailwindcss/vite';
 import { etymaRemoteContract } from '@etyma/tooling/vite';
 
-import { GLOSSA_I18N_BASE } from './src/i18n/delivery.ts';
+import { catalogUrl, I18N_PROJECT } from './src/i18n/project.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://andersseen.dev',
+  // Routing, not catalogs: route paths here (`ua`), language codes in src/i18n/project.ts (`uk`).
+  // `defaultLocale` is the route of I18N_PROJECT.sourceLocale — @etyma/astro throws otherwise.
   i18n: {
     defaultLocale: 'es',
     locales: ['es', 'en', { path: 'ua', codes: ['uk'] }],
@@ -36,7 +38,7 @@ export default defineConfig({
       // Keys-only TypeScript contract derived from Glossa's source catalog; committed so
       // typing survives a Glossa outage. Refreshed on every `astro dev` / `astro build`.
       etymaRemoteContract({
-        source: `${GLOSSA_I18N_BASE}/es.json`,
+        source: catalogUrl(I18N_PROJECT.sourceLocale),
         output: path.resolve(__dirname, './src/i18n/etyma.generated.ts'),
       }),
     ],

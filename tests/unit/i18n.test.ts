@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createCatalogRegistry, createMessageFormatter, createTranslator } from '@etyma/core';
 import { i18n, type MessageKey } from '../../src/i18n';
 import { getOgLocale } from '../../src/i18n/og-locale';
+import { catalogUrl, I18N_PROJECT } from '../../src/i18n/project';
 
 // Locale-routing behavior (Astro's native `i18n` config, `/ua` -> `uk`,
 // localized paths, canonical/hreflang/x-default, language dropdown) is
@@ -52,6 +53,20 @@ describe('Etyma i18n definition', () => {
 
   it('uses Spanish as the source locale, matching the Glossa project and Astro default', () => {
     expect(i18n.sourceLocale).toBe('es');
+  });
+
+  it('takes its locales and source locale from the single i18n project constant', () => {
+    expect(i18n.locales).toEqual([...I18N_PROJECT.locales]);
+    expect(i18n.sourceLocale).toBe(I18N_PROJECT.sourceLocale);
+  });
+
+  it('resolves every catalog URL from one {locale} template', () => {
+    expect(I18N_PROJECT.remote).toBe(`${GLOSSA}/{locale}.json`);
+    expect(I18N_PROJECT.locales.map(catalogUrl)).toEqual([
+      `${GLOSSA}/es.json`,
+      `${GLOSSA}/en.json`,
+      `${GLOSSA}/uk.json`,
+    ]);
   });
 
   it('exposes the generated key contract as typed, dotted keys', () => {

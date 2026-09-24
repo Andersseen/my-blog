@@ -1,6 +1,6 @@
 import { createHttpMessageLoader, defineRemoteI18n } from '@etyma/core';
 import { createAstroI18n, type AstroI18n, type AstroI18nContext } from '@etyma/astro';
-import { GLOSSA_I18N_BASE } from './delivery';
+import { catalogUrl, I18N_PROJECT } from './project';
 import contract from './etyma.generated';
 
 /**
@@ -14,11 +14,11 @@ import contract from './etyma.generated';
  * `sourceLocale` must equal Astro's `i18n.defaultLocale` (the unprefixed route), and is
  * also the source locale of the Glossa project.
  */
-const loadFromGlossa = createHttpMessageLoader(locale => `${GLOSSA_I18N_BASE}/${locale}.json`);
+const loadFromGlossa = createHttpMessageLoader(catalogUrl);
 
 export const i18n = defineRemoteI18n({
-  locales: ['es', 'en', 'uk'],
-  sourceLocale: 'es',
+  locales: I18N_PROJECT.locales,
+  sourceLocale: I18N_PROJECT.sourceLocale,
   contract,
   loaders: {
     es: loadFromGlossa,
