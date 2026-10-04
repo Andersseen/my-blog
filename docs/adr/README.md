@@ -55,7 +55,7 @@ Este directorio contiene registros de decisiones arquitectónicas importantes to
 el que podía dogfoodearse en un proyecto real. My Blog fue el primer consumidor
 real: se desarrolló contra tarballs empaquetados (`.tgz`) de `@etyma/core`/`@etyma/astro`
 antes de su primer release público, y hoy consume las versiones publicadas en npm
-(`@etyma/astro` ^0.1.1).
+(`@etyma/astro` ^0.2.2, `@etyma/core` ^0.5.0 desde 2026-10-04).
 
 **Decisión:** Astro pasa a ser dueño del routing i18n (`astro.config.mjs`
 `i18n` block, con la locale `uk` mapeada al path `ua` vía `{ path, codes }`).
@@ -99,7 +99,8 @@ dueño del contenido de producción, y Etyma ya ofrece `defineRemoteI18n`,
 traducciones; **Etyma** es dueño de carga/tipado/formato; my-blog solo contiene integración y
 uso de claves. El sitio sigue siendo 100 % estático: los catálogos se leen de Glossa Public
 Delivery **durante el build** y se incrustan en el HTML (sin fetch en el navegador, sin SSR, sin
-capa de sync). El contrato de claves (`src/i18n/etyma.generated.ts`, solo claves, commiteado) se
+capa de sync). El contrato de mensajes (`src/i18n/etyma.generated.ts`, commiteado; solo claves
+hasta Etyma 0.5, desde entonces también variables externas y funciones MF2 — nunca texto) se
 genera desde el catálogo fuente remoto. Se eliminaron `src/i18n/locales/*.json`, `pnpm
 i18n:validate` y `@etyma/cli`. Los agentes editan traducciones vía el MCP de Glossa
 (`.mcp.json`, token en `GLOSSA_TOKEN`, nunca commiteado).

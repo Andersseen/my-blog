@@ -61,13 +61,17 @@ the whole `etyma` object or a raw catalog, unless the component's entire purpose
    `src/i18n/locales/*.json`, translation sync/pull/push scripts, or a Glossa client; never
    commit `GLOSSA_TOKEN`.
 2. **Code only references keys.** Read them with `etyma.t('namespace.key')`; never hardcode UI
-   text. `MessageKey` comes from the generated contract `src/i18n/etyma.generated.ts`. After a
-   source key is added/renamed/deleted in Glossa, run `pnpm dev` or `pnpm build` once so
-   `etymaRemoteContract()` refreshes it, and commit the diff. Never hand-edit or reformat that
+   text. `MessageKey` and each key's params come from the generated message contract
+   `src/i18n/etyma.generated.ts` (keys + external variables + MF2 functions, no text). After a
+   source key is added/renamed/deleted, or a message's variables change, in Glossa, run
+   `pnpm dev` or `pnpm build` once so `etymaRemoteContract()` refreshes it, and commit the diff.
+   A resulting `t()` type error means the code and the source message disagree: fix whichever
+   is wrong, never cast it away. Never hand-edit or reformat that
    file (it is in `.prettierignore`).
 3. Messages use MessageFormat 2: `{$variable}` for interpolation (e.g.
    `"Featured image for {$title}"`, read with `t('key', { title })`), `{$year :number
-useGrouping=never}` for a plain integer (no thousands separator). Do not rewrite message
+useGrouping=never}` for a plain integer (no thousands separator); `t()` then requires `title` /
+   `year` and types `year` as numeric. Do not rewrite message
    syntax when moving content around.
 4. Internal links: `etyma.path('/blog')` on a **bare** logical path — never template
    `/${locale}/blog` by hand, and never pass the current, already-prefixed

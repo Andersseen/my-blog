@@ -20,7 +20,7 @@ Medium RSS, deployed to Cloudflare Pages.
 - **Stack**: Astro 6 (SSG), Tailwind CSS 4, TypeScript strict, nanostores, Dexie (IndexedDB), Pagefind,
   Etyma (typed remote i18n), Glossa (translation content)
 - **Design system**: `@andersseen/web-components` + `@andersseen/icon` (external packages, do not fork locally)
-- **Package manager**: `pnpm` ONLY (v10, Node >= 22.12). Never use npm or yarn.
+- **Package manager**: `pnpm` ONLY (v10, Node >= 22.22 — Etyma's minimum). Never use npm or yarn.
 - **Deploy**: Cloudflare Pages via GitHub Actions on push to `main`. A Cloudflare Worker (`src/workers/medium-sync/`) triggers redeploys when Medium publishes a new post.
 - **i18n**: `es` is default (no URL prefix), `en` and `ua` are prefixed (`/en/...`, `/ua/...`).
   Three owners, never mix them: **Astro** owns routing (`astro.config.mjs` `i18n` block),

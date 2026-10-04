@@ -81,8 +81,10 @@ Everything Etyma-related lives in `src/i18n/` (aliased `@/i18n` → `index.ts`):
   (contract source = `catalogUrl(I18N_PROJECT.sourceLocale)`); the only place these are written.
   Import-free on purpose, because the Astro config loads it. Astro's `i18n` block is routing, not
   catalogs, and stays separate (`ua` route vs. `uk` language).
-- `etyma.generated.ts` — **generated, committed, keys only** (no translation values). The typed
-  key contract, produced from Glossa's `es.json` by `etymaRemoteContract()`. Never hand-edit.
+- `etyma.generated.ts` — **generated, committed message contract**: exact keys, each message's
+  external variables and the MF2 functions they feed (e.g. `footer.rights` → `year: ['number']`),
+  no translation text. Produced from Glossa's `es.json` by `etymaRemoteContract()` as a one-object
+  `defineMessageContract({ keys, variables, functions })`. Never hand-edit.
 - `index.ts` — `i18n = defineRemoteI18n({ locales: ['es', 'en', 'uk'], sourceLocale: 'es',
 contract, loaders })` built from `I18N_PROJECT`, with one shared `createHttpMessageLoader(catalogUrl)` for every locale (all three, source
   included, are remote). `locales` are always real BCP-47 codes; `'ua'` must never appear here,
@@ -91,20 +93,23 @@ contract, loaders })` built from `I18N_PROJECT`, with one shared `createHttpMess
     translations, via `const etyma = await getPageI18n(Astro);`
   - `etyma.locale` / `etyma.direction` — the real language code (`uk`, never `ua`) and text
     direction, for `<html lang>` / `<html dir>`
-  - `etyma.t('namespace.key', params?)` — typed message lookup; a typo fails to compile
+  - `etyma.t('namespace.key', params?)` — typed message lookup; a key typo, a missing or
+    misspelled variable, or a wrong value category (a `Date` for `{$year :number}`) fails to
+    compile. `params` is required exactly for the keys whose source message declares variables
   - `etyma.path(bareLogicalPath, locale?)` — locale-aware href for a **bare** path (e.g. `/blog`,
     never the current, already-prefixed `Astro.url.pathname` — it throws, see the gotcha below)
   - `etyma.seo()` — `{ lang, direction, canonical, alternates, xDefault }`, consumed by
     `BaseHead.astro`
   - Types `BlogI18n`, `Translate` (`etyma.t`'s type), `LocalePath` (`etyma.path`'s type),
-    `MessageKey` — used to type component props instead of prop-drilling the whole catalog
+    `MessageKey` — used to type component props instead of prop-drilling the whole catalog.
+    `BlogI18n` is inferred from `getPageI18n`'s return type; never spell it
+    `AstroI18n<MessageKey>`, which defaults the params generic and silently drops every param
+    check (a unit test fails if that regresses)
 
 **Gotcha:** `etyma.path()` takes an already-_bare_ logical path, not `Astro.url.pathname` (which
-is already locale-prefixed) — passing the raw pathname throws an `EtymaError` (`@etyma/astro`
-
-> = 0.1.1; 0.1.0 silently double-prefixed instead). To switch the _current_ page to another
-> locale (e.g. in `LanguageDropdown.astro`), use `etyma.seo().alternates` instead, which already
-> computes the bare path correctly.
+is already locale-prefixed) — passing the raw pathname throws an `EtymaError`. To switch the
+_current_ page to another locale (e.g. in `LanguageDropdown.astro`), use
+`etyma.seo().alternates` instead, which already computes the bare path correctly.
 
 Messages are MessageFormat 2 (`{$variable}`, `{$year :number useGrouping=never}`), authored in
 Glossa. Open Graph's `es_ES`/`en_US`/`uk_UA` locale format is a distinct, app-specific concern
@@ -119,7 +124,7 @@ Etyma does not own: `getOgLocale()` in `src/i18n/og-locale.ts`.
    Etyma defineRemoteI18n + createHttpMessageLoader
             │
             ▼
-   @etyma/astro (createAstroI18n — render-scoped catalog registry)
+   @etyma/astro (createAstroI18n — per-render translator, prerender-shared catalogs)
             │
             ▼
    Astro static generation  →  translated static HTML in dist/
@@ -129,10 +134,12 @@ Etyma does not own: `getOgLocale()` in `src/i18n/og-locale.ts`.
 ```
 
 The browser never talks to Glossa; the deployed HTML already contains the translated text.
-The key contract takes a second, separate path from the same source:
+The message contract takes a second, separate path from the same source, and reaches every
+component through the inferred types:
 
 ```
-Glossa es.json ──etymaRemoteContract() (Vite buildStart)──▶ src/i18n/etyma.generated.ts ──▶ MessageKey
+Glossa es.json ──etymaRemoteContract() (Vite buildStart)──▶ src/i18n/etyma.generated.ts
+   ──▶ defineRemoteI18n ──▶ createAstroI18n ──▶ BlogI18n / Translate ──▶ component props
 ```
 
 Every build also validates the catalogs themselves, from the same `I18N_PROJECT`:
@@ -180,11 +187,17 @@ capability, intentionally not built in this repo), and never a runtime fetch or 
 
 ### Build-time request volume
 
-`@etyma/astro` creates a render-scoped catalog registry, so each rendered page fetches its own
-locale's catalog plus the `es` source catalog. Measured on the 2026-09-18 cutover: 11 pages →
-20 requests to Glossa (14 `es`, 3 `en`, 3 `uk`, the `es` count including 3 contract refreshes),
-~4 s total build. Fine at this size; it grows linearly with page count. No my-blog cache layer
-was added — a build-scoped catalog cache is an `@etyma/astro` follow-up (see STATE.md).
+Three independent consumers read Glossa during `astro build`, each a fixed number of times:
+
+| Subsystem                                     | Requests         | Why                                          |
+| --------------------------------------------- | ---------------- | -------------------------------------------- |
+| `etymaRemoteContract()`                       | 1 (`es`)         | once per plugin instance, across Vite passes |
+| `etymaRemoteValidation()`                     | 1 per locale (3) | once per plugin instance                     |
+| runtime loaders (`createAstroI18n` prerender) | 1 per locale (3) | prerendered pages share catalogs per locale  |
+
+So 7 requests per build, independent of page count (measured 2026-10-04 on 11 pages + RSS,
+Etyma core/tooling 0.5.0, astro 0.2.2). The duplicate `es` reads across subsystems are by
+design: they are separate consumers. No my-blog cache layer exists, and none is needed.
 
 ## Theming
 
@@ -247,7 +260,7 @@ of relative `../../` imports.
 | `src/lib/bento-layout.ts`         | Post grid layout algorithm                                                                                    |
 | `src/i18n/index.ts`               | Remote Etyma definition + bridge (`i18n`, `getPageI18n`, `BlogI18n`, `Translate`, `LocalePath`, `MessageKey`) |
 | `src/i18n/project.ts`             | `I18N_PROJECT` + `catalogUrl` — locales, source locale, Glossa `{locale}` URL template                        |
-| `src/i18n/etyma.generated.ts`     | Generated, committed key-only contract (Etyma-owned, never hand-edit)                                         |
+| `src/i18n/etyma.generated.ts`     | Generated, committed message contract: keys + variables + MF2 functions (Etyma-owned, never hand-edit)        |
 | `src/i18n/og-locale.ts`           | App-specific Open Graph locale mapping (`es_ES`/`en_US`/`uk_UA`)                                              |
 | `.mcp.json`                       | Glossa MCP server entry (token via `${GLOSSA_TOKEN}`, never committed)                                        |
 | `src/store/theme.ts`              | Theme state + persistence                                                                                     |
@@ -260,8 +273,9 @@ of relative `../../` imports.
 ## Tests
 
 - **Unit (Vitest, `tests/unit/`)**: the Etyma definition (`src/i18n/index.ts` — locales,
-  sourceLocale, typed keys incl. a `@ts-expect-error` compile-time check enforced by
-  `astro check`), remote loading with **stubbed `fetch` and a tiny synthetic catalog** (URL per
+  sourceLocale, typed keys and per-key params — the committed contract's variables/functions,
+  and `@ts-expect-error` checks on `Translate` / `BlogI18n` enforced by `astro check`), remote
+  loading with **stubbed `fetch` and a tiny synthetic catalog** (URL per
   locale, source fallback, MF2 interpolation, loud failure on 503), `getOgLocale`, theme
   resolution/behavior, Dexie services, bento layout, Worker sync logic. Unit tests must never
   hit the network or Glossa, and must not carry a copy of the production translations.

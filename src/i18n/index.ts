@@ -1,5 +1,5 @@
 import { createHttpMessageLoader, defineRemoteI18n } from '@etyma/core';
-import { createAstroI18n, type AstroI18n, type AstroI18nContext } from '@etyma/astro';
+import { createAstroI18n, type AstroI18nContext } from '@etyma/astro';
 import { catalogUrl, I18N_PROJECT } from './project';
 import contract from './etyma.generated';
 
@@ -27,10 +27,14 @@ export const i18n = defineRemoteI18n({
   },
 });
 
-export type MessageKey = (typeof i18n)['keys'][number];
-export type BlogI18n = AstroI18n<MessageKey>;
-export type Translate = BlogI18n['t'];
-export type LocalePath = BlogI18n['path'];
-
 /** Creates the request-scoped Etyma instance for the current Astro render. */
 export const getPageI18n = (astro: AstroI18nContext) => createAstroI18n(astro, i18n);
+
+export type MessageKey = (typeof i18n)['keys'][number];
+/**
+ * Inferred from the factory, not spelled `AstroI18n<MessageKey>`: that form defaults the
+ * second generic and silently drops the per-key params the generated contract declares.
+ */
+export type BlogI18n = Awaited<ReturnType<typeof getPageI18n>>;
+export type Translate = BlogI18n['t'];
+export type LocalePath = BlogI18n['path'];
