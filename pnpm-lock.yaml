@@ -24,11 +24,11 @@ importers:
         specifier: ^3.7.1
         version: 3.7.1
       '@etyma/astro':
-        specifier: ^0.1.1
-        version: 0.1.1(astro@6.0.4(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(sass@1.97.3)(terser@5.48.0)(typescript@5.9.3)(yaml@2.8.3))
+        specifier: ^0.2.2
+        version: 0.2.2(astro@6.0.4(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(sass@1.97.3)(terser@5.48.0)(typescript@5.9.3)(yaml@2.8.3))
       '@etyma/core':
-        specifier: ^0.2.0
-        version: 0.2.0
+        specifier: ^0.5.0
+        version: 0.5.0
       '@tailwindcss/vite':
         specifier: ^4.2.1
         version: 4.2.1(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.31.1)(sass@1.97.3)(terser@5.48.0)(yaml@2.8.3))
@@ -61,8 +61,8 @@ importers:
         specifier: ^4.10.0
         version: 4.11.3(playwright-core@1.58.2)
       '@etyma/tooling':
-        specifier: ^0.2.0
-        version: 0.2.0
+        specifier: ^0.5.0
+        version: 0.5.0
       '@playwright/test':
         specifier: ^1.58.2
         version: 1.58.2
@@ -687,18 +687,18 @@ packages:
     resolution: {integrity: sha512-iH1B076HoAshH1mLpHMgwdGeTs0CYwL0SPMkGuSebZrwBp16v415e9NZXg2jtrqPVQjf6IANe2Vtlr5KswtcZQ==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
 
-  '@etyma/astro@0.1.1':
-    resolution: {integrity: sha512-XIhnd2mG4Zk3amIrump1nQ+wmTN0VQhyKo7rUPAbxu+JZBTHqPzkaPOJJB8Jg5IXmonPrOZFa8WUtyNO4CAKww==}
+  '@etyma/astro@0.2.2':
+    resolution: {integrity: sha512-XFg85aWbh2WXwZ7w+1SCBWBq8Lm9HYyUdIewFUmuO6lkVT4YObwhDRGt+QCDt/HEmvNQk3el0gqKPKAMa0CKyQ==}
     engines: {node: '>=22.22.0'}
     peerDependencies:
-      astro: ^6.0.0
+      astro: ^6.0.0 || ^7.0.0
 
-  '@etyma/core@0.2.0':
-    resolution: {integrity: sha512-NvEY0ku4TbVuZZJseWp3bqOQIugalL+Y39vRNkjUt+r8Xhhgt40zSLKd57dsm/G4lODmLzs5f2xCBwf7ECJNjg==}
+  '@etyma/core@0.5.0':
+    resolution: {integrity: sha512-6z8m4aWt+2H4l2/qUwd8q0lOGJa9+eTHAAxyg5scXCT5vueb0Dql+MMpmray43ZQdxXI5/4XTQ3T01cp+cA4gQ==}
     engines: {node: '>=22.22.0'}
 
-  '@etyma/tooling@0.2.0':
-    resolution: {integrity: sha512-iJL/VWnew31jgaojvcAZd7GdFliMVGiyWkBn6ixx06UBNVAExedsYy6Yn/SiCij7XzO1zRX5WvkHDn02fuKt9A==}
+  '@etyma/tooling@0.5.0':
+    resolution: {integrity: sha512-GLfy3gzKNXUH2j96cyQumMkxU89arVKDBROUVmhPe6bTHfyhr275e3vtAFRED0DMv/AU1clhK/Yqj5O1OU/rBA==}
     engines: {node: '>=22.22.0'}
 
   '@exodus/bytes@1.15.0':
@@ -5391,18 +5391,18 @@ snapshots:
       '@eslint/core': 1.1.1
       levn: 0.4.1
 
-  '@etyma/astro@0.1.1(astro@6.0.4(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(sass@1.97.3)(terser@5.48.0)(typescript@5.9.3)(yaml@2.8.3))':
+  '@etyma/astro@0.2.2(astro@6.0.4(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(sass@1.97.3)(terser@5.48.0)(typescript@5.9.3)(yaml@2.8.3))':
     dependencies:
-      '@etyma/core': 0.2.0
+      '@etyma/core': 0.5.0
       astro: 6.0.4(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(sass@1.97.3)(terser@5.48.0)(typescript@5.9.3)(yaml@2.8.3)
 
-  '@etyma/core@0.2.0':
+  '@etyma/core@0.5.0':
     dependencies:
       messageformat: 4.0.0
 
-  '@etyma/tooling@0.2.0':
+  '@etyma/tooling@0.5.0':
     dependencies:
-      '@etyma/core': 0.2.0
+      '@etyma/core': 0.5.0
       messageformat: 4.0.0
 
   '@exodus/bytes@1.15.0': {}

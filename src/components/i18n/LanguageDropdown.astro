@@ -10,8 +10,10 @@ interface Props {
 const { etyma, class: className, slot: slotName } = Astro.props;
 
 // Locale codes are only known at runtime, but this map keeps every value a
-// real, typo-checked catalog key — `t()` itself stays fully typed.
-const LANGUAGE_LABEL_KEY: Record<string, MessageKey> = {
+// real, typo-checked catalog key — `t()` itself stays fully typed. Narrowed to
+// the `language.*` keys: a plain `MessageKey` value could be any key, including
+// parameterized ones, so `t()` would rightly demand their params.
+const LANGUAGE_LABEL_KEY: Record<string, Extract<MessageKey, `language.${string}`>> = {
   es: 'language.es',
   en: 'language.en',
   uk: 'language.uk',

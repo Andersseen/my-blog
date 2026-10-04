@@ -35,8 +35,9 @@ export default defineConfig({
   vite: {
     plugins: [
       tailwindcss(),
-      // Keys-only TypeScript contract derived from Glossa's source catalog; committed so
-      // typing survives a Glossa outage. Refreshed on every `astro dev` / `astro build`.
+      // Generated message contract (exact keys + external variables + MF2 functions, no text)
+      // derived from Glossa's source catalog; committed so typing survives a Glossa outage.
+      // Refreshed once per `astro dev` / `astro build`.
       etymaRemoteContract({
         source: catalogUrl(I18N_PROJECT.sourceLocale),
         output: path.resolve(__dirname, './src/i18n/etyma.generated.ts'),

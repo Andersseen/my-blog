@@ -1,6 +1,6 @@
 # STATE — Current status of the project
 
-> **Snapshot: 2026-09-24 (one i18n project constant; Glossa catalogs validated at build time).**
+> **Snapshot: 2026-10-04 (Etyma 0.5 hardened API: generated params contract, typed `t()` params).**
 > This file is the session-to-session memory of the project. If you complete meaningful work
 > (fix a known issue, add debt, change status), UPDATE THIS FILE in the same PR — that is how
 > the next agent (or the next session) knows where things stand. Keep it honest and short;
@@ -33,6 +33,21 @@
   placeholder `data-repo-id` / `data-category-id` — same pattern as the wrangler KV IDs, needs
   real values set out-of-band, don't invent them.
 
+## Fixed this session (2026-10-04)
+
+**Etyma upgraded to the hardened 0.5 API from npm** (`@etyma/core` / `@etyma/tooling` `^0.5.0`,
+`@etyma/astro` `^0.2.2`; Astro stays on 6). `etymaRemoteContract()` regenerated
+`etyma.generated.ts` as `defineMessageContract({ keys, variables, functions })`: 48 keys,
+variables for `blog.heroImageAlt` / `blogPost.heroImageAlt` (`title`) and `footer.rights`
+(`author`, `year`), and `footer.rights.year → number`. `BlogI18n` was spelled
+`AstroI18n<MessageKey>`, which defaulted the params generic and let `t('blog.heroImageAlt')`,
+`{ titel }` and `year: new Date()` compile; it is now inferred from `getPageI18n`, and
+`tests/unit/i18n.test.ts` pins the param checks on `Translate` and `BlogI18n` (now enforced by a
+`pnpm astro check` CI step). Every existing `t()` call already matched the contract; the one new
+error was `LanguageDropdown.astro`'s label map typed `Record<string, MessageKey>`, which made
+each lookup "any key" (parameterized ones included) — narrowed to the `language.*` keys. Node baseline raised to `>=22.22.0` (Etyma's engines).
+Glossa requests per build dropped from 23 to 7 (see ARCHITECTURE.md › Build-time request volume).
+
 ## Fixed this session (2026-09-24)
 
 **One i18n project constant.** `locales`, `sourceLocale` and the Glossa `{locale}` URL template
@@ -41,7 +56,7 @@ now live only in `src/i18n/project.ts` (`I18N_PROJECT`, `catalogUrl`), replacing
 contract can no longer be generated from a different catalog than the runtime source. Astro's
 `i18n` block stays separate (routes, not catalogs). No rendered output changed.
 
-**Glossa catalogs are validated at build time.** `@etyma/tooling` is at 0.2.0 and
+**Glossa catalogs are validated at build time.** `@etyma/tooling` moved to 0.2.0 and
 `etymaRemoteValidation()` runs next to `etymaRemoteContract()` in `astro.config.mjs`: every
 catalog goes through Etyma's `validateCatalogs()`, and a missing/extra key, broken MessageFormat
 2, dropped/invented placeholder or unreachable catalog fails `pnpm build` (a warning in
@@ -77,8 +92,8 @@ safe to drop only after months. Guarded by `tests/unit/static-assets.test.ts`.
 **1. Astro-native i18n + `@etyma/astro`** (ADR-007): replaced the hand-rolled `[lang]` system;
 Etyma locales are `['en', 'es', 'uk']`, `'ua'` is only an Astro route path; catalogs became
 MessageFormat 2 (array leaves flattened to numbered keys); sitemap gained per-URL hreflang;
-added `seo-i18n.spec.ts`. Dogfooding fixed two `@etyma/astro` bugs upstream (0.1.1); still open
-upstream: `MessageSource` has no array-leaf support.
+added `seo-i18n.spec.ts`. Dogfooding fixed two `@etyma/astro` bugs upstream (0.1.1); array-leaf
+support upstream arrived later (Etyma 0.5 string-array messages); my-blog keeps numbered keys.
 
 **2. Glossa cutover** (ADR-007 addendum): production translations moved to Glossa Public
 Delivery. Local `es/en/uk.json`, `pnpm i18n:validate` and `@etyma/cli` were removed;
@@ -95,18 +110,13 @@ again canonical and unprefixed, while `/es/*` is compatibility-only traffic redi
 
 - **my-blog**: production build now hard-depends on Glossa Public Delivery being reachable
   (verified: a simulated outage fails the build with an `EtymaError` and keeps the committed
-  contract — by design, no stale copy). `@etyma/tooling` declares `engines.node >=22.22.0` while
-  this repo says `>=22.12.0` — bump `engines`/CI if it ever bites.
-- **Etyma → `@etyma/astro`**: (a) catalogs are fetched per rendered page (render-scoped
-  registry): 11 pages → 20 Glossa requests (~4 s build), linear in page count — wants a
-  build-scoped catalog cache; (b) `etymaRemoteContract` refreshes 3× per build (one per Vite
-  pass) — harmless but redundant; (c) ~~quality gap~~ **resolved 2026-09-24:** MF2 syntax and placeholder-contract checks
-  across the remote catalogs now run in every `pnpm build` (`etymaRemoteValidation()`,
-  `@etyma/tooling` 0.2.0), with no download script in this repo;
-  (d) the source-locale/`defaultLocale` coupling is enforced with a clear error, but it is what
-  forced the URL flip above — worth documenting prominently upstream.
+  contract — by design, no stale copy).
+- **Etyma → `@etyma/astro`**: the source-locale/`defaultLocale` coupling is enforced with a
+  clear error, but it is what forced the URL flip above — worth documenting prominently
+  upstream. (Per-page catalog fetches, the 3× contract refresh and the remote-validation gap
+  are resolved upstream as of Etyma 0.5 / astro 0.2.2 — see the 2026-10-04 entry.)
 - **Glossa**: Analysis covers completeness (missing/extra keys, coverage) but not MF2
-  syntax/placeholder checks — see Etyma (c). Project Settings now resolves the prior editable
+  syntax/placeholder checks — `etymaRemoteValidation()` covers that at build time. Project Settings now resolves the prior editable
   source-locale limitation. The remaining generic follow-up is outbound webhooks / deploy hooks
   (`catalog.updated`, `translation.created/updated/renamed/deleted`) → GitHub
   `repository_dispatch` or a Cloudflare Pages Deploy Hook, so static consumers can republish on
